@@ -22,12 +22,22 @@ async function initializeDatabase() {
 
         // Добавляем проверку существующих таблиц
         const checkExistingTables = async () => {
-            const queryInterface = sequelize.getQueryInterface();
-            const tables = await queryInterface.showAllTables();
-            if (tables.length === 0) {
-                await sequelize.sync({ force: true });
-            } else {
-                await sequelize.sync({ alter: true });
+            try {
+                const queryInterface = sequelize.getQueryInterface();
+                const tables = await queryInterface.showAllTables();
+                
+                if (tables.length === 0) {
+                    console.log('Таблицы не найдены. Создаю новые таблицы...');
+                    await sequelize.sync({ force: true });
+                    console.log('Таблицы успешно созданы');
+                } else {
+                    console.log('Таблицы уже существуют. Синхронизирую изменения...');
+                    await sequelize.sync();
+                    console.log('Синхронизация завершена');
+                }
+            } catch (error) {
+                console.error('Ошибка при проверке/создании таблиц:', error);
+                throw error;
             }
         };
 

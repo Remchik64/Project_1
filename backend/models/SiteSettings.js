@@ -99,9 +99,6 @@ const SiteSettings = sequelize.define('SiteSettings', {
   timestamps: true
 });
 
-// Создаем таблицу, если она не существует
-sequelize.sync();
-
 // Метод для получения настроек (создает запись, если она не существует)
 SiteSettings.getSettings = async function() {
   let settings = await this.findOne();
