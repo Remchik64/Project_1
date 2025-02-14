@@ -33,7 +33,7 @@ const upload = multer({
 
 // Middleware для загрузки одного файла
 const uploadMiddleware = (req, res, next) => {
-    const uploadField = upload.single('photo');
+    const uploadField = upload.any();
     uploadField(req, res, (err) => {
         if (err instanceof multer.MulterError) {
             return res.status(400).json({
@@ -46,6 +46,12 @@ const uploadMiddleware = (req, res, next) => {
                 error: err.message
             });
         }
+        
+        // Если есть файлы, берем первый и добавляем его в req.file
+        if (req.files && req.files.length > 0) {
+            req.file = req.files[0];
+        }
+        
         next();
     });
 };
