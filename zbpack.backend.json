@@ -1,0 +1,14 @@
+{
+    "build_command": "npm install",
+    "start_command": "node index.js",
+    "cache_dependencies": true,
+    "env": {
+        "PORT": "8080",
+        "JWT_SECRET": "dating-site-secret-key-2024",
+        "ADMIN_EMAIL": "renataraev51@gmail.com",
+        "ADMIN_PASSWORD": "12345.Rem",
+        "NODE_ENV": "production",
+        "MONGODB_URI": "mongodb+srv://renataraev51:12345.Rem@cluster0.aqbwxvz.mongodb.net/dating-site?retryWrites=true&w=majority"
+    },
+    "node_version": "18"
+}

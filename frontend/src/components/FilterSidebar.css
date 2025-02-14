@@ -1,0 +1,145 @@
+.filter-sidebar {
+  position: fixed;
+  top: 0;
+  left: -300px;
+  width: 300px;
+  height: 100vh;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(8px);
+  transition: transform 0.3s ease-in-out;
+  z-index: 1002;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+.filter-sidebar.open {
+  transform: translateX(300px);
+}
+
+.filter-sidebar-content {
+  padding: 20px;
+  height: 100%;
+  overflow-y: auto;
+  position: relative;
+  z-index: 1003;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(8px);
+}
+
+.filter-sidebar h3 {
+  color: white;
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.filter-section {
+  margin-bottom: 20px;
+  position: relative;
+  z-index: 1003;
+}
+
+.filter-section label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: white;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.filter-section select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(4px);
+}
+
+.filter-section select:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.filter-section select:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.filter-sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(3px);
+  z-index: 1001;
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: white;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(4px);
+}
+
+.close-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg);
+}
+
+@media (max-width: 768px) {
+  .filter-sidebar {
+    width: 280px;
+  }
+
+  .filter-sidebar.open {
+    transform: translateX(280px);
+  }
+
+  .filter-sidebar-content {
+    padding: 15px;
+  }
+
+  .filter-section h3 {
+    font-size: 1.3rem;
+  }
+
+  .filter-section select {
+    padding: 12px;
+  }
+}
+
+/* Поддержка для браузеров без backdrop-filter */
+@supports not (backdrop-filter: blur(8px)) {
+  .filter-sidebar,
+  .filter-sidebar-content {
+    background: rgba(255, 255, 255, 0.95);
+  }
+
+  .filter-section select {
+    background: rgba(255, 255, 255, 0.9);
+  }
+
+  .filter-sidebar-overlay {
+    background: rgba(0, 0, 0, 0.4);
+  }
+}

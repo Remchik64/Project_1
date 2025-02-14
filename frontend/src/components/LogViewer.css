@@ -1,0 +1,118 @@
+.log-viewer {
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin: 1rem;
+}
+
+.log-controls {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.log-filter {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  min-width: 150px;
+}
+
+.clear-logs-button {
+  padding: 0.5rem 1rem;
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.clear-logs-button:hover {
+  background: #c82333;
+}
+
+.logs-container {
+  max-height: 500px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 1rem;
+}
+
+.log-entry {
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  border-radius: 4px;
+  border-left: 4px solid transparent;
+}
+
+.log-error {
+  background: #fff5f5;
+  border-left-color: #dc3545;
+}
+
+.log-warn {
+  background: #fff9db;
+  border-left-color: #fcc419;
+}
+
+.log-info {
+  background: #e7f5ff;
+  border-left-color: #339af0;
+}
+
+.log-debug {
+  background: #f8f9fa;
+  border-left-color: #adb5bd;
+}
+
+.log-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.log-timestamp {
+  color: #666;
+}
+
+.log-type {
+  padding: 0.2rem 0.5rem;
+  border-radius: 3px;
+  font-weight: bold;
+}
+
+.log-type-error {
+  background: #dc3545;
+  color: white;
+}
+
+.log-type-warn {
+  background: #fcc419;
+  color: black;
+}
+
+.log-type-info {
+  background: #339af0;
+  color: white;
+}
+
+.log-type-debug {
+  background: #adb5bd;
+  color: white;
+}
+
+.log-message {
+  margin-bottom: 0.5rem;
+}
+
+.log-data {
+  background: #f8f9fa;
+  padding: 0.5rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  overflow-x: auto;
+  margin: 0;
+}

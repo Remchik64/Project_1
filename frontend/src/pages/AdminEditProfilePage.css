@@ -1,0 +1,28 @@
+.telegram-link-group {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.telegram-link-group input {
+  flex: 1;
+}
+
+.use-default-link {
+  padding: 8px 12px;
+  background-color: #e9ecef;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  color: #495057;
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.use-default-link:hover {
+  background-color: #dee2e6;
+}
+
+.use-default-link:active {
+  background-color: #ced4da;
+}

@@ -1,0 +1,12 @@
+{
+    "build_command": "npm install && CI=false npm run build",
+    "start_command": "npx serve -s build",
+    "cache_dependencies": true,
+    "env": {
+        "REACT_APP_API_URL": "https://love-for-once.zeabur.app",
+        "REACT_APP_ENV": "production",
+        "NODE_ENV": "production",
+        "PORT": "3000"
+    },
+    "node_version": "18"
+}

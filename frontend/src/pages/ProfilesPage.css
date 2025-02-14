@@ -1,0 +1,201 @@
+.profiles-page {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  margin-top: 100px;
+}
+
+.profiles-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.profiles-header h1 {
+  margin: 0;
+  font-size: 24px;
+  color: white;
+}
+
+.city-label {
+  color: white;
+  font-size: 0.9em;
+  margin-left: 8px;
+}
+
+.no-profiles-message {
+  text-align: center;
+  padding: 40px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.no-profiles-message h2 {
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.no-profiles-message p {
+  color: #666;
+  margin: 10px 0;
+}
+
+.hamburger-button {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1001;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.hamburger-button:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.05);
+}
+
+.hamburger-icon {
+  font-size: 24px;
+  color: rgb(255, 253, 253);
+}
+
+.profiles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  padding: 20px 0;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  font-size: 1.2rem;
+  color: rgb(80, 80, 80);
+  margin-top: 160px;
+}
+
+.error-message {
+  text-align: center;
+  padding: 40px;
+  color: #ff4444;
+  font-size: 1.2rem;
+  margin-top: 160px;
+  background: rgba(255, 68, 68, 0.1);
+  border-radius: 8px;
+}
+
+.no-profiles {
+  text-align: center;
+  padding: 40px;
+  color: rgb(80, 80, 80);
+  font-size: 1.2rem;
+  margin-top: 20px;
+  background: rgba(80, 80, 80, 0.05);
+  border-radius: 8px;
+}
+
+/* Адаптивная верстка */
+@media (max-width: 768px) {
+  .profiles-page {
+    padding: 10px;
+    margin-top: 80px;
+  }
+
+  .profiles-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .profiles-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .profiles-header h1 {
+    font-size: 20px;
+  }
+}
+
+/* Анимация появления карточек */
+.profile-card {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Стили для фильтров */
+.filters-container {
+  position: fixed;
+  top: 90px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 1200px;
+  z-index: 900;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.filters {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.filter-select {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  color: rgb(80, 80, 80);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 150px;
+  backdrop-filter: blur(4px);
+}
+
+.filter-select:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Поддержка для браузеров без backdrop-filter */
+@supports not (backdrop-filter: blur(8px)) {
+  .filters-container,
+  .filter-select {
+    background: rgba(255, 255, 255, 0.95);
+  }
+}

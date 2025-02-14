@@ -1,0 +1,186 @@
+.create-profile-page {
+  padding: 2rem 0;
+}
+
+.create-profile-container {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.create-profile-container h1 {
+  margin-bottom: 2rem;
+  color: #333;
+}
+
+.error-message {
+  background-color: #ffebee;
+  color: #c62828;
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 1.5rem;
+  border: 1px solid #ef9a9a;
+}
+
+.form-group {
+  position: relative;
+  margin-bottom: 1.5rem;
+  z-index: 0;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #666;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  position: relative;
+  z-index: 0;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.photo-upload {
+  width: 100%;
+  height: 200px;
+  border: 2px dashed #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.photo-upload:hover {
+  border-color: #007bff;
+  background-color: rgba(0, 123, 255, 0.05);
+}
+
+.photo-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+}
+
+.photo-placeholder div {
+  text-align: center;
+}
+
+.photo-placeholder svg {
+  margin-bottom: 10px;
+  opacity: 0.7;
+}
+
+.photo-placeholder span {
+  display: block;
+  font-size: 14px;
+}
+
+.photo-preview-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.photo-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.remove-photo {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: #666;
+  transition: all 0.2s ease;
+}
+
+.remove-photo:hover {
+  background: #fff;
+  color: #dc3545;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.submit-button,
+.cancel-button {
+  padding: 0.8rem 1.5rem;
+  border-radius: 25px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.submit-button {
+  background: linear-gradient(135deg, #6e8efb, #a777e3);
+  color: white;
+  border: none;
+  flex: 1;
+}
+
+.cancel-button {
+  background: #f0f0f0;
+  color: #666;
+  border: none;
+  flex: 1;
+}
+
+.submit-button:hover,
+.cancel-button:hover {
+  transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+  .create-profile-container {
+    padding: 1rem;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .submit-button,
+  .cancel-button {
+    width: 100%;
+  }
+
+  .photo-upload {
+    width: 100%;
+    max-width: 300px;
+    height: 400px;
+    margin: 0 auto 1rem;
+  }
+}

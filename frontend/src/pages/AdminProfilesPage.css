@@ -1,0 +1,119 @@
+.admin-profiles-page {
+  padding: 2rem;
+  margin-top: 100px;
+}
+
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.admin-header h1 {
+  margin: 0;
+  color: #333;
+}
+
+.create-button {
+  background: linear-gradient(135deg, #6e8efb, #a777e3);
+  color: white;
+  text-decoration: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 25px;
+  transition: transform 0.3s ease;
+}
+
+.create-button:hover {
+  transform: translateY(-2px);
+}
+
+.profiles-table {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+th {
+  background: #f8f9fa;
+  color: #666;
+  font-weight: 600;
+}
+
+.status-select {
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+.status-active {
+  color: #2e7d32;
+}
+
+.status-pending {
+  color: #f57c00;
+}
+
+.status-blocked {
+  color: #c62828;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.edit-button,
+.delete-button {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.edit-button {
+  background: #f0f0f0;
+  color: #333;
+}
+
+.delete-button {
+  background: #ffebee;
+  color: #c62828;
+  border: none;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .admin-profiles-page {
+    padding: 1rem;
+    margin-top: 80px;
+  }
+
+  .admin-header {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .edit-button,
+  .delete-button {
+    text-align: center;
+  }
+}

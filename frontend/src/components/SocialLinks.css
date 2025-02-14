@@ -1,0 +1,54 @@
+.social-links {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.social-button {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+  padding: 8px;
+}
+
+.social-button:hover {
+  transform: scale(1.1);
+}
+
+.social-button svg {
+  width: 24px;
+  height: 24px;
+}
+
+.social-button.telegram {
+  background-color: #27a7e7;
+  color: white;
+}
+
+.social-button.telegram:hover {
+  background-color: #229ad3;
+}
+
+.social-button.whatsapp {
+  background-color: #25d366;
+  color: white;
+}
+
+.social-button.whatsapp:hover {
+  background-color: #22c35e;
+}
+
+.social-button.vk {
+  background-color: #4c75a3;
+  color: white;
+}
+
+.social-button.vk:hover {
+  background-color: #446a92;
+}

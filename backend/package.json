@@ -1,0 +1,33 @@
+{
+    "name": "backend",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "start": "node index.js",
+        "dev": "nodemon index.js",
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "db:check": "node scripts/database-check.js",
+        "update-geo": "node scripts/updateGeoDatabases.js"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "axios": "^1.7.9",
+        "bcryptjs": "^2.4.3",
+        "cors": "^2.8.5",
+        "dotenv": "^16.0.3",
+        "express": "^4.18.2",
+        "geoip-lite": "^1.4.10",
+        "jsonwebtoken": "^9.0.0",
+        "multer": "^1.4.5-lts.1",
+        "sequelize": "^6.37.5",
+        "sharp": "^0.32.1",
+        "sqlite3": "^5.1.7",
+        "node-cron": "^3.0.3"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.20"
+    }
+}
