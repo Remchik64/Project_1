@@ -164,8 +164,8 @@ const AdminCreateProfilePage = () => {
               required
             >
               <option value="">Выберите пол</option>
-              <option value="female">Женский</option>
-              <option value="male">Мужской</option>
+              <option value="Женский">Женский</option>
+              <option value="Мужской">Мужской</option>
             </select>
           </div>
 

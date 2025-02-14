@@ -59,7 +59,20 @@ app.get('/api/auth/me', authController.requireAuth, authController.getCurrentUse
 // Маршруты профилей
 app.get('/api/profiles', authController.requireAdmin, profileController.getAllProfiles);
 app.get('/api/profiles/:id', authController.requireAdmin, profileController.getProfile);
-app.post('/api/profiles', authController.requireAdmin, uploadMiddleware, optimizeImage, profileController.createProfile);
+app.post('/api/profiles', 
+    authController.requireAdmin, 
+    uploadMiddleware,
+    (req, res, next) => {
+        console.log('Файл получен:', req.file);
+        next();
+    },
+    optimizeImage,
+    (req, res, next) => {
+        console.log('Файл оптимизирован');
+        next();
+    },
+    profileController.createProfile
+);
 app.put('/api/profiles/:id', authController.requireAdmin, uploadMiddleware, optimizeImage, profileController.updateProfile);
 app.patch('/api/profiles/:id/status', authController.requireAdmin, profileController.updateStatus);
 app.delete('/api/profiles/:id', authController.requireAdmin, profileController.deleteProfile);

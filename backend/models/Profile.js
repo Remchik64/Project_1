@@ -23,7 +23,7 @@ const Profile = sequelize.define('Profile', {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
-            isIn: [['male', 'female']]
+            isIn: [['Мужской', 'Женский']]
         }
     },
     about: {

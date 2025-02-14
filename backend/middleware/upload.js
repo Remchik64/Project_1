@@ -8,26 +8,29 @@ const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         // Определяем путь в зависимости от типа загружаемого файла
         let uploadPath = path.join(__dirname, '..', 'uploads');
-        if (file.fieldname === 'headerBackgroundImage' || file.fieldname === 'siteBackgroundImage') {
-            uploadPath = path.join(__dirname, '..', 'uploads', 'backgrounds');
+        
+        // Создаем директорию, если она не существует
+        if (!fs.existsSync(uploadPath)) {
+            fs.mkdirSync(uploadPath, { recursive: true, mode: 0o777 });
         }
+        
         cb(null, uploadPath);
     },
     filename: (req, file, cb) => {
-        const prefix = file.fieldname === 'headerBackgroundImage' ? 'header-' : 
-                      file.fieldname === 'siteBackgroundImage' ? 'bg-' : '';
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, prefix + uniqueSuffix + path.extname(file.originalname));
+        cb(null, 'profile-' + uniqueSuffix + path.extname(file.originalname));
     }
 });
 
 // Фильтр файлов
 const fileFilter = (req, file, cb) => {
-    if (file.mimetype.startsWith('image/')) {
-        cb(null, true);
-    } else {
-        cb(new Error('Разрешены только изображения'), false);
+    if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+        return cb(new Error('Разрешены только изображения (jpg, jpeg, png, gif)'), false);
     }
+    if (file.size > 50 * 1024 * 1024) {
+        return cb(new Error('Размер файла не должен превышать 50MB'), false);
+    }
+    cb(null, true);
 };
 
 // Создаем middleware для загрузки
@@ -41,38 +44,54 @@ const upload = multer({
 
 // Middleware для загрузки одного файла
 const uploadMiddleware = (req, res, next) => {
-    const uploadSingle = upload.single('headerBackgroundImage');
+    const uploadSingle = upload.single('photo');
+    
     uploadSingle(req, res, (err) => {
         if (err instanceof multer.MulterError) {
+            console.error('Ошибка Multer при загрузке файла:', err);
             return res.status(400).json({
                 message: 'Ошибка при загрузке файла',
                 error: err.message
             });
         } else if (err) {
+            console.error('Ошибка при загрузке файла:', err);
             return res.status(400).json({
                 message: 'Ошибка при загрузке файла',
                 error: err.message
             });
         }
+        
+        // Если файл не был загружен, просто продолжаем
+        if (!req.file) {
+            console.log('Файл не был загружен, продолжаем без файла');
+            return next();
+        }
+        
+        console.log('Файл успешно загружен:', req.file);
         next();
     });
 };
 
 // Middleware для оптимизации изображений
 const optimizeImage = async (req, res, next) => {
-    if (!req.file) return next();
+    if (!req.file) {
+        console.log('Нет файла для оптимизации');
+        return next();
+    }
 
     try {
+        console.log('Начинаем оптимизацию файла:', req.file.path);
+        
         // Создаем временное имя файла
         const tempPath = req.file.path + '.temp';
         
         // Оптимизируем изображение и сохраняем во временный файл
         await sharp(req.file.path)
-            .resize(1920, 1080, {
+            .resize(800, 800, {
                 fit: 'inside',
                 withoutEnlargement: true
             })
-            .jpeg({ quality: 85 })
+            .jpeg({ quality: 80 })
             .toFile(tempPath);
 
         // Удаляем оригинальный файл
@@ -81,10 +100,12 @@ const optimizeImage = async (req, res, next) => {
         // Переименовываем временный файл в оригинальный
         await fs.promises.rename(tempPath, req.file.path);
         
+        console.log('Файл успешно оптимизирован');
         next();
     } catch (error) {
         console.error('Ошибка при оптимизации изображения:', error);
-        // Попытка очистить временные файлы в случае ошибки
+        
+        // Попытка очистить временные файлы
         try {
             const tempPath = req.file.path + '.temp';
             if (await fs.promises.access(tempPath).then(() => true).catch(() => false)) {

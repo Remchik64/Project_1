@@ -85,34 +85,103 @@ exports.getProfileContacts = async (req, res) => {
 // Создание профиля
 exports.createProfile = async (req, res) => {
     try {
-        console.log('Создание профиля, данные:', req.body);
-        console.log('Файл:', req.file);
+        console.log('Создание профиля, полученные данные:', {
+            name: req.body.name,
+            age: req.body.age,
+            gender: req.body.gender,
+            about: req.body.about,
+            interests: req.body.interests,
+            hasFile: !!req.file
+        });
+
+        // Валидация входных данных
+        if (!req.body.name || !req.body.age || !req.body.gender) {
+            console.log('Отсутствуют обязательные поля:', {
+                name: !req.body.name,
+                age: !req.body.age,
+                gender: !req.body.gender
+            });
+            return res.status(400).json({
+                message: 'Не все обязательные поля заполнены',
+                requiredFields: {
+                    name: !req.body.name,
+                    age: !req.body.age,
+                    gender: !req.body.gender
+                }
+            });
+        }
+
+        // Проверка возраста
+        const age = parseInt(req.body.age);
+        if (isNaN(age) || age < 18 || age > 100) {
+            console.log('Некорректный возраст:', req.body.age);
+            return res.status(400).json({
+                message: 'Некорректный возраст. Допустимый возраст от 18 до 100 лет'
+            });
+        }
+
+        // Проверка пола
+        if (!['Мужской', 'Женский'].includes(req.body.gender)) {
+            console.log('Некорректное значение пола:', req.body.gender);
+            return res.status(400).json({
+                message: 'Некорректное значение пола. Допустимые значения: Мужской, Женский'
+            });
+        }
 
         const profileData = {
             name: req.body.name,
-            age: parseInt(req.body.age),
+            age: age,
             gender: req.body.gender,
             about: req.body.about || '',
             interests: req.body.interests || '',
             status: 'pending'
         };
 
+        // Добавляем фото, если оно есть
         if (req.file) {
             profileData.photo = `/uploads/${req.file.filename}`;
+            console.log('Добавлено фото:', profileData.photo);
         }
 
         console.log('Создаем профиль с данными:', profileData);
 
         const profile = await Profile.create(profileData);
-        console.log('Профиль создан:', profile.toJSON());
+        console.log('Профиль успешно создан:', profile.toJSON());
         
-        res.status(201).json(profile);
+        res.status(201).json({
+            message: 'Профиль успешно создан',
+            profile: profile
+        });
     } catch (error) {
         console.error('Ошибка при создании профиля:', error);
+        
+        // Проверяем, является ли ошибка ошибкой валидации Sequelize
+        if (error.name === 'SequelizeValidationError') {
+            const validationErrors = error.errors.map(err => ({
+                field: err.path,
+                message: err.message,
+                value: err.value
+            }));
+            console.log('Ошибки валидации:', validationErrors);
+            return res.status(400).json({
+                message: 'Ошибка валидации данных',
+                errors: validationErrors
+            });
+        }
+
+        // Если произошла ошибка, пытаемся удалить загруженный файл
+        if (req.file) {
+            try {
+                await fs.promises.unlink(req.file.path);
+                console.log('Загруженный файл удален после ошибки');
+            } catch (unlinkError) {
+                console.error('Ошибка при удалении файла:', unlinkError);
+            }
+        }
+
         res.status(500).json({
             message: 'Ошибка при создании профиля',
-            error: error.message,
-            stack: error.stack
+            error: error.message
         });
     }
 };
