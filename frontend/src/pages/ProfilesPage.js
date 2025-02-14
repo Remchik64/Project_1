@@ -23,7 +23,6 @@ const ProfilesPage = () => {
     try {
       setLoading(true);
       const response = await axios.get('http://localhost:5000/api/public/profiles');
-      console.log('Получен ответ:', response.data);
       
       if (response.data.profiles) {
         setProfiles(response.data.profiles);
@@ -58,7 +57,6 @@ const ProfilesPage = () => {
   if (loading) return <div className="loading">Загрузка...</div>;
   if (error) return <div className="error-message">{error}</div>;
 
-  // Если нет анкет для отображения
   if (filteredProfiles.length === 0) {
     return (
       <div className="profiles-page">

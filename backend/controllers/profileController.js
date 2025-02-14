@@ -267,8 +267,6 @@ exports.getPublicProfiles = async (req, res) => {
             order: [['createdAt', 'DESC']]
         });
         
-        console.log('Найдено анкет:', profiles.length);
-
         res.json({
             profiles,
             total: profiles.length
