@@ -42,11 +42,13 @@ app.use('/api/uploads', express.static(path.join(__dirname, 'uploads')));
 // Создаем папки для загрузок
 const uploadsDir = path.join(__dirname, 'uploads');
 const backgroundsDir = path.join(__dirname, 'uploads', 'backgrounds');
+
+// Создаем директории с правильными правами доступа
 if (!fs.existsSync(uploadsDir)) {
-    fs.mkdirSync(uploadsDir, { recursive: true });
+    fs.mkdirSync(uploadsDir, { recursive: true, mode: 0o777 });
 }
 if (!fs.existsSync(backgroundsDir)) {
-    fs.mkdirSync(backgroundsDir, { recursive: true });
+    fs.mkdirSync(backgroundsDir, { recursive: true, mode: 0o777 });
 }
 
 // Маршруты аутентификации

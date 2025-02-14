@@ -1,15 +1,23 @@
 const multer = require('multer');
 const path = require('path');
 const sharp = require('sharp');
+const fs = require('fs');
 
 // Настройка хранилища
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, path.join(__dirname, '..', 'uploads'));
+        // Определяем путь в зависимости от типа загружаемого файла
+        let uploadPath = path.join(__dirname, '..', 'uploads');
+        if (file.fieldname === 'headerBackgroundImage' || file.fieldname === 'siteBackgroundImage') {
+            uploadPath = path.join(__dirname, '..', 'uploads', 'backgrounds');
+        }
+        cb(null, uploadPath);
     },
     filename: (req, file, cb) => {
+        const prefix = file.fieldname === 'headerBackgroundImage' ? 'header-' : 
+                      file.fieldname === 'siteBackgroundImage' ? 'bg-' : '';
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, uniqueSuffix + path.extname(file.originalname));
+        cb(null, prefix + uniqueSuffix + path.extname(file.originalname));
     }
 });
 
@@ -33,8 +41,8 @@ const upload = multer({
 
 // Middleware для загрузки одного файла
 const uploadMiddleware = (req, res, next) => {
-    const uploadField = upload.any();
-    uploadField(req, res, (err) => {
+    const uploadSingle = upload.single('headerBackgroundImage');
+    uploadSingle(req, res, (err) => {
         if (err instanceof multer.MulterError) {
             return res.status(400).json({
                 message: 'Ошибка при загрузке файла',
@@ -46,12 +54,6 @@ const uploadMiddleware = (req, res, next) => {
                 error: err.message
             });
         }
-        
-        // Если есть файлы, берем первый и добавляем его в req.file
-        if (req.files && req.files.length > 0) {
-            req.file = req.files[0];
-        }
-        
         next();
     });
 };
@@ -61,16 +63,41 @@ const optimizeImage = async (req, res, next) => {
     if (!req.file) return next();
 
     try {
-        const optimized = await sharp(req.file.path)
-            .resize(800)
-            .jpeg({ quality: 80 })
-            .toBuffer();
+        // Создаем временное имя файла
+        const tempPath = req.file.path + '.temp';
+        
+        // Оптимизируем изображение и сохраняем во временный файл
+        await sharp(req.file.path)
+            .resize(1920, 1080, {
+                fit: 'inside',
+                withoutEnlargement: true
+            })
+            .jpeg({ quality: 85 })
+            .toFile(tempPath);
 
-        await sharp(optimized).toFile(req.file.path);
+        // Удаляем оригинальный файл
+        await fs.promises.unlink(req.file.path);
+        
+        // Переименовываем временный файл в оригинальный
+        await fs.promises.rename(tempPath, req.file.path);
+        
         next();
     } catch (error) {
         console.error('Ошибка при оптимизации изображения:', error);
-        next(error);
+        // Попытка очистить временные файлы в случае ошибки
+        try {
+            const tempPath = req.file.path + '.temp';
+            if (await fs.promises.access(tempPath).then(() => true).catch(() => false)) {
+                await fs.promises.unlink(tempPath);
+            }
+        } catch (cleanupError) {
+            console.error('Ошибка при очистке временных файлов:', cleanupError);
+        }
+        
+        return res.status(500).json({
+            message: 'Ошибка при оптимизации изображения',
+            error: error.message
+        });
     }
 };
 

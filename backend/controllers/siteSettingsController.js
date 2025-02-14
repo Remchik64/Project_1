@@ -5,10 +5,14 @@ const path = require('path');
 // Получение настроек
 exports.getSettings = async (req, res) => {
     try {
-        const settings = await SiteSettings.findOne();
-        res.json(settings || {});
+        let settings = await SiteSettings.findOne();
+        if (!settings) {
+            settings = await SiteSettings.create({});
+        }
+        res.json(settings);
     } catch (error) {
-        res.status(500).json({ message: 'Ошибка при получении настроек' });
+        console.error('Ошибка при получении настроек:', error);
+        res.status(500).json({ message: 'Ошибка при получении настроек', error: error.message });
     }
 };
 
@@ -18,32 +22,33 @@ exports.updateSettings = async (req, res) => {
         let settings = await SiteSettings.findOne();
         
         if (!settings) {
-            settings = new SiteSettings();
+            settings = await SiteSettings.create({});
         }
 
         // Обновляем все поля из req.body
         Object.keys(req.body).forEach(key => {
-            settings[key] = req.body[key];
+            if (req.body[key] !== undefined) {
+                settings[key] = req.body[key];
+            }
         });
 
-        // Если есть новое фоновое изображение
+        // Если есть новое изображение
         if (req.file) {
             const fieldName = req.file.fieldname;
             
-            // Определяем, какое изображение обновляется
             if (fieldName === 'headerBackgroundImage') {
                 // Удаляем старое изображение шапки если оно существует
                 if (settings.headerBackgroundImage) {
                     try {
-                        const oldPath = path.join(__dirname, '..', settings.headerBackgroundImage);
+                        const oldPath = path.join(__dirname, '..', settings.headerBackgroundImage.replace(/^\//, ''));
                         if (await fs.access(oldPath).then(() => true).catch(() => false)) {
                             await fs.unlink(oldPath);
                         }
                     } catch (error) {
-                        console.error('Ошибка при удалении старого фона шапки:', error);
+                        console.warn('Ошибка при удалении старого фона шапки:', error.message);
                     }
                 }
-                settings.headerBackgroundImage = '/uploads/' + req.file.filename;
+                settings.headerBackgroundImage = '/uploads/backgrounds/' + req.file.filename;
                 settings.headerBackground = 'image';
             } else if (fieldName === 'siteBackground') {
                 // Удаляем старое изображение фона если оно существует
@@ -66,7 +71,11 @@ exports.updateSettings = async (req, res) => {
         res.json(settings);
     } catch (error) {
         console.error('Ошибка при обновлении настроек:', error);
-        res.status(500).json({ message: 'Ошибка при обновлении настроек' });
+        res.status(500).json({ 
+            message: 'Ошибка при обновлении настроек', 
+            error: error.message,
+            stack: error.stack 
+        });
     }
 };
 
