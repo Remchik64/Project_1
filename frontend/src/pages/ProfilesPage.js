@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import ProfileCard from '../components/ProfileCard';
 import FilterSidebar from '../components/FilterSidebar';
-import useGeolocation from '../hooks/useGeolocation';
 import './ProfilesPage.css';
 
 const ProfilesPage = () => {
@@ -10,40 +9,24 @@ const ProfilesPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [activeCities, setActiveCities] = useState([]);
   const [filters, setFilters] = useState({
     ageRange: 'all',
     gender: 'all',
     maritalStatus: 'all'
   });
 
-  const { location, error: locationError, loading: locationLoading } = useGeolocation();
-
   useEffect(() => {
-    if (!locationLoading) {
-      fetchProfiles();
-    }
-  }, [locationLoading, location]);
+    fetchProfiles();
+  }, []);
 
   const fetchProfiles = async () => {
     try {
       setLoading(true);
-      console.log('Запрашиваем анкеты с параметрами:', location);
-
-      const params = location ? {
-        city: location.city,
-        latitude: location.latitude,
-        longitude: location.longitude
-      } : {};
-
-      const response = await axios.get('http://localhost:5000/api/public/profiles', { params });
+      const response = await axios.get('http://localhost:5000/api/public/profiles');
       console.log('Получен ответ:', response.data);
       
       if (response.data.profiles) {
         setProfiles(response.data.profiles);
-      }
-      if (response.data.cities) {
-        setActiveCities(response.data.cities);
       }
     } catch (error) {
       console.error('Ошибка при загрузке анкет:', error);
@@ -72,23 +55,19 @@ const ProfilesPage = () => {
     return true;
   });
 
-  if (loading || locationLoading) return <div className="loading">Загрузка...</div>;
-  if (error || locationError) return <div className="error-message">{error || locationError}</div>;
+  if (loading) return <div className="loading">Загрузка...</div>;
+  if (error) return <div className="error-message">{error}</div>;
 
   // Если нет анкет для отображения
   if (filteredProfiles.length === 0) {
     return (
       <div className="profiles-page">
         <div className="profiles-header">
-          <h1>
-            Анкеты
-            {location?.city && <span className="city-label"> в городе {location.city}</span>}
-          </h1>
+          <h1>Анкеты</h1>
         </div>
         <div className="no-profiles-message">
-          <h2>Извините, в вашем городе пока нет доступных анкет</h2>
-          <p>В настоящее время сервис не работает в городе {location?.city}</p>
-          <p>Мы постоянно расширяем географию и скоро появимся в вашем городе!</p>
+          <h2>Извините, пока нет доступных анкет</h2>
+          <p>В настоящее время нет активных анкет</p>
         </div>
       </div>
     );
@@ -97,10 +76,7 @@ const ProfilesPage = () => {
   return (
     <div className="profiles-page">
       <div className="profiles-header">
-        <h1>
-          Анкеты
-          {location?.city && <span className="city-label"> в городе {location.city}</span>}
-        </h1>
+        <h1>Анкеты</h1>
         <button 
           className="hamburger-button"
           onClick={() => setIsFilterOpen(true)}
@@ -118,7 +94,7 @@ const ProfilesPage = () => {
       
       <div className="profiles-grid">
         {filteredProfiles.map(profile => (
-          <ProfileCard key={profile._id} profile={profile} />
+          <ProfileCard key={profile.id} profile={profile} />
         ))}
       </div>
     </div>

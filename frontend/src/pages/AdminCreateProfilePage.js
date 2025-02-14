@@ -12,8 +12,7 @@ const AdminCreateProfilePage = () => {
     about: '',
     interests: '',
     photo: null,
-    status: 'pending',
-    city: ''
+    status: 'pending'
   });
   const [photoFile, setPhotoFile] = useState(null);
   const [error, setError] = useState('');
@@ -33,7 +32,6 @@ const AdminCreateProfilePage = () => {
         formData.append('gender', profile.gender);
         
         // Добавляем опциональные поля
-        if (profile.city) formData.append('city', profile.city.trim());
         if (profile.about) formData.append('about', profile.about.trim());
         if (profile.interests) formData.append('interests', profile.interests.trim());
 
@@ -187,16 +185,6 @@ const AdminCreateProfilePage = () => {
               value={profile.interests}
               onChange={(e) => setProfile({...profile, interests: e.target.value})}
               placeholder="Например: спорт, музыка, путешествия"
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Город</label>
-            <input
-              type="text"
-              value={profile.city}
-              onChange={(e) => setProfile({...profile, city: e.target.value})}
-              required
             />
           </div>
 

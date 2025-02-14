@@ -1,6 +1,5 @@
 const Profile = require('./Profile');
 const User = require('./User');
-const City = require('./City');
 const SiteSettings = require('./SiteSettings');
 
 // Настройка ассоциаций
@@ -15,6 +14,5 @@ Profile.belongsTo(User, { foreignKey: 'userId' });
 module.exports = {
     Profile,
     User,
-    City,
     SiteSettings
 }; 

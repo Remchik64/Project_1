@@ -44,14 +44,8 @@ const Navigation = () => {
               <Link to="/admin/profiles" className="nav-link" onClick={closeMobileMenu}>
                 Управление анкетами
               </Link>
-              <Link to="/admin/cities" className="nav-link" onClick={closeMobileMenu}>
-                Города
-              </Link>
               <Link to="/admin/settings" className="nav-link" onClick={closeMobileMenu}>
                 Настройки
-              </Link>
-              <Link to="/admin/geo-test" className="nav-link" onClick={closeMobileMenu}>
-                Тест геолокации
               </Link>
               <button onClick={handleLogout} className="nav-button">
                 Выход

@@ -10,9 +10,7 @@ require('./config/cron');
 const authController = require('./controllers/authController');
 const profileController = require('./controllers/profileController');
 const siteSettingsController = require('./controllers/siteSettingsController');
-const cityController = require('./controllers/cityController');
 const { uploadMiddleware, optimizeImage } = require('./middleware/upload');
-const geoLocationService = require('./services/geoLocationService');
 
 // Импорт роутов
 const siteSettingsRoutes = require('./routes/siteSettingsRoutes');
@@ -58,22 +56,9 @@ app.get('/api/auth/me', authController.requireAuth, authController.getCurrentUse
 // Маршруты профилей
 app.get('/api/profiles', authController.requireAdmin, profileController.getAllProfiles);
 app.get('/api/profiles/:id', authController.requireAdmin, profileController.getProfile);
-app.post('/api/profiles',
-    authController.requireAdmin,
-    uploadMiddleware,
-    optimizeImage,
-    profileController.createProfile
-);
-app.put('/api/profiles/:id', 
-    authController.requireAdmin, 
-    uploadMiddleware,
-    optimizeImage,
-    profileController.updateProfile
-);
-app.patch('/api/profiles/:id/status', 
-    authController.requireAdmin, 
-    profileController.updateStatus
-);
+app.post('/api/profiles', authController.requireAdmin, uploadMiddleware, optimizeImage, profileController.createProfile);
+app.put('/api/profiles/:id', authController.requireAdmin, uploadMiddleware, optimizeImage, profileController.updateProfile);
+app.patch('/api/profiles/:id/status', authController.requireAdmin, profileController.updateStatus);
 app.delete('/api/profiles/:id', authController.requireAdmin, profileController.deleteProfile);
 
 // Маршруты для фото
@@ -86,39 +71,6 @@ app.get('/api/public/profiles/:id/contacts', profileController.getProfileContact
 
 // Маршруты настроек сайта
 app.use('/api/site-settings', siteSettingsRoutes);
-
-// Маршруты городов
-app.get('/api/cities', cityController.getAllCities);
-app.get('/api/cities/active', cityController.getActiveCities);
-app.post('/api/cities', authController.requireAdmin, cityController.createCity);
-app.patch('/api/cities/:id/status', authController.requireAdmin, cityController.updateCityStatus);
-app.delete('/api/cities/:id', authController.requireAdmin, cityController.deleteCity);
-
-// Тестовые маршруты (только для разработки)
-if (process.env.NODE_ENV === 'development') {
-    app.post('/api/test/geolocation', authController.requireAdmin, async (req, res) => {
-        try {
-            const { ip } = req.body;
-            if (ip) {
-                const cityData = await geoLocationService.enableTestMode(ip);
-                res.json({ 
-                    message: 'Тестовый режим геолокации включен', 
-                    ip,
-                    city: cityData.city,
-                    region: cityData.region
-                });
-            } else {
-                geoLocationService.disableTestMode();
-                res.json({ message: 'Тестовый режим геолокации выключен' });
-            }
-        } catch (error) {
-            console.error('Ошибка при настройке тестового режима:', error);
-            res.status(400).json({ 
-                message: error.message || 'Ошибка при настройке тестового режима геолокации'
-            });
-        }
-    });
-}
 
 // Обработка ошибок
 app.use((err, req, res, next) => {

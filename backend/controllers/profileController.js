@@ -1,10 +1,7 @@
 const { Profile, User, SiteSettings } = require('../models');
-const City = require('../models/City');
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
-const locationExceptions = require('../config/locationExceptions');
-const geoLocationService = require('../services/geoLocationService');
 
 // Функция для получения MD5-хеша файла
 const getFileHash = (filePath) => {
@@ -95,7 +92,6 @@ exports.createProfile = async (req, res) => {
             name: req.body.name,
             age: parseInt(req.body.age),
             gender: req.body.gender,
-            city: req.body.city || null,
             about: req.body.about || '',
             interests: req.body.interests || '',
             status: 'pending'
@@ -140,7 +136,6 @@ exports.updateProfile = async (req, res) => {
             name: req.body.name,
             age: parseInt(req.body.age),
             gender: req.body.gender,
-            city: req.body.city || null,
             about: req.body.about || '',
             interests: req.body.interests || '',
             status: req.body.status || profile.status
@@ -261,143 +256,14 @@ exports.uploadPhoto = async (req, res) => {
     }
 };
 
-// Получение публичных профилей с учетом геолокации
+// Получение публичных профилей
 exports.getPublicProfiles = async (req, res) => {
     try {
-        // Получаем IP пользователя
-        const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-        console.log('IP пользователя:', ip);
-
-        // Определяем город пользователя
-        const locationData = await geoLocationService.getCityByIp(ip);
-        console.log('Данные геолокации:', locationData);
-
-        let cityName = null;
-        if (locationData) {
-            // Если пользователь не в областном центре, используем областной центр
-            cityName = locationData.isRegionalCenter ? 
-                locationData.city : 
-                locationData.regionalCenter;
-        }
-
-        // Проверяем, активен ли город в нашей системе
-        let city = null;
-        if (cityName) {
-            city = await City.findOne({
-                where: { 
-                    name: cityName,
-                    status: 'active'
-                }
-            });
-        }
-
-        // Получаем профили
-        const profiles = await Profile.findAll({
-            where: {
-                status: 'active',
-                ...(city ? { city: city.name } : {})
-            },
-            order: [['createdAt', 'DESC']]
-        });
-
-        // Добавляем информацию о геолокации в ответ
-        res.json({
-            profiles,
-            location: locationData ? {
-                city: locationData.city,
-                region: locationData.region,
-                isRegionalCenter: locationData.isRegionalCenter,
-                regionalCenter: locationData.regionalCenter
-            } : null
-        });
-    } catch (error) {
-        console.error('Ошибка при получении профилей:', error);
-        res.status(500).json({ message: 'Ошибка при получении профилей' });
-    }
-};
-
-// Получение всех анкет (для админа)
-exports.getAllProfiles = async (req, res) => {
-    try {
-        const profiles = await Profile.findAll({
-            order: [['createdAt', 'DESC']]
-        });
-        res.json(profiles);
-    } catch (error) {
-        console.error('Ошибка при получении анкет:', error);
-        res.status(500).json({ message: 'Ошибка при получении анкет' });
-    }
-};
-
-// Получение публичных анкет
-exports.getPublicProfiles = async (req, res) => {
-    try {
-        const { city } = req.query;
-        
-        let whereClause = {
-            status: 'active'
-        };
-
-        if (city) {
-            whereClause.city = city;
-        }
-
-        // Получаем активные города
-        const activeCities = await City.findAll({
-            where: { status: 'active' },
-            order: [['name', 'ASC']]
-        });
-
-        // Если город не определен, возвращаем пустой список и список активных городов
-        if (!city) {
-            console.log('Город не определен');
-            return res.json({
-                profiles: [],
-                cities: activeCities.map(city => ({
-                    name: city.name,
-                    isActive: true
-                })),
-                total: 0,
-                message: 'Не удалось определить город'
-            });
-        }
-
-        // Проверяем, находится ли город в исключениях
-        if (locationExceptions[city]) {
-            console.log('Город находится в исключениях:', city);
-            return res.json({
-                profiles: [],
-                city: {
-                    name: city,
-                    isActive: false,
-                    message: locationExceptions[city].message
-                },
-                total: 0
-            });
-        }
-
-        // Ищем город в базе данных
-        const targetCity = await City.findOne({ 
-            where: { name: city }
-        });
-        console.log('Найден город:', targetCity);
-
-        if (!targetCity || targetCity.status !== 'active') {
-            console.log('Город неактивен или не найден:', city);
-            return res.json({
-                profiles: [],
-                city: {
-                    name: city,
-                    isActive: false,
-                    message: 'Сервис пока не доступен в этом городе'
-                },
-                total: 0
-            });
-        }
-
-        // Получаем все активные анкеты для указанного города
+        // Получаем все активные анкеты
         const profiles = await Profile.findAll({ 
-            where: whereClause,
+            where: {
+                status: 'active'
+            },
             order: [['createdAt', 'DESC']]
         });
         
@@ -405,10 +271,6 @@ exports.getPublicProfiles = async (req, res) => {
 
         res.json({
             profiles,
-            city: {
-                name: targetCity.name,
-                isActive: true
-            },
             total: profiles.length
         });
     } catch (error) {

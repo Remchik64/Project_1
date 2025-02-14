@@ -91,7 +91,6 @@ const AdminProfilesPage = () => {
                 <th>ID</th>
                 <th>Имя</th>
                 <th>Возраст</th>
-                <th>Город</th>
                 <th>Статус</th>
                 <th>Действия</th>
               </tr>
@@ -102,7 +101,6 @@ const AdminProfilesPage = () => {
                   <td>{profile.id}</td>
                   <td>{profile.name}</td>
                   <td>{profile.age}</td>
-                  <td>{profile.city}</td>
                   <td>
                     <select
                       value={profile.status}

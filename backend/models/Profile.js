@@ -26,10 +26,6 @@ const Profile = sequelize.define('Profile', {
             isIn: [['male', 'female']]
         }
     },
-    city: {
-        type: DataTypes.STRING,
-        allowNull: true
-    },
     about: {
         type: DataTypes.TEXT,
         allowNull: true
@@ -84,7 +80,6 @@ const Profile = sequelize.define('Profile', {
 }, {
     timestamps: true,
     indexes: [
-        { fields: ['city'] },
         { fields: ['status'] }
     ]
 });

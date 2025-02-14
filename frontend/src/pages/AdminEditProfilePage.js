@@ -11,7 +11,6 @@ const AdminEditProfilePage = () => {
         name: '',
         age: '',
         gender: '',
-        city: '',
         about: '',
         interests: '',
         status: '',
