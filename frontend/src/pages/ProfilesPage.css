@@ -9,37 +9,34 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
 
 .profiles-header h1 {
   margin: 0;
-  font-size: 24px;
-  color: white;
-}
-
-.city-label {
-  color: white;
-  font-size: 0.9em;
-  margin-left: 8px;
-}
-
-.no-profiles-message {
-  text-align: center;
-  padding: 40px;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.no-profiles-message h2 {
   color: #333;
-  margin-bottom: 20px;
+  font-size: 28px;
 }
 
-.no-profiles-message p {
-  color: #666;
-  margin: 10px 0;
+.change-city-button {
+  padding: 8px 16px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s;
+}
+
+.change-city-button:hover {
+  background: #0056b3;
 }
 
 .hamburger-button {
@@ -73,37 +70,49 @@
 
 .profiles-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 20px;
-  padding: 20px 0;
+  margin-top: 20px;
 }
 
 .loading {
   text-align: center;
   padding: 40px;
-  font-size: 1.2rem;
-  color: rgb(80, 80, 80);
-  margin-top: 160px;
+  font-size: 18px;
+  color: #666;
 }
 
 .error-message {
+  background: #f8d7da;
+  color: #721c24;
+  padding: 15px;
+  border-radius: 4px;
+  margin: 20px 0;
   text-align: center;
-  padding: 40px;
-  color: #ff4444;
-  font-size: 1.2rem;
-  margin-top: 160px;
-  background: rgba(255, 68, 68, 0.1);
-  border-radius: 8px;
 }
 
-.no-profiles {
+.no-profiles-message {
   text-align: center;
   padding: 40px;
-  color: rgb(80, 80, 80);
-  font-size: 1.2rem;
-  margin-top: 20px;
-  background: rgba(80, 80, 80, 0.05);
+  background: #f8f9fa;
   border-radius: 8px;
+  margin-top: 20px;
+}
+
+.no-profiles-message h2 {
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.no-profiles-message p {
+  color: #666;
+  margin: 0;
+}
+
+.city-label {
+  color: white;
+  font-size: 0.9em;
+  margin-left: 8px;
 }
 
 /* Адаптивная верстка */
@@ -113,19 +122,23 @@
     margin-top: 80px;
   }
 
-  .profiles-grid {
-    grid-template-columns: 1fr;
-    gap: 15px;
-  }
-
   .profiles-header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 10px;
+    gap: 15px;
   }
 
-  .profiles-header h1 {
-    font-size: 20px;
+  .header-content {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .hamburger-button {
+    align-self: flex-end;
+  }
+
+  .profiles-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   }
 }
 

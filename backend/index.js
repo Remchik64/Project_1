@@ -14,6 +14,7 @@ const { uploadMiddleware, optimizeImage } = require('./middleware/upload');
 
 // Импорт роутов
 const siteSettingsRoutes = require('./routes/siteSettingsRoutes');
+const cityRoutes = require('./routes/cityRoutes');
 
 const app = express();
 
@@ -71,6 +72,9 @@ app.get('/api/public/profiles/:id/contacts', profileController.getProfileContact
 
 // Маршруты настроек сайта
 app.use('/api/site-settings', siteSettingsRoutes);
+
+// Маршруты для городов
+app.use('/api/cities', cityRoutes);
 
 // Обработка ошибок
 app.use((err, req, res, next) => {

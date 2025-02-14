@@ -10,6 +10,7 @@ import SearchPage from './pages/SearchPage';
 import AdminProfilesPage from './pages/AdminProfilesPage';
 import AdminCreateProfilePage from './pages/AdminCreateProfilePage';
 import AdminSettingsPage from './pages/AdminSettingsPage';
+import AdminCitiesPage from './pages/AdminCitiesPage';
 import UserDashboard from './pages/UserDashboard';
 import EditProfilePage from './pages/EditProfilePage';
 import { AuthProvider } from './context/AuthContext';
@@ -75,6 +76,14 @@ function App() {
                   element={
                     <AdminRoute>
                       <AdminSettingsPage />
+                    </AdminRoute>
+                  }
+                />
+                <Route
+                  path="/admin/cities"
+                  element={
+                    <AdminRoute>
+                      <AdminCitiesPage />
                     </AdminRoute>
                   }
                 />

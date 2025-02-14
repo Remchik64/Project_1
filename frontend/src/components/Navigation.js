@@ -44,6 +44,9 @@ const Navigation = () => {
               <Link to="/admin/profiles" className="nav-link" onClick={closeMobileMenu}>
                 Управление анкетами
               </Link>
+              <Link to="/admin/cities" className="nav-link" onClick={closeMobileMenu}>
+                Управление городами
+              </Link>
               <Link to="/admin/settings" className="nav-link" onClick={closeMobileMenu}>
                 Настройки
               </Link>
