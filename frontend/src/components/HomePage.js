@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import './HomePage.css';
+import './InfoBlocks.css';
 import { getApiUrl, getMediaUrl } from '../config/api';
 
 const HomePage = () => {
@@ -69,21 +70,27 @@ const HomePage = () => {
                     </div>
                 </div>
             </section>
-            <section className="features">
-                <div className="feature">
-                    <i className="fas fa-heart"></i>
-                    <h3>Простой поиск</h3>
-                    <p>Находите людей по вашим интересам</p>
+            <section className="info-blocks">
+                <div className="info-block">
+                    <div className="info-block-icon">
+                        <i className="fas fa-users"></i>
+                    </div>
+                    <h3>Тысячи пользователей</h3>
+                    <p>Найдите того, кто разделяет ваши интересы</p>
                 </div>
-                <div className="feature">
-                    <i className="fas fa-shield-alt"></i>
+                <div className="info-block">
+                    <div className="info-block-icon">
+                        <i className="fas fa-shield-alt"></i>
+                    </div>
                     <h3>Безопасность</h3>
-                    <p>Ваши данные под надежной защитой</p>
+                    <p>Ваши данные надежно защищены</p>
                 </div>
-                <div className="feature">
-                    <i className="fas fa-comments"></i>
-                    <h3>Общение</h3>
-                    <p>Удобный чат для знакомства</p>
+                <div className="info-block">
+                    <div className="info-block-icon">
+                        <i className="fas fa-heart"></i>
+                    </div>
+                    <h3>Успешные истории</h3>
+                    <p>Тысячи счастливых пар нашли друг друга</p>
                 </div>
             </section>
         </div>

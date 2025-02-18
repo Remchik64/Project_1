@@ -1,11 +1,12 @@
 .profile-card {
-  background: white;
+  background: #212121d9;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   transition: transform 0.3s ease;
   position: relative;
 }
+
 
 .profile-card:hover {
   transform: translateY(-5px);
@@ -43,14 +44,14 @@
 .profile-name {
   margin: 0 0 10px 0;
   font-size: 24px;
-  color: #333;
+  color: #ffffff;
 }
 
 .profile-details {
   display: flex;
   gap: 15px;
   margin-bottom: 15px;
-  color: #666;
+  color: #ffffff;
 }
 
 .profile-age,
@@ -60,7 +61,7 @@
 
 .profile-about {
   margin: 15px 0;
-  color: #555;
+  color: #ffffff;
   line-height: 1.5;
 }
 
@@ -72,11 +73,11 @@
 }
 
 .interest-tag {
-  background: #f0f0f0;
+  background: rgba(255, 255, 255, 0.1);
   padding: 4px 12px;
   border-radius: 15px;
   font-size: 0.9rem;
-  color: #666;
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .profile-image {
@@ -94,23 +95,23 @@
 
 .profile-info h2 {
   margin: 0 0 10px 0;
-  color: #333;
+  color: #ffffff;
   font-size: 1.5rem;
 }
 
 .age,
 .city {
-  color: #666;
+  color: rgba(255, 255, 255, 0.9);
   margin: 5px 0;
 }
 
 .profile-detail-item {
   font-size: 14px;
-  color: #666;
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .profile-detail-label {
-  color: #999;
+  color: rgba(255, 255, 255, 0.7);
   font-size: 12px;
   display: block;
   margin-bottom: 2px;
@@ -231,7 +232,7 @@
 }
 
 .additional-info p {
-  color: #666;
+  color: rgba(255, 255, 255, 0.9);
   line-height: 1.5;
 }
 
