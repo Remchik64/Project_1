@@ -20,13 +20,13 @@
 
 .profiles-header h1 {
   margin: 0;
-  color: #333;
+  color: #b90c8a;
   font-size: 28px;
 }
 
 .change-city-button {
   padding: 8px 16px;
-  background: #007bff;
+  background: #ce00ff5e;
   color: white;
   border: none;
   border-radius: 4px;
@@ -36,7 +36,7 @@
 }
 
 .change-city-button:hover {
-  background: #0056b3;
+  background: #3f0015;
 }
 
 .hamburger-button {
