@@ -56,6 +56,7 @@ code {
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 1rem;
+  color: #333;
 }
 
 .form-group input:focus,
@@ -64,6 +65,12 @@ code {
   border-color: #6e8efb;
   outline: none;
   box-shadow: 0 0 0 2px rgba(110, 142, 251, 0.1);
+}
+
+/* Добавляем стили для опций в выпадающем списке */
+.form-group select option {
+  color: #333;
+  background-color: #fff;
 }
 
 /* Общие стили для кнопок */
