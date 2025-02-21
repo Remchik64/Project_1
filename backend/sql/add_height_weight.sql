@@ -1,0 +1,3 @@
+ALTER TABLE Profiles
+ADD COLUMN height INTEGER,
+ADD COLUMN weight INTEGER; 

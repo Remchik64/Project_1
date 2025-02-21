@@ -9,13 +9,15 @@ const ProfileCard = ({ profile }) => {
     const [settings, setSettings] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     
+    console.log('Данные профиля в ProfileCard:', profile);
+    
     // Преобразуем строку интересов в массив, если она задана
     const interestsArray = profile.interests ? 
         profile.interests.split(',').map(interest => interest.trim()) : 
         [];
 
     // Формируем полный URL для фотографии
-    const photoUrl = profile.photo && typeof profile.photo === 'string' && !profile.photo.startsWith('blob:') ? 
+    const photoUrl = profile.photo ? 
         `http://localhost:5000${profile.photo}` : 
         null;
 
@@ -24,6 +26,7 @@ const ProfileCard = ({ profile }) => {
             try {
                 const response = await axios.get(getApiUrl('/api/site-settings'));
                 setSettings(response.data);
+                console.log('Загруженные настройки:', response.data);
             } catch (error) {
                 console.error('Ошибка при загрузке настроек:', error);
             }
@@ -34,14 +37,22 @@ const ProfileCard = ({ profile }) => {
 
     const handleOpenModal = () => {
         setIsModalOpen(true);
-        // Предотвращаем прокрутку body при открытом модальном окне
         document.body.style.overflow = 'hidden';
     };
 
     const handleCloseModal = () => {
         setIsModalOpen(false);
-        // Возвращаем прокрутку body при закрытии модального окна
         document.body.style.overflow = 'unset';
+    };
+
+    // Форматирование номера телефона
+    const formatPhoneNumber = (phone) => {
+        if (!phone) return 'Не указан';
+        const cleaned = phone.replace(/\D/g, '');
+        if (cleaned.length === 11) {
+            return `+${cleaned[0]} (${cleaned.slice(1,4)}) ${cleaned.slice(4,7)}-${cleaned.slice(7,9)}-${cleaned.slice(9)}`;
+        }
+        return phone;
     };
 
     return (
@@ -140,7 +151,19 @@ const ProfileCard = ({ profile }) => {
                                     </p>
                                     <p className="detail-item">
                                         <span className="detail-label">Пол:</span>
-                                        <span>{profile.gender === 'male' ? 'Мужской' : 'Женский'}</span>
+                                        <span>{profile.gender}</span>
+                                    </p>
+                                    <p className="detail-item">
+                                        <span className="detail-label">Рост:</span>
+                                        <span>{profile.height ? `${profile.height} см` : 'Не указан'}</span>
+                                    </p>
+                                    <p className="detail-item">
+                                        <span className="detail-label">Вес:</span>
+                                        <span>{profile.weight ? `${profile.weight} кг` : 'Не указан'}</span>
+                                    </p>
+                                    <p className="detail-item">
+                                        <span className="detail-label">Телефон:</span>
+                                        <span>{formatPhoneNumber(profile.phone)}</span>
                                     </p>
                                 </div>
                                 <div className="about-section">

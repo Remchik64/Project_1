@@ -46,6 +46,22 @@ const Profile = sequelize.define('Profile', {
             isIn: [['active', 'pending', 'blocked']]
         }
     },
+    height: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        validate: {
+            min: 140,
+            max: 220
+        }
+    },
+    weight: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        validate: {
+            min: 40,
+            max: 150
+        }
+    },
     phone: {
         type: DataTypes.STRING,
         allowNull: true

@@ -12,7 +12,10 @@ const AdminCreateProfilePage = () => {
     about: '',
     interests: '',
     photo: null,
-    status: 'pending'
+    status: 'pending',
+    height: '',
+    weight: '',
+    phone: ''
   });
   const [photoFile, setPhotoFile] = useState(null);
   const [error, setError] = useState('');
@@ -26,18 +29,39 @@ const AdminCreateProfilePage = () => {
     try {
         const formData = new FormData();
         
-        // Добавляем базовые поля
+        // Сначала добавляем файл
+        if (photoFile) {
+            console.log('Добавляем файл в FormData:', {
+                name: photoFile.name,
+                type: photoFile.type,
+                size: photoFile.size
+            });
+            formData.append('photo', photoFile);
+        }
+        
+        // Затем добавляем остальные поля
         formData.append('name', profile.name.trim());
-        formData.append('age', profile.age);
+        formData.append('age', Number(profile.age));
         formData.append('gender', profile.gender);
         
-        // Добавляем опциональные поля
         if (profile.about) formData.append('about', profile.about.trim());
         if (profile.interests) formData.append('interests', profile.interests.trim());
+        if (profile.height) formData.append('height', Number(profile.height));
+        if (profile.weight) formData.append('weight', Number(profile.weight));
+        if (profile.phone) formData.append('phone', profile.phone.trim());
 
-        // Добавляем фото, если оно есть
-        if (photoFile) {
-            formData.append('photo', photoFile);
+        // Для отладки - проверяем содержимое FormData
+        console.log('Отправляемые данные:');
+        for (let [key, value] of formData.entries()) {
+            if (key === 'photo') {
+                console.log('photo:', {
+                    name: value.name,
+                    type: value.type,
+                    size: value.size
+                });
+            } else {
+                console.log(`${key}:`, value);
+            }
         }
 
         const response = await axios.post(
@@ -55,11 +79,17 @@ const AdminCreateProfilePage = () => {
         navigate('/admin/profiles');
     } catch (error) {
         console.error('Ошибка при создании анкеты:', error.response?.data || error);
-        setError(
-            error.response?.data?.message || 
-            error.response?.data?.error || 
-            'Ошибка при создании анкеты'
-        );
+        const errorMessage = error.response?.data?.message || 
+                           error.response?.data?.error || 
+                           'Ошибка при создании анкеты. Проверьте правильность заполнения полей.';
+        setError(errorMessage);
+        
+        // Логируем детали ошибки для отладки
+        if (error.response) {
+            console.log('Response data:', error.response.data);
+            console.log('Response status:', error.response.status);
+            console.log('Response headers:', error.response.headers);
+        }
     } finally {
         setIsLoading(false);
     }
@@ -186,6 +216,44 @@ const AdminCreateProfilePage = () => {
               onChange={(e) => setProfile({...profile, interests: e.target.value})}
               placeholder="Например: спорт, музыка, путешествия"
             />
+          </div>
+
+          <div className="additional-info-section">
+            <h3>Дополнительная информация</h3>
+            
+            <div className="form-group">
+              <label>Рост (см)</label>
+              <input
+                type="number"
+                min="140"
+                max="220"
+                value={profile.height}
+                onChange={(e) => setProfile({...profile, height: e.target.value})}
+                placeholder="Например: 175"
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Вес (кг)</label>
+              <input
+                type="number"
+                min="40"
+                max="150"
+                value={profile.weight}
+                onChange={(e) => setProfile({...profile, weight: e.target.value})}
+                placeholder="Например: 65"
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Номер телефона</label>
+              <input
+                type="tel"
+                value={profile.phone}
+                onChange={(e) => setProfile({...profile, phone: e.target.value})}
+                placeholder="+7 (999) 999-99-99"
+              />
+            </div>
           </div>
 
           <div className="form-actions">

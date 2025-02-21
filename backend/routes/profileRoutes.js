@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const profileController = require('../controllers/profileController');
 const authMiddleware = require('../middleware/authMiddleware');
-const upload = require('../middleware/uploadMiddleware');
+const { uploadProfilePhoto } = require('../middleware/upload');
 
 // Публичные маршруты
 router.get('/public', profileController.getPublicProfiles);
@@ -12,10 +12,10 @@ router.get('/public/:id/contacts', profileController.getProfileContacts);
 // Защищенные маршруты (требуют авторизации)
 router.use(authMiddleware);
 router.get('/', profileController.getAllProfiles);
-router.post('/', upload.single('photo'), profileController.createProfile);
-router.put('/:id', upload.single('photo'), profileController.updateProfile);
+router.post('/', uploadProfilePhoto, profileController.createProfile);
+router.put('/:id', uploadProfilePhoto, profileController.updateProfile);
 router.delete('/:id', profileController.deleteProfile);
 router.patch('/:id/status', profileController.updateStatus);
-router.post('/upload', upload.single('photo'), profileController.uploadPhoto);
+router.post('/upload', uploadProfilePhoto, profileController.uploadPhoto);
 
 module.exports = router;

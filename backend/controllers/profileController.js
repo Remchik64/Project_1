@@ -85,14 +85,11 @@ exports.getProfileContacts = async (req, res) => {
 // Создание профиля
 exports.createProfile = async (req, res) => {
     try {
-        console.log('Создание профиля, полученные данные:', {
-            name: req.body.name,
-            age: req.body.age,
-            gender: req.body.gender,
-            about: req.body.about,
-            interests: req.body.interests,
-            hasFile: !!req.file
-        });
+        console.log('Начало создания профиля');
+        console.log('Headers:', req.headers);
+        console.log('Body:', req.body);
+        console.log('File:', req.file);
+        console.log('Files:', req.files);
 
         // Валидация входных данных
         if (!req.body.name || !req.body.age || !req.body.gender) {
@@ -134,13 +131,29 @@ exports.createProfile = async (req, res) => {
             gender: req.body.gender,
             about: req.body.about || '',
             interests: req.body.interests || '',
+            height: req.body.height ? parseInt(req.body.height) : null,
+            weight: req.body.weight ? parseInt(req.body.weight) : null,
+            phone: req.body.phone || '',
             status: 'pending'
         };
 
         // Добавляем фото, если оно есть
-        if (req.file) {
-            profileData.photo = `/uploads/${req.file.filename}`;
-            console.log('Добавлено фото:', profileData.photo);
+        if (req.files && req.files.photo && req.files.photo[0]) {
+            const photoFile = req.files.photo[0];
+            console.log('Обработка загруженного файла:', {
+                originalname: photoFile.originalname,
+                filename: photoFile.filename,
+                path: photoFile.path,
+                mimetype: photoFile.mimetype,
+                size: photoFile.size
+            });
+            
+            // Формируем URL для фото
+            const photoUrl = `/uploads/${photoFile.filename}`;
+            profileData.photo = photoUrl;
+            console.log('Добавлено фото:', photoUrl);
+        } else {
+            console.log('Файл не был загружен');
         }
 
         console.log('Создаем профиль с данными:', profileData);
@@ -155,24 +168,10 @@ exports.createProfile = async (req, res) => {
     } catch (error) {
         console.error('Ошибка при создании профиля:', error);
         
-        // Проверяем, является ли ошибка ошибкой валидации Sequelize
-        if (error.name === 'SequelizeValidationError') {
-            const validationErrors = error.errors.map(err => ({
-                field: err.path,
-                message: err.message,
-                value: err.value
-            }));
-            console.log('Ошибки валидации:', validationErrors);
-            return res.status(400).json({
-                message: 'Ошибка валидации данных',
-                errors: validationErrors
-            });
-        }
-
         // Если произошла ошибка, пытаемся удалить загруженный файл
-        if (req.file) {
+        if (req.files && req.files.photo && req.files.photo[0]) {
             try {
-                await fs.promises.unlink(req.file.path);
+                await fs.promises.unlink(req.files.photo[0].path);
                 console.log('Загруженный файл удален после ошибки');
             } catch (unlinkError) {
                 console.error('Ошибка при удалении файла:', unlinkError);
@@ -207,7 +206,10 @@ exports.updateProfile = async (req, res) => {
             gender: req.body.gender,
             about: req.body.about || '',
             interests: req.body.interests || '',
-            status: req.body.status || profile.status
+            status: req.body.status || profile.status,
+            height: req.body.height ? parseInt(req.body.height) : null,
+            weight: req.body.weight ? parseInt(req.body.weight) : null,
+            phone: req.body.phone || ''
         };
 
         // Обработка фото

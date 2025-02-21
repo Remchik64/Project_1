@@ -48,9 +48,9 @@
 
 .profile-details {
   display: flex;
+  flex-direction: column;
   gap: 15px;
-  margin-bottom: 15px;
-  color: #ffffff;
+  margin-bottom: 25px;
 }
 
 .profile-age,
@@ -155,8 +155,6 @@
   border-radius: 8px;
   max-width: 900px;
   width: 90%;
-  max-height: 90vh;
-  overflow-y: auto;
   position: relative;
   animation: modalFadeIn 0.3s ease-out;
 }
@@ -201,10 +199,21 @@
   padding: 30px;
 }
 
+.modal-info {
+  flex: 1;
+  min-width: 0;
+}
+
 @media (max-width: 768px) {
   .modal-content {
     flex-direction: column;
     gap: 20px;
+    padding: 15px;
+  }
+
+  .profile-modal {
+    width: 95%;
+    margin: 20px auto;
   }
 }
 
@@ -222,11 +231,6 @@
   object-fit: cover;
 }
 
-.modal-info {
-  flex: 1;
-  min-width: 0;
-}
-
 .modal-info h2 {
   color: #333;
   margin: 0 0 20px 0;
@@ -238,14 +242,22 @@
 }
 
 .detail-item {
-  margin-bottom: 10px;
-  color: #333;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
 }
 
 .detail-label {
   color: #666;
-  margin-right: 10px;
   font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.detail-item span:last-child {
+  color: #333;
+  font-size: 1rem;
 }
 
 .about-section,
