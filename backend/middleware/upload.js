@@ -18,7 +18,9 @@ const storage = multer.diskStorage({
     },
     filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, 'profile-' + uniqueSuffix + path.extname(file.originalname));
+        // Используем разные префиксы в зависимости от типа файла
+        const prefix = file.fieldname === 'headerBackgroundImage' ? 'background-' : 'profile-';
+        cb(null, prefix + uniqueSuffix + path.extname(file.originalname));
     }
 });
 
@@ -44,7 +46,7 @@ const upload = multer({
 
 // Middleware для загрузки одного файла
 const uploadMiddleware = (req, res, next) => {
-    const uploadSingle = upload.single('photo');
+    const uploadSingle = upload.single('headerBackgroundImage');
     
     uploadSingle(req, res, (err) => {
         if (err instanceof multer.MulterError) {

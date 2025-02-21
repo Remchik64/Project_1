@@ -19,63 +19,30 @@ exports.getSettings = async (req, res) => {
 // Обновление настроек
 exports.updateSettings = async (req, res) => {
     try {
-        let settings = await SiteSettings.findOne();
-        
+        console.log('Получены данные:', req.body);
+        console.log('Загруженный файл:', req.file);
+
+        const settings = await SiteSettings.findOne();
         if (!settings) {
-            settings = await SiteSettings.create({});
+            return res.status(404).json({ message: 'Настройки не найдены' });
         }
 
-        // Обновляем все поля из req.body
-        Object.keys(req.body).forEach(key => {
-            if (req.body[key] !== undefined) {
-                settings[key] = req.body[key];
-            }
-        });
-
-        // Если есть новое изображение
+        // Если загружен новый файл, обновляем путь к изображению
         if (req.file) {
-            const fieldName = req.file.fieldname;
-            
-            if (fieldName === 'headerBackgroundImage') {
-                // Удаляем старое изображение шапки если оно существует
-                if (settings.headerBackgroundImage) {
-                    try {
-                        const oldPath = path.join(__dirname, '..', settings.headerBackgroundImage.replace(/^\//, ''));
-                        if (await fs.access(oldPath).then(() => true).catch(() => false)) {
-                            await fs.unlink(oldPath);
-                        }
-                    } catch (error) {
-                        console.warn('Ошибка при удалении старого фона шапки:', error.message);
-                    }
-                }
-                settings.headerBackgroundImage = '/uploads/backgrounds/' + req.file.filename;
-                settings.headerBackground = 'image';
-            } else if (fieldName === 'siteBackground') {
-                // Удаляем старое изображение фона если оно существует
-                if (settings.siteBackgroundImage) {
-                    try {
-                        const oldPath = path.join(__dirname, '..', settings.siteBackgroundImage);
-                        if (await fs.access(oldPath).then(() => true).catch(() => false)) {
-                            await fs.unlink(oldPath);
-                        }
-                    } catch (error) {
-                        console.error('Ошибка при удалении старого фона сайта:', error);
-                    }
-                }
-                settings.siteBackgroundImage = '/uploads/' + req.file.filename;
-                settings.siteBackground = 'image';
-            }
+            // Добавляем слеш перед путем для правильного URL
+            const imagePath = '/uploads/' + req.file.filename;
+            console.log('Сохраняемый путь к изображению:', imagePath);
+            req.body.headerBackgroundImage = imagePath;
         }
 
-        await settings.save();
-        res.json(settings);
+        await settings.update(req.body);
+        const updatedSettings = await SiteSettings.findOne();
+        
+        console.log('Обновленные настройки:', updatedSettings.toJSON());
+        res.json(updatedSettings);
     } catch (error) {
         console.error('Ошибка при обновлении настроек:', error);
-        res.status(500).json({ 
-            message: 'Ошибка при обновлении настроек', 
-            error: error.message,
-            stack: error.stack 
-        });
+        res.status(500).json({ message: 'Ошибка при обновлении настроек', error: error.message });
     }
 };
 
