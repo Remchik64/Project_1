@@ -123,13 +123,36 @@ const ProfilesPage = () => {
     }
 
     if (filters.interests && filters.interests.length > 0 && profile.interests) {
-      const profileInterests = profile.interests.toLowerCase().split(',').map(i => i.trim());
-      const hasMatchingInterests = filters.interests.some(interest => 
-        profileInterests.some(profileInterest => 
-          profileInterest.includes(interest.toLowerCase()) || 
-          interest.toLowerCase().includes(profileInterest)
-        )
+      const profileInterests = profile.interests
+        .toLowerCase()
+        .split(',')
+        .map(i => i.trim())
+        .filter(i => i.length > 0);
+
+      const searchInterests = filters.interests
+        .map(i => i.toLowerCase().trim())
+        .filter(i => i.length > 0);
+
+      const hasMatchingInterests = searchInterests.some(searchInterest =>
+        profileInterests.some(profileInterest => {
+          if (profileInterest === searchInterest) return true;
+          
+          if (profileInterest.includes(searchInterest) || 
+              searchInterest.includes(profileInterest)) {
+            const profileWords = profileInterest.split(' ');
+            const searchWords = searchInterest.split(' ');
+            
+            return profileWords.some(pWord => 
+              searchWords.some(sWord => 
+                pWord.includes(sWord) || sWord.includes(pWord)
+              )
+            );
+          }
+          
+          return false;
+        })
       );
+
       if (!hasMatchingInterests) {
         return false;
       }

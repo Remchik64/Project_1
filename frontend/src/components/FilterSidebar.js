@@ -67,8 +67,8 @@ const FilterSidebar = ({
             onClick={stopPropagation}
           >
             <option value="all">Все</option>
-            <option value="male">Мужской</option>
-            <option value="female">Женский</option>
+            <option value="Мужской">Мужской</option>
+            <option value="Женский">Женский</option>
           </select>
         </div>
 
