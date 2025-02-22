@@ -7,7 +7,17 @@ node_modules/
 /coverage
 
 # Production
+/build
+/dist
 build/
+dist/
+
+# Development
+.cache/
+*.pack
+frontend/.cache/
+frontend/node_modules/
+backend/node_modules/
 
 # Misc
 .DS_Store
