@@ -1,14 +1,37 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './FilterSidebar.css';
 
 const FilterSidebar = ({ 
   isOpen, 
   onClose, 
   filters, 
-  setFilters
+  setFilters,
+  onSearch
 }) => {
+  const [interests, setInterests] = useState('');
+
   const handleFilterChange = (key, value) => {
     setFilters(prev => ({...prev, [key]: value}));
+  };
+
+  const handleInterestsChange = (e) => {
+    setInterests(e.target.value);
+  };
+
+  const handleSearch = () => {
+    // Преобразуем строку интересов в массив, удаляем пробелы
+    const interestsArray = interests
+      .split(',')
+      .map(interest => interest.trim())
+      .filter(interest => interest.length > 0);
+    
+    // Обновляем фильтры с новыми интересами
+    handleFilterChange('interests', interestsArray);
+    
+    // Вызываем функцию поиска
+    if (onSearch) {
+      onSearch();
+    }
   };
 
   const stopPropagation = (e) => {
@@ -84,22 +107,25 @@ const FilterSidebar = ({
 
         <div className="filter-section">
           <label>Интересы</label>
-          <select
-            value={filters.interest}
-            onChange={(e) => handleFilterChange('interest', e.target.value)}
+          <input
+            type="text"
+            value={interests}
+            onChange={handleInterestsChange}
             onClick={stopPropagation}
-          >
-            <option value="all">Все интересы</option>
-            <option value="спорт">Спорт</option>
-            <option value="музыка">Музыка</option>
-            <option value="путешествия">Путешествия</option>
-            <option value="кино">Кино</option>
-            <option value="книги">Книги</option>
-            <option value="искусство">Искусство</option>
-            <option value="танцы">Танцы</option>
-            <option value="фотография">Фотография</option>
-          </select>
+            placeholder="Введите интересы через запятую"
+            className="interests-input"
+          />
+          <small className="input-help">
+            Например: спорт, музыка, путешествия
+          </small>
         </div>
+
+        <button 
+          className="search-button" 
+          onClick={handleSearch}
+        >
+          Найти анкеты
+        </button>
       </div>
       {isOpen && <div className="filter-sidebar-overlay" onClick={onClose}></div>}
     </div>

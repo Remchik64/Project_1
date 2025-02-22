@@ -184,3 +184,16 @@
     margin: 0 auto 1rem;
   }
 }
+
+.additional-info-section {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.additional-info-section h3 {
+  color: #fff;
+  margin-bottom: 20px;
+  font-size: 1.2rem;
+  font-weight: 500;
+}

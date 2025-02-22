@@ -21,7 +21,7 @@ const ProfilesPage = () => {
     gender: 'all',
     heightRange: 'all',
     weightRange: 'all',
-    interest: 'all'
+    interests: []
   });
 
   useEffect(() => {
@@ -122,9 +122,15 @@ const ProfilesPage = () => {
       }
     }
 
-    if (filters.interest !== 'all' && profile.interests) {
+    if (filters.interests && filters.interests.length > 0 && profile.interests) {
       const profileInterests = profile.interests.toLowerCase().split(',').map(i => i.trim());
-      if (!profileInterests.includes(filters.interest.toLowerCase())) {
+      const hasMatchingInterests = filters.interests.some(interest => 
+        profileInterests.some(profileInterest => 
+          profileInterest.includes(interest.toLowerCase()) || 
+          interest.toLowerCase().includes(profileInterest)
+        )
+      );
+      if (!hasMatchingInterests) {
         return false;
       }
     }
@@ -180,6 +186,10 @@ const ProfilesPage = () => {
         onClose={() => setIsFilterOpen(false)}
         filters={filters}
         setFilters={setFilters}
+        onSearch={() => {
+          setIsFilterOpen(false);
+          fetchProfiles();
+        }}
       />
       
       <div className="profiles-grid">

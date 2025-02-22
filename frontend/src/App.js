@@ -12,7 +12,7 @@ import AdminCreateProfilePage from './pages/AdminCreateProfilePage';
 import AdminSettingsPage from './pages/AdminSettingsPage';
 import AdminCitiesPage from './pages/AdminCitiesPage';
 import UserDashboard from './pages/UserDashboard';
-import EditProfilePage from './pages/EditProfilePage';
+import AdminEditProfilePage from './pages/AdminEditProfilePage';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
@@ -67,7 +67,7 @@ function App() {
                   path="/admin/edit/:id"
                   element={
                     <AdminRoute>
-                      <EditProfilePage />
+                      <AdminEditProfilePage />
                     </AdminRoute>
                   }
                 />

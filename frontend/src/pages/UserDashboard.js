@@ -43,9 +43,11 @@ const UserDashboard = () => {
       name: '',
       age: '',
       gender: '',
-      city: '',
       about: '',
-      interests: ''
+      interests: '',
+      height: '',
+      weight: '',
+      phone: ''
     });
   };
 
@@ -109,7 +111,10 @@ const UserDashboard = () => {
                 <div className="profile-details">
                   <h3>{profile.name || 'Имя не указано'}</h3>
                   {profile.age && <p>{profile.age} лет</p>}
-                  {profile.city && <p>{profile.city}</p>}
+                  {profile.gender && <p>Пол: {profile.gender}</p>}
+                  {profile.height && <p>Рост: {profile.height} см</p>}
+                  {profile.weight && <p>Вес: {profile.weight} кг</p>}
+                  {profile.phone && <p>Телефон: {profile.phone}</p>}
                 </div>
               </div>
               
@@ -177,19 +182,9 @@ const UserDashboard = () => {
                 <label>Пол</label>
                 <select name="gender" defaultValue={profile.gender} required>
                   <option value="">Выберите пол</option>
-                  <option value="male">Мужской</option>
-                  <option value="female">Женский</option>
+                  <option value="Мужской">Мужской</option>
+                  <option value="Женский">Женский</option>
                 </select>
-              </div>
-
-              <div className="form-group">
-                <label>Город</label>
-                <input
-                  type="text"
-                  name="city"
-                  defaultValue={profile.city}
-                  required
-                />
               </div>
 
               <div className="form-group">
@@ -209,6 +204,44 @@ const UserDashboard = () => {
                   defaultValue={profile.interests}
                   placeholder="Например: спорт, музыка, путешествия"
                 />
+              </div>
+
+              <div className="additional-info-section">
+                <h3>Дополнительная информация</h3>
+                
+                <div className="form-group">
+                  <label>Рост (см)</label>
+                  <input
+                    type="number"
+                    name="height"
+                    defaultValue={profile.height}
+                    min="140"
+                    max="220"
+                    placeholder="Например: 175"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Вес (кг)</label>
+                  <input
+                    type="number"
+                    name="weight"
+                    defaultValue={profile.weight}
+                    min="40"
+                    max="150"
+                    placeholder="Например: 65"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Телефон</label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    defaultValue={profile.phone}
+                    placeholder="+7 (999) 999-99-99"
+                  />
+                </div>
               </div>
 
               <div className="form-actions">

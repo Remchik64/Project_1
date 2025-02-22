@@ -47,6 +47,10 @@
   border-radius: 8px;
 }
 
+.profile-details {
+  flex: 1;
+}
+
 .profile-details h3 {
   margin: 0 0 0.5rem 0;
   color: #333;
@@ -153,6 +157,19 @@
   box-shadow: 0 0 0 2px rgba(110, 142, 251, 0.1);
 }
 
+.additional-info-section {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+.additional-info-section h3 {
+  color: #333;
+  margin-bottom: 20px;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
 .form-actions {
   display: flex;
   gap: 1rem;
@@ -190,4 +207,23 @@
   opacity: 0.7;
   cursor: not-allowed;
   transform: none;
+}
+
+/* Стили для полей с ограничениями */
+.form-group input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.form-group input[type="number"]::-webkit-outer-spin-button,
+.form-group input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Стили для placeholder */
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: #999;
+  font-size: 0.9rem;
 }

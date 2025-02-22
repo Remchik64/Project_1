@@ -8,11 +8,12 @@ const CreateProfilePage = () => {
   const [profile, setProfile] = useState({
     name: '',
     age: '',
-    city: '',
     gender: '',
     about: '',
     interests: '',
-    photo: null,
+    height: '',
+    weight: '',
+    phone: '',
     status: 'pending'
   });
   const [photoFile, setPhotoFile] = useState(null);
@@ -32,23 +33,24 @@ const CreateProfilePage = () => {
         return;
       }
 
-      // Создаем FormData для отправки файла
       const formData = new FormData();
-      Object.keys(profile).forEach(key => {
-        if (key !== 'photo') {
-          formData.append(key, profile[key]);
-        }
-      });
+
+      // Добавляем основные поля
+      formData.append('name', profile.name.trim());
+      formData.append('age', Number(profile.age));
+      formData.append('gender', profile.gender);
+      formData.append('about', profile.about ? profile.about.trim() : '');
+      formData.append('interests', profile.interests ? profile.interests.trim() : '');
+      formData.append('status', profile.status);
+      
+      // Добавляем дополнительные поля
+      if (profile.height) formData.append('height', Number(profile.height));
+      if (profile.weight) formData.append('weight', Number(profile.weight));
+      if (profile.phone) formData.append('phone', profile.phone.trim());
       
       // Добавляем фото, если оно есть
       if (photoFile) {
-        console.log('Добавляем фото в FormData:', photoFile.name);
         formData.append('photo', photoFile);
-      }
-
-      // Логируем содержимое FormData
-      for (let pair of formData.entries()) {
-        console.log('FormData содержит:', pair[0], pair[1]);
       }
 
       console.log('Отправляем запрос на создание профиля...');
@@ -169,19 +171,9 @@ const CreateProfilePage = () => {
               required
             >
               <option value="">Выберите пол</option>
-              <option value="female">Женский</option>
-              <option value="male">Мужской</option>
+              <option value="Женский">Женский</option>
+              <option value="Мужской">Мужской</option>
             </select>
-          </div>
-
-          <div className="form-group">
-            <label>Город</label>
-            <input
-              type="text"
-              value={profile.city}
-              onChange={(e) => setProfile({...profile, city: e.target.value})}
-              required
-            />
           </div>
 
           <div className="form-group">
@@ -201,6 +193,44 @@ const CreateProfilePage = () => {
               onChange={(e) => setProfile({...profile, interests: e.target.value})}
               placeholder="Например: спорт, музыка, путешествия"
             />
+          </div>
+
+          <div className="additional-info-section">
+            <h3>Дополнительная информация</h3>
+            
+            <div className="form-group">
+              <label>Рост (см)</label>
+              <input
+                type="number"
+                min="140"
+                max="220"
+                value={profile.height}
+                onChange={(e) => setProfile({...profile, height: e.target.value})}
+                placeholder="Например: 175"
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Вес (кг)</label>
+              <input
+                type="number"
+                min="40"
+                max="150"
+                value={profile.weight}
+                onChange={(e) => setProfile({...profile, weight: e.target.value})}
+                placeholder="Например: 65"
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Телефон</label>
+              <input
+                type="tel"
+                value={profile.phone}
+                onChange={(e) => setProfile({...profile, phone: e.target.value})}
+                placeholder="+7 (999) 999-99-99"
+              />
+            </div>
           </div>
 
           <div className="form-actions">

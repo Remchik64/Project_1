@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { getApiUrl } from '../config/api';
-import './AdminEditProfilePage.css';
+import './CreateProfilePage.css';
 
 const AdminEditProfilePage = () => {
     const { id } = useParams();
@@ -13,52 +13,53 @@ const AdminEditProfilePage = () => {
         gender: '',
         about: '',
         interests: '',
-        status: '',
         height: '',
         weight: '',
-        phone: ''
+        phone: '',
+        status: 'pending'
     });
     const [photoFile, setPhotoFile] = useState(null);
     const [error, setError] = useState('');
-    const [loading, setLoading] = useState(true);
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [siteSettings, setSiteSettings] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        const fetchData = async () => {
+        const fetchProfile = async () => {
             try {
-                const [profileResponse, settingsResponse] = await Promise.all([
-                    axios.get(
-                        getApiUrl(`/api/profiles/${id}`),
-                        {
-                            headers: {
-                                'Authorization': `Bearer ${localStorage.getItem('token')}`
-                            }
+                const response = await axios.get(
+                    getApiUrl(`/api/profiles/${id}`),
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`
                         }
-                    ),
-                    axios.get(getApiUrl('/api/site-settings'))
-                ]);
+                    }
+                );
                 
-                console.log('Полученные данные профиля:', profileResponse.data);
-                setProfile(profileResponse.data);
-                setSiteSettings(settingsResponse.data);
-                setLoading(false);
+                console.log('Полученные данные профиля:', response.data);
+                setProfile(response.data);
+                setIsLoading(false);
             } catch (error) {
                 console.error('Ошибка при загрузке данных:', error);
                 setError('Ошибка при загрузке данных');
-                setLoading(false);
+                setIsLoading(false);
             }
         };
 
-        fetchData();
+        fetchProfile();
     }, [id]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setIsSubmitting(true);
+        setIsLoading(true);
         setError('');
 
         try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                setError('Необходима авторизация');
+                navigate('/login');
+                return;
+            }
+
             const formData = new FormData();
 
             // Добавляем основные поля
@@ -79,28 +80,13 @@ const AdminEditProfilePage = () => {
                 formData.append('photo', photoFile);
             }
 
-            // Для отладки - проверяем содержимое FormData и данные профиля
-            console.log('Данные профиля перед отправкой:', profile);
-            console.log('Отправляемые данные:');
-            for (let [key, value] of formData.entries()) {
-                if (key === 'photo') {
-                    console.log('photo:', {
-                        name: value.name,
-                        type: value.type,
-                        size: value.size
-                    });
-                } else {
-                    console.log(`${key}:`, value);
-                }
-            }
-
             const response = await axios.put(
                 getApiUrl(`/api/profiles/${id}`),
                 formData,
                 {
                     headers: {
-                        'Content-Type': 'multipart/form-data',
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'multipart/form-data'
                     }
                 }
             );
@@ -108,60 +94,76 @@ const AdminEditProfilePage = () => {
             console.log('Ответ сервера:', response.data);
             navigate('/admin/profiles');
         } catch (error) {
-            console.error('Ошибка при обновлении профиля:', error.response?.data || error);
-            setError(
-                error.response?.data?.message || 
-                error.response?.data?.error || 
-                'Ошибка при обновлении профиля'
-            );
+            console.error('Ошибка при обновлении анкеты:', error.response?.data || error);
+            setError(error.response?.data?.message || 'Ошибка при обновлении анкеты');
         } finally {
-            setIsSubmitting(false);
+            setIsLoading(false);
         }
     };
 
     const handlePhotoChange = (e) => {
         const file = e.target.files[0];
         if (file) {
+            console.log('Выбран файл:', file.name, 'размер:', file.size, 'тип:', file.type);
             setPhotoFile(file);
         }
     };
 
-    if (loading) return <div className="loading">Загрузка...</div>;
+    if (isLoading) return <div className="loading">Загрузка...</div>;
 
     return (
-        <div className="admin-edit-profile-page">
-            <h1>Редактирование анкеты</h1>
-            {error && <div className="error-message">{error}</div>}
-            
-            {!loading && (
+        <div className="create-profile-page">
+            <div className="create-profile-container">
+                <h1>Редактирование анкеты</h1>
+                {error && <div className="error-message">{error}</div>}
+                
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
                         <label>Фото</label>
-                        <div className="photo-upload" onClick={() => document.getElementById('photo-input').click()}>
-                            {profile.photo && (
+                        <div className="photo-upload">
+                            {(profile.photo || photoFile) ? (
                                 <div className="photo-preview-container">
                                     <img 
-                                        src={`http://localhost:5000${profile.photo}`}
+                                        src={photoFile ? URL.createObjectURL(photoFile) : `http://localhost:5000${profile.photo}`}
                                         alt="Preview" 
                                         className="photo-preview" 
                                     />
-                                    <div className="photo-upload-text">
-                                        Нажмите, чтобы изменить фото
+                                    <button 
+                                        type="button" 
+                                        className="remove-photo"
+                                        onClick={() => {
+                                            setPhotoFile(null);
+                                            setProfile({...profile, photo: null});
+                                        }}
+                                    >
+                                        ✕
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="photo-placeholder">
+                                    <div>
+                                        <svg 
+                                            width="40" 
+                                            height="40" 
+                                            viewBox="0 0 40 40" 
+                                            fill="none" 
+                                            xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                            <path d="M20 0L23.5 3.5H16.5L20 0Z" fill="#666"/>
+                                            <rect x="18" y="3" width="4" height="25" fill="#666"/>
+                                            <path d="M8 20L12 24V16L8 20Z" fill="#666"/>
+                                            <path d="M32 20L28 24V16L32 20Z" fill="#666"/>
+                                        </svg>
+                                        <span>Нажмите для загрузки фото</span>
                                     </div>
                                 </div>
                             )}
-                            {!profile.photo && (
-                                <div className="photo-upload-text">
-                                    Нажмите для загрузки фото
-                                </div>
-                            )}
                             <input
-                                id="photo-input"
                                 type="file"
                                 accept="image/*"
                                 onChange={handlePhotoChange}
                                 className="photo-input"
-                                style={{ display: 'none' }}
+                                onClick={(e) => e.stopPropagation()}
                             />
                         </div>
                     </div>
@@ -196,8 +198,8 @@ const AdminEditProfilePage = () => {
                             required
                         >
                             <option value="">Выберите пол</option>
-                            <option value="Женский">Женский</option>
                             <option value="Мужской">Мужской</option>
+                            <option value="Женский">Женский</option>
                         </select>
                     </div>
 
@@ -248,7 +250,7 @@ const AdminEditProfilePage = () => {
                         </div>
 
                         <div className="form-group">
-                            <label>Номер телефона</label>
+                            <label>Телефон</label>
                             <input
                                 type="tel"
                                 value={profile.phone || ''}
@@ -272,15 +274,24 @@ const AdminEditProfilePage = () => {
                     </div>
 
                     <div className="form-actions">
-                        <button type="submit" disabled={isSubmitting}>
-                            {isSubmitting ? 'Сохранение...' : 'Сохранить'}
-                        </button>
-                        <button type="button" onClick={() => navigate('/admin/profiles')}>
+                        <button 
+                            type="button" 
+                            onClick={() => navigate('/admin/profiles')} 
+                            className="cancel-button"
+                            disabled={isLoading}
+                        >
                             Отмена
+                        </button>
+                        <button 
+                            type="submit" 
+                            className="save-button"
+                            disabled={isLoading}
+                        >
+                            {isLoading ? 'Сохранение...' : 'Сохранить изменения'}
                         </button>
                     </div>
                 </form>
-            )}
+            </div>
         </div>
     );
 };
