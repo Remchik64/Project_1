@@ -335,6 +335,7 @@ exports.getPublicProfiles = async (req, res) => {
             where: {
                 status: 'active'
             },
+            attributes: ['id', 'name', 'age', 'gender', 'photo', 'about', 'interests', 'height', 'weight', 'phone'],
             order: [['createdAt', 'DESC']]
         });
         
