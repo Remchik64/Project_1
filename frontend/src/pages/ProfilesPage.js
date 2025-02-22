@@ -19,7 +19,9 @@ const ProfilesPage = () => {
   const [filters, setFilters] = useState({
     ageRange: 'all',
     gender: 'all',
-    maritalStatus: 'all'
+    heightRange: 'all',
+    weightRange: 'all',
+    interest: 'all'
   });
 
   useEffect(() => {
@@ -89,8 +91,10 @@ const ProfilesPage = () => {
   const filteredProfiles = profiles.filter(profile => {
     if (filters.ageRange !== 'all') {
       const [min, max] = filters.ageRange.split('-').map(Number);
-      if (profile.age < min || (max && profile.age > max)) {
-        return false;
+      if (max) {
+        if (profile.age < min || profile.age > max) return false;
+      } else {
+        if (profile.age < min) return false;
       }
     }
 
@@ -98,8 +102,31 @@ const ProfilesPage = () => {
       return false;
     }
 
-    if (filters.maritalStatus !== 'all' && profile.maritalStatus !== filters.maritalStatus) {
-      return false;
+    if (filters.heightRange !== 'all' && profile.height) {
+      const [min, max] = filters.heightRange.split('-').map(Number);
+      const height = parseInt(profile.height);
+      if (max) {
+        if (height < min || height > max) return false;
+      } else {
+        if (height < min) return false;
+      }
+    }
+
+    if (filters.weightRange !== 'all' && profile.weight) {
+      const [min, max] = filters.weightRange.split('-').map(Number);
+      const weight = parseInt(profile.weight);
+      if (max) {
+        if (weight < min || weight > max) return false;
+      } else {
+        if (weight < min) return false;
+      }
+    }
+
+    if (filters.interest !== 'all' && profile.interests) {
+      const profileInterests = profile.interests.toLowerCase().split(',').map(i => i.trim());
+      if (!profileInterests.includes(filters.interest.toLowerCase())) {
+        return false;
+      }
     }
     
     return true;

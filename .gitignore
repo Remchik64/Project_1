@@ -1,5 +1,5 @@
 # Dependencies
-/node_modules
+node_modules/
 /.pnp
 .pnp.js
 
@@ -7,7 +7,7 @@
 /coverage
 
 # Production
-/build
+build/
 
 # Misc
 .DS_Store
@@ -67,3 +67,9 @@ pids
 
 # Yarn Integrity file
 .yarn-integrity
+
+# Cache directory
+.cache/
+
+# Distribution directory
+dist/

@@ -50,16 +50,54 @@ const FilterSidebar = ({
         </div>
 
         <div className="filter-section">
-          <label>Семейное положение</label>
+          <label>Рост</label>
           <select
-            value={filters.maritalStatus}
-            onChange={(e) => handleFilterChange('maritalStatus', e.target.value)}
+            value={filters.heightRange}
+            onChange={(e) => handleFilterChange('heightRange', e.target.value)}
             onClick={stopPropagation}
           >
-            <option value="all">Любое</option>
-            <option value="single">Холост/Не замужем</option>
-            <option value="divorced">В разводе</option>
-            <option value="widowed">Вдовец/Вдова</option>
+            <option value="all">Любой рост</option>
+            <option value="150-160">150-160 см</option>
+            <option value="161-170">161-170 см</option>
+            <option value="171-180">171-180 см</option>
+            <option value="181-190">181-190 см</option>
+            <option value="191">191+ см</option>
+          </select>
+        </div>
+
+        <div className="filter-section">
+          <label>Вес</label>
+          <select
+            value={filters.weightRange}
+            onChange={(e) => handleFilterChange('weightRange', e.target.value)}
+            onClick={stopPropagation}
+          >
+            <option value="all">Любой вес</option>
+            <option value="40-50">40-50 кг</option>
+            <option value="51-60">51-60 кг</option>
+            <option value="61-70">61-70 кг</option>
+            <option value="71-80">71-80 кг</option>
+            <option value="81-90">81-90 кг</option>
+            <option value="91">91+ кг</option>
+          </select>
+        </div>
+
+        <div className="filter-section">
+          <label>Интересы</label>
+          <select
+            value={filters.interest}
+            onChange={(e) => handleFilterChange('interest', e.target.value)}
+            onClick={stopPropagation}
+          >
+            <option value="all">Все интересы</option>
+            <option value="спорт">Спорт</option>
+            <option value="музыка">Музыка</option>
+            <option value="путешествия">Путешествия</option>
+            <option value="кино">Кино</option>
+            <option value="книги">Книги</option>
+            <option value="искусство">Искусство</option>
+            <option value="танцы">Танцы</option>
+            <option value="фотография">Фотография</option>
           </select>
         </div>
       </div>
