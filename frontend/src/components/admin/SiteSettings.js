@@ -49,7 +49,10 @@ const SiteSettings = () => {
         getApiUrl('/api/site-settings'),
         settings,
         {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { 
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
         }
       );
       setSettings(response.data);
@@ -68,6 +71,44 @@ const SiteSettings = () => {
       ...prev,
       [name]: value
     }));
+  };
+
+  const handleRemoveHeaderImage = async () => {
+    setIsLoading(true);
+    setMessage({ text: '', type: '' });
+
+    try {
+      // Отправляем обновление настроек с пустым значением для headerBackgroundImage
+      // и сбрасываем все связанные поля
+      const updatedSettings = {
+        ...settings,
+        headerBackgroundImage: '',
+        headerBackground: 'color',  // Возвращаем к дефолтному значению
+        headerBackgroundColor: settings.headerBackgroundColor || '#ffffff'  // Устанавливаем цвет по умолчанию если не задан
+      };
+
+      const response = await axios.put(
+        getApiUrl('/api/site-settings'),
+        updatedSettings,
+        {
+          headers: { 
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      setSettings(response.data);
+      setMessage({ text: 'Фотография успешно удалена', type: 'success' });
+      
+      // Принудительно обновляем настройки после удаления
+      await fetchSettings();
+    } catch (error) {
+      console.error('Ошибка при удалении фотографии:', error);
+      setMessage({ text: 'Ошибка при удалении фотографии', type: 'error' });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -111,6 +152,51 @@ const SiteSettings = () => {
               rows="4"
             />
           </div>
+
+          <div className="form-group">
+            <label>Тип фона заголовка</label>
+            <select
+              name="headerBackground"
+              value={settings.headerBackground}
+              onChange={handleChange}
+            >
+              <option value="color">Цвет</option>
+              <option value="image">Изображение</option>
+            </select>
+          </div>
+
+          {settings.headerBackground === 'color' && (
+            <div className="form-group">
+              <label>Цвет фона заголовка</label>
+              <input
+                type="color"
+                name="headerBackgroundColor"
+                value={settings.headerBackgroundColor || '#ffffff'}
+                onChange={handleChange}
+              />
+            </div>
+          )}
+
+          {settings.headerBackgroundImage && (
+            <div className="form-group">
+              <label>Текущая фотография заголовка</label>
+              <div className="current-image">
+                <img 
+                  src={`http://localhost:5000${settings.headerBackgroundImage}`} 
+                  alt="Фон заголовка" 
+                  style={{ maxWidth: '200px' }} 
+                />
+                <button 
+                  type="button" 
+                  className="delete-button"
+                  onClick={handleRemoveHeaderImage}
+                  disabled={isLoading}
+                >
+                  Удалить фотографию
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="settings-section">

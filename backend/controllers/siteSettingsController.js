@@ -27,6 +27,20 @@ exports.updateSettings = async (req, res) => {
             return res.status(404).json({ message: 'Настройки не найдены' });
         }
 
+        // Если есть старое изображение и оно было удалено или заменено
+        if (settings.headerBackgroundImage && 
+            (!req.body.headerBackgroundImage || 
+             (req.file && req.body.headerBackgroundImage !== settings.headerBackgroundImage))) {
+            try {
+                const oldImagePath = path.join(__dirname, '..', settings.headerBackgroundImage);
+                await fs.unlink(oldImagePath).catch(err => {
+                    console.log('Файл не найден или уже удален:', err);
+                });
+            } catch (error) {
+                console.error('Ошибка при удалении старого изображения:', error);
+            }
+        }
+
         // Если загружен новый файл, обновляем путь к изображению
         if (req.file) {
             // Добавляем слеш перед путем для правильного URL
