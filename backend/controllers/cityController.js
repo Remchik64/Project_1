@@ -146,7 +146,7 @@ exports.getCityProfiles = async (req, res) => {
             where,
             include: [{
                 model: Profile,
-                attributes: ['id', 'name', 'age', 'gender', 'photo', 'status'],
+                attributes: ['id', 'name', 'age', 'gender', 'photo', 'status', 'about', 'interests'],
                 where: { status: 'active' }
             }]
         });
