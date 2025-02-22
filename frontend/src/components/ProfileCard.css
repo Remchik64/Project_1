@@ -151,12 +151,13 @@
 }
 
 .profile-modal {
-  background: #fff;
+  background: #212121;
   border-radius: 8px;
-  max-width: 900px;
+  max-width: 500px;
   width: 90%;
   position: relative;
   animation: modalFadeIn 0.3s ease-out;
+  overflow: hidden;
 }
 
 @keyframes modalFadeIn {
@@ -174,13 +175,13 @@
   position: absolute;
   top: 15px;
   right: 15px;
-  background: rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.1);
   border: none;
   width: 30px;
   height: 30px;
   border-radius: 50%;
   font-size: 20px;
-  color: #333;
+  color: #fff;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -190,39 +191,38 @@
 }
 
 .close-modal:hover {
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .modal-content {
   display: flex;
-  gap: 30px;
-  padding: 30px;
+  flex-direction: column;
+  color: #fff;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #212121;
 }
 
-.modal-info {
-  flex: 1;
-  min-width: 0;
+.modal-content::-webkit-scrollbar {
+  width: 8px;
 }
 
-@media (max-width: 768px) {
-  .modal-content {
-    flex-direction: column;
-    gap: 20px;
-    padding: 15px;
-  }
+.modal-content::-webkit-scrollbar-track {
+  background: #333;
+}
 
-  .profile-modal {
-    width: 95%;
-    margin: 20px auto;
-  }
+.modal-content::-webkit-scrollbar-thumb {
+  background: #666;
+  border-radius: 4px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+  background: #888;
 }
 
 .modal-image {
-  flex: 1;
-  max-width: 400px;
+  width: 100%;
   height: 500px;
-  border-radius: 8px;
-  overflow: hidden;
 }
 
 .modal-image img.full-photo {
@@ -231,33 +231,45 @@
   object-fit: cover;
 }
 
-.modal-info h2 {
-  color: #333;
-  margin: 0 0 20px 0;
-  font-size: 2rem;
+.modal-info {
+  padding: 20px;
+  background: #212121;
 }
 
-.profile-details {
-  margin-bottom: 25px;
+.modal-info h2 {
+  color: #fff;
+  margin: 0 0 20px 0;
+  font-size: 1.8rem;
 }
 
 .detail-item {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
+  margin-bottom: 15px;
   padding-bottom: 10px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
 }
 
 .detail-label {
-  color: #666;
-  font-weight: 500;
+  color: rgba(255, 255, 255, 0.7);
   font-size: 0.9rem;
+  margin-bottom: 5px;
+  display: block;
 }
 
 .detail-item span:last-child {
-  color: #333;
+  color: #fff;
   font-size: 1rem;
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .profile-modal {
+    width: 95%;
+  }
+
+  .modal-image {
+    height: 300px;
+  }
 }
 
 .about-section,
@@ -267,7 +279,7 @@
 
 .about-section h3,
 .interests-section h3 {
-  color: #333;
+  color: #fff;
   margin-bottom: 10px;
   font-size: 1.2rem;
 }
@@ -281,7 +293,7 @@
 .modal-social-links {
   margin-top: 25px;
   padding-top: 20px;
-  border-top: 1px solid #eee;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* Мобильная версия */
