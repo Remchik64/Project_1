@@ -55,6 +55,12 @@ const ProfileCard = ({ profile }) => {
         return phone;
     };
 
+    // Получение чистого номера телефона для ссылки tel:
+    const getCleanPhoneNumber = (phone) => {
+        if (!phone) return '';
+        return phone.replace(/\D/g, '');
+    };
+
     return (
         <>
             <div className="profile-card">
@@ -102,6 +108,18 @@ const ProfileCard = ({ profile }) => {
                             </div>
                         )}
                     </div>
+                    
+                    <div className="phone-number-container">
+                        <span className="phone-label">Телефон:</span>
+                        {profile.phone ? (
+                            <a href={`tel:${getCleanPhoneNumber(profile.phone)}`} className="phone-value clickable-phone">
+                                {formatPhoneNumber(profile.phone)}
+                            </a>
+                        ) : (
+                            <span className="phone-value">Не указан</span>
+                        )}
+                    </div>
+                    
                     <button className="details-button" onClick={handleOpenModal}>
                         Подробнее
                     </button>
@@ -163,7 +181,13 @@ const ProfileCard = ({ profile }) => {
                                     </p>
                                     <p className="detail-item">
                                         <span className="detail-label">Телефон:</span>
-                                        <span>{formatPhoneNumber(profile.phone)}</span>
+                                        {profile.phone ? (
+                                            <a href={`tel:${getCleanPhoneNumber(profile.phone)}`} className="clickable-phone">
+                                                {formatPhoneNumber(profile.phone)}
+                                            </a>
+                                        ) : (
+                                            <span>Не указан</span>
+                                        )}
                                     </p>
                                 </div>
                                 <div className="about-section">

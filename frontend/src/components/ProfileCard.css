@@ -116,6 +116,65 @@
   margin-bottom: 2px;
 }
 
+/* Стили для номера телефона */
+.phone-number-container {
+  margin: 10px 0;
+  padding: 8px 10px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.phone-label {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+}
+
+.phone-value {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Стили для кликабельного номера телефона */
+.clickable-phone {
+  color: #ffffff;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  transition: color 0.2s ease;
+  position: relative;
+}
+
+.clickable-phone:hover {
+  color: #ce00ff;
+}
+
+.clickable-phone::before {
+  content: "📞";
+  margin-right: 5px;
+  font-size: 14px;
+}
+
+.clickable-phone::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background-color: #ce00ff;
+  transform: scaleX(0);
+  transition: transform 0.2s ease;
+  transform-origin: left;
+}
+
+.clickable-phone:hover::after {
+  transform: scaleX(1);
+}
+
 /* Стили для кнопки "Подробнее" */
 .details-button {
   width: 100%;
