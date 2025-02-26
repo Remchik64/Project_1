@@ -9,6 +9,11 @@ const AdminCitiesPage = () => {
     const [selectedCity, setSelectedCity] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filterGender, setFilterGender] = useState('all');
+    const [selectedProfiles, setSelectedProfiles] = useState([]);
+    const [saveStatus, setSaveStatus] = useState('');
+    const [autoClose, setAutoClose] = useState(true);
 
     // Загрузка городов и анкет
     useEffect(() => {
@@ -35,6 +40,13 @@ const AdminCitiesPage = () => {
 
         fetchData();
     }, []);
+
+    // Установка выбранных профилей при выборе города
+    useEffect(() => {
+        if (selectedCity) {
+            setSelectedProfiles(selectedCity.Profiles?.map(p => p.id) || []);
+        }
+    }, [selectedCity]);
 
     // Создание нового города
     const handleCreateCity = async (e) => {
@@ -94,6 +106,7 @@ const AdminCitiesPage = () => {
 
     // Привязка анкет к городу
     const handleAssignProfiles = async (cityId, selectedProfileIds) => {
+        setSaveStatus('saving');
         try {
             const response = await axios.post(
                 `http://localhost:5000/api/cities/${cityId}/profiles`,
@@ -105,12 +118,85 @@ const AdminCitiesPage = () => {
             setCities(cities.map(city => 
                 city.id === cityId ? response.data : city
             ));
-            setSelectedCity(null);
+            setSaveStatus('saved');
+            
+            // Сбрасываем статус через 2 секунды и закрываем модальное окно если включено автозакрытие
+            setTimeout(() => {
+                setSaveStatus('');
+                if (autoClose) {
+                    setSelectedCity(null); // Закрываем модальное окно
+                }
+            }, 2000);
         } catch (error) {
             console.error('Ошибка при привязке анкет:', error);
             setError('Ошибка при привязке анкет');
+            setSaveStatus('error');
         }
     };
+
+    // Обработчик изменения выбора анкеты
+    const handleProfileSelection = (profileId, isSelected) => {
+        setSelectedProfiles(prev => {
+            if (isSelected) {
+                return [...prev, profileId];
+            } else {
+                return prev.filter(id => id !== profileId);
+            }
+        });
+    };
+
+    // Сохранение выбранных анкет
+    const saveSelectedProfiles = () => {
+        if (selectedCity) {
+            handleAssignProfiles(selectedCity.id, selectedProfiles);
+        }
+    };
+
+    // Выбор всех отфильтрованных анкет
+    const selectAllFiltered = () => {
+        const filteredIds = filteredProfiles.map(profile => profile.id);
+        setSelectedProfiles(prev => {
+            const newSelection = [...prev];
+            filteredIds.forEach(id => {
+                if (!newSelection.includes(id)) {
+                    newSelection.push(id);
+                }
+            });
+            return newSelection;
+        });
+    };
+
+    // Снятие выбора со всех отфильтрованных анкет
+    const deselectAllFiltered = () => {
+        const filteredIds = filteredProfiles.map(profile => profile.id);
+        setSelectedProfiles(prev => 
+            prev.filter(id => !filteredIds.includes(id))
+        );
+    };
+
+    // Форматирование краткого описания
+    const formatShortDescription = (about) => {
+        if (!about) return 'Нет описания';
+        return about.length > 50 ? about.substring(0, 50) + '...' : about;
+    };
+
+    // Получение URL фотографии
+    const getPhotoUrl = (photoPath) => {
+        if (!photoPath) return null;
+        return `http://localhost:5000${photoPath}`;
+    };
+
+    // Фильтрация профилей
+    const filteredProfiles = profiles.filter(profile => {
+        const matchesSearch = searchTerm === '' || 
+            (profile.name && profile.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+            (profile.about && profile.about.toLowerCase().includes(searchTerm.toLowerCase())) ||
+            (profile.city && profile.city.toLowerCase().includes(searchTerm.toLowerCase()));
+        
+        const matchesGender = filterGender === 'all' || profile.gender === filterGender;
+        
+        return matchesSearch && matchesGender;
+    });
 
     if (loading) return <div className="loading">Загрузка...</div>;
     if (error) return <div className="error-message">{error}</div>;
@@ -182,34 +268,141 @@ const AdminCitiesPage = () => {
                 <div className="profiles-modal">
                     <div className="modal-content">
                         <h2>Анкеты для города {selectedCity.name}</h2>
-                        <div className="profiles-list">
-                            {profiles.map(profile => {
-                                const isAssigned = selectedCity.Profiles?.some(
-                                    p => p.id === profile.id
-                                );
-                                return (
-                                    <div key={profile.id} className="profile-item">
-                                        <input
-                                            type="checkbox"
-                                            checked={isAssigned}
-                                            onChange={(e) => {
-                                                const newProfiles = e.target.checked
-                                                    ? [...(selectedCity.Profiles || []), profile]
-                                                    : (selectedCity.Profiles || []).filter(p => p.id !== profile.id);
-                                                handleAssignProfiles(
-                                                    selectedCity.id,
-                                                    newProfiles.map(p => p.id)
-                                                );
-                                            }}
-                                        />
-                                        <span>
-                                            {profile.name} ({profile.age}, {profile.gender})
-                                        </span>
-                                    </div>
-                                );
-                            })}
+                        
+                        <div className="profiles-filter">
+                            <div className="search-box">
+                                <input
+                                    type="text"
+                                    placeholder="Поиск по имени, городу или описанию..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                />
+                            </div>
+                            <div className="gender-filter">
+                                <label>Фильтр по полу:</label>
+                                <select 
+                                    value={filterGender} 
+                                    onChange={(e) => setFilterGender(e.target.value)}
+                                >
+                                    <option value="all">Все</option>
+                                    <option value="Мужской">Мужской</option>
+                                    <option value="Женский">Женский</option>
+                                </select>
+                            </div>
+                            <div className="auto-close-option">
+                                <label className="auto-close-label">
+                                    <input
+                                        type="checkbox"
+                                        checked={autoClose}
+                                        onChange={() => setAutoClose(!autoClose)}
+                                    />
+                                    Автоматически закрывать после сохранения
+                                </label>
+                            </div>
                         </div>
-                        <button onClick={() => setSelectedCity(null)}>Закрыть</button>
+                        
+                        <div className="profiles-stats">
+                            <span>Найдено анкет: {filteredProfiles.length}</span>
+                            <span>Выбрано: {selectedProfiles.length}</span>
+                            <div className="bulk-actions">
+                                <button 
+                                    className="select-all-btn" 
+                                    onClick={selectAllFiltered}
+                                    disabled={filteredProfiles.length === 0}
+                                >
+                                    Выбрать все
+                                </button>
+                                <button 
+                                    className="deselect-all-btn" 
+                                    onClick={deselectAllFiltered}
+                                    disabled={filteredProfiles.length === 0}
+                                >
+                                    Снять выбор
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div className="profiles-list">
+                            {filteredProfiles.length > 0 ? (
+                                filteredProfiles.map(profile => {
+                                    const isSelected = selectedProfiles.includes(profile.id);
+                                    const photoUrl = getPhotoUrl(profile.photo);
+                                    
+                                    return (
+                                        <div key={profile.id} className={`profile-item ${isSelected ? 'selected' : ''}`}>
+                                            <input
+                                                type="checkbox"
+                                                checked={isSelected}
+                                                onChange={(e) => handleProfileSelection(profile.id, e.target.checked)}
+                                            />
+                                            <div className="profile-thumbnail">
+                                                {photoUrl ? (
+                                                    <img 
+                                                        src={photoUrl} 
+                                                        alt={profile.name} 
+                                                        onError={(e) => {
+                                                            e.target.onerror = null;
+                                                            e.target.src = '/placeholder-avatar.png';
+                                                        }}
+                                                    />
+                                                ) : (
+                                                    <div className="placeholder-image">
+                                                        <span>Нет фото</span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div className="profile-details">
+                                                <div className="profile-name">
+                                                    {profile.name || 'Без имени'} ({profile.age || '?'}, {profile.gender || '?'})
+                                                </div>
+                                                <div className="profile-short-info">
+                                                    <span className="profile-city">{profile.city || 'Город не указан'}</span>
+                                                    <span className="profile-about">{formatShortDescription(profile.about)}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                })
+                            ) : (
+                                <div className="no-profiles-message">
+                                    Анкеты не найдены. Попробуйте изменить параметры поиска.
+                                </div>
+                            )}
+                        </div>
+                        <div className="modal-actions">
+                            <div className="save-status">
+                                {saveStatus === 'saving' && (
+                                    <span className="saving">
+                                        <span className="spinner"></span> Сохранение...
+                                    </span>
+                                )}
+                                {saveStatus === 'saved' && (
+                                    <span className="saved">
+                                        <span className="success-icon">✓</span> Сохранено! {autoClose && 'Окно закроется автоматически...'}
+                                    </span>
+                                )}
+                                {saveStatus === 'error' && (
+                                    <span className="error">
+                                        <span className="error-icon">✗</span> Ошибка сохранения!
+                                    </span>
+                                )}
+                            </div>
+                            <div className="action-buttons">
+                                <button 
+                                    className="save-button" 
+                                    onClick={saveSelectedProfiles}
+                                    disabled={saveStatus === 'saving'}
+                                >
+                                    {saveStatus === 'saving' ? 'Сохранение...' : 'Сохранить изменения'}
+                                </button>
+                                <button 
+                                    className="close-button" 
+                                    onClick={() => setSelectedCity(null)}
+                                >
+                                    Закрыть
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}
