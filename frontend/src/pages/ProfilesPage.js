@@ -84,10 +84,6 @@ const ProfilesPage = () => {
     setShowCitySelector(false);
   };
 
-  const handleChangeCity = () => {
-    setShowCitySelector(true);
-  };
-
   const filteredProfiles = profiles.filter(profile => {
     if (filters.ageRange !== 'all') {
       const [min, max] = filters.ageRange.split('-').map(Number);
@@ -174,9 +170,6 @@ const ProfilesPage = () => {
         <div className="profiles-header">
           <div className="header-content">
             <h1>Анкеты {cityName && `в городе ${cityName}`}</h1>
-            <button onClick={handleChangeCity} className="change-city-button">
-              Изменить город
-            </button>
           </div>
         </div>
         <div className="no-profiles-message">
@@ -192,9 +185,6 @@ const ProfilesPage = () => {
       <div className="profiles-header">
         <div className="header-content">
           <h1>Анкеты {cityName && `в городе ${cityName}`}</h1>
-          <button onClick={handleChangeCity} className="change-city-button">
-            Изменить город
-          </button>
         </div>
         <button 
           className="hamburger-button"
