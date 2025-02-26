@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import ProfileCard from '../components/ProfileCard';
 import FilterSidebar from '../components/FilterSidebar';
 import CitySelector from '../components/CitySelector';
+import { setPageMetadata, setStructuredData, createCityStructuredData } from '../utils/seo';
 import './ProfilesPage.css';
 
 const ProfilesPage = () => {
@@ -30,6 +31,21 @@ const ProfilesPage = () => {
       setSelectedCity(savedCity);
       setShowCitySelector(false);
     }
+    
+    // Устанавливаем базовые SEO метаданные для страницы анкет
+    setPageMetadata({
+      title: 'Анкеты и знакомства | Сервис знакомств',
+      description: 'Просмотр анкет для знакомств. Найдите интересных людей в вашем городе.',
+      keywords: 'анкеты, знакомства, поиск анкет, просмотр анкет',
+      canonical: window.location.href,
+      og: {
+        title: 'Анкеты и знакомства | Сервис знакомств',
+        description: 'Просмотр анкет для знакомств. Найдите интересных людей в вашем городе.',
+        type: 'website',
+        url: window.location.href,
+        image: `${window.location.origin}/og-image.jpg`
+      }
+    });
   }, [isAdmin]);
 
   useEffect(() => {
@@ -52,6 +68,24 @@ const ProfilesPage = () => {
         
         if (cityResponse.data) {
           setCityName(cityResponse.data.name);
+          
+          // Обновляем SEO метаданные с учетом выбранного города
+          setPageMetadata({
+            title: `Анкеты в городе ${cityResponse.data.name} | Сервис знакомств`,
+            description: `Просмотр анкет для знакомств в городе ${cityResponse.data.name}. Найдите интересных людей в вашем городе.`,
+            keywords: `анкеты ${cityResponse.data.name}, знакомства ${cityResponse.data.name}, поиск анкет, просмотр анкет`,
+            canonical: window.location.href,
+            og: {
+              title: `Анкеты в городе ${cityResponse.data.name} | Сервис знакомств`,
+              description: `Просмотр анкет для знакомств в городе ${cityResponse.data.name}. Найдите интересных людей в вашем городе.`,
+              type: 'website',
+              url: window.location.href,
+              image: `${window.location.origin}/og-image.jpg`
+            }
+          });
+          
+          // Устанавливаем структурированные данные для города
+          setStructuredData(createCityStructuredData(cityResponse.data));
         }
       } else if (isAdmin) {
         profilesResponse = await axios.get('http://localhost:5000/api/profiles', {
@@ -181,7 +215,10 @@ const ProfilesPage = () => {
   }
 
   return (
-    <div className="profiles-page">
+    <div className="profiles-page" itemScope itemType="https://schema.org/CollectionPage">
+      <meta itemProp="name" content={`Анкеты ${cityName ? `в городе ${cityName}` : ''}`} />
+      <meta itemProp="description" content={`Просмотр анкет для знакомств ${cityName ? `в городе ${cityName}` : ''}. Найдите интересных людей в вашем городе.`} />
+      
       <div className="profiles-header">
         <div className="header-content">
           <h1>Анкеты {cityName && `в городе ${cityName}`}</h1>

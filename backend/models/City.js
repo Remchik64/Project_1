@@ -18,7 +18,8 @@ const City = sequelize.define('City', {
         defaultValue: true
     }
 }, {
-    timestamps: true
+    timestamps: true,
+    paranoid: true
 });
 
 module.exports = City; 

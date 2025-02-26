@@ -1,27 +1,39 @@
 {
-  "name": "sait-znakomstv",
+  "name": "dating-site",
   "version": "1.0.0",
-  "description": "Сайт знакомств с административной панелью",
+  "description": "Сервис знакомств по городам России",
+  "main": "index.js",
   "scripts": {
-    "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
-    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
-    "start:backend": "cd backend && npm start",
-    "start:frontend": "cd frontend && npm start",
-    "dev:backend": "cd backend && npm run dev",
-    "dev:frontend": "cd frontend && npm start",
-    "install:all": "npm install && cd frontend && npm install && cd ../backend && npm install"
+    "install-all": "npm install && cd frontend && npm install && cd ../backend && npm install",
+    "build": "cd frontend && CI=false npm run build",
+    "start-backend": "cd backend && node index.js",
+    "start-frontend": "cd frontend && npx serve -s build",
+    "start": "concurrently \"npm run start-backend\" \"npm run start-frontend\"",
+    "dev-backend": "cd backend && nodemon index.js",
+    "dev-frontend": "cd frontend && npm start",
+    "dev": "concurrently \"npm run dev-backend\" \"npm run dev-frontend\"",
+    "deploy": "npm run install-all && npm run build && npm run start",
+    "generate-sitemap": "cd backend && node scripts/generateSitemap.js"
   },
-  "devDependencies": {
-    "concurrently": "^8.2.2"
+  "engines": {
+    "node": "18.x"
   },
   "dependencies": {
-    "bcryptjs": "^3.0.1",
-    "cors": "^2.8.5",
-    "dotenv": "^16.4.7",
-    "express": "^4.21.2",
-    "jsonwebtoken": "^9.0.2",
-    "multer": "^1.4.5-lts.1",
-    "node-cron": "^3.0.3",
-    "sharp": "^0.33.5"
-  }
+    "concurrently": "^8.2.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/dating-site.git"
+  },
+  "keywords": [
+    "dating",
+    "profiles",
+    "cities",
+    "russia"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
 }

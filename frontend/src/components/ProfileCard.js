@@ -63,12 +63,17 @@ const ProfileCard = ({ profile }) => {
 
     return (
         <>
-            <div className="profile-card">
+            <div className="profile-card" itemScope itemType="https://schema.org/Person">
+                <meta itemProp="gender" content={profile.gender} />
+                {profile.age && <meta itemProp="age" content={profile.age} />}
+                {profile.city && <meta itemProp="homeLocation" content={profile.city} />}
+                
                 <div className="profile-image clickable-image" onClick={handleOpenModal}>
                     {photoUrl && !imageError ? (
                         <img 
                             src={photoUrl} 
                             alt={profile.name} 
+                            itemProp="image"
                             onError={(e) => {
                                 console.error('Ошибка загрузки изображения:', e.target.src);
                                 setImageError(true);
@@ -96,14 +101,14 @@ const ProfileCard = ({ profile }) => {
                 </div>
                 
                 <div className="profile-info">
-                    <h2>{profile.name || 'Имя не указано'}</h2>
+                    <h2 itemProp="name">{profile.name || 'Имя не указано'}</h2>
                     <p className="age">{profile.age ? `${profile.age} лет` : 'Возраст не указан'}</p>
                     <div className="additional-info">
-                        <p>{profile.about ? `${profile.about.substring(0, 100)}${profile.about.length > 100 ? '...' : ''}` : 'Информация о себе не указана'}</p>
+                        <p itemProp="description">{profile.about ? `${profile.about.substring(0, 100)}${profile.about.length > 100 ? '...' : ''}` : 'Информация о себе не указана'}</p>
                         {interestsArray.length > 0 && (
                             <div className="interests">
                                 {interestsArray.slice(0, 3).map((interest, index) => (
-                                    <span key={index} className="interest-tag">{interest}</span>
+                                    <span key={index} className="interest-tag" itemProp="knowsAbout">{interest}</span>
                                 ))}
                                 {interestsArray.length > 3 && (
                                     <span className="interest-tag">+{interestsArray.length - 3}</span>
@@ -115,7 +120,7 @@ const ProfileCard = ({ profile }) => {
                     <div className="phone-number-container">
                         <span className="phone-label">Телефон:</span>
                         {profile.phone ? (
-                            <a href={`tel:${getCleanPhoneNumber(profile.phone)}`} className="phone-value clickable-phone">
+                            <a href={`tel:${getCleanPhoneNumber(profile.phone)}`} className="phone-value clickable-phone" itemProp="telephone">
                                 {formatPhoneNumber(profile.phone)}
                             </a>
                         ) : (

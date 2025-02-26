@@ -14,8 +14,24 @@
     />
     <meta
       name="keywords"
-      content="знакомства, сайт знакомств, поиск пары, отношения"
+      content="знакомства, сайт знакомств, поиск пары, отношения, анкеты, города России"
     />
+    <meta name="author" content="Ваш сервис знакомств" />
+    <meta name="robots" content="index, follow" />
+    <meta name="googlebot" content="index, follow" />
+    <meta name="google" content="notranslate" />
+    <meta property="og:title" content="Сервис знакомств по городам России" />
+    <meta property="og:description" content="Найдите интересных людей в вашем городе. Просматривайте анкеты и знакомьтесь." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://вашдомен.ru" />
+    <meta property="og:image" content="%PUBLIC_URL%/og-image.jpg" />
+    <meta property="og:site_name" content="Сервис знакомств" />
+    <meta property="og:locale" content="ru_RU" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Сервис знакомств по городам России" />
+    <meta name="twitter:description" content="Найдите интересных людей в вашем городе. Просматривайте анкеты и знакомьтесь." />
+    <meta name="twitter:image" content="%PUBLIC_URL%/og-image.jpg" />
+    <link rel="canonical" href="https://вашдомен.ru" />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
     <!-- Предзагрузка шрифтов -->
@@ -50,6 +66,40 @@
         text-align: center;
       }
     </style>
+    <!-- Базовые структурированные данные для сайта -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Сервис знакомств",
+        "url": "https://вашдомен.ru",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://вашдомен.ru/search?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      }
+    </script>
+    <!-- Структурированные данные для организации -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Сервис знакомств",
+        "url": "https://вашдомен.ru",
+        "logo": "https://вашдомен.ru/logo.png",
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "telephone": "+7-999-999-9999",
+          "contactType": "customer service",
+          "availableLanguage": ["Russian"]
+        },
+        "sameAs": [
+          "https://vk.com/вашгруппа",
+          "https://t.me/вашканал"
+        ]
+      }
+    </script>
   </head>
   <body>
     <noscript>Для работы приложения необходимо включить JavaScript.</noscript>

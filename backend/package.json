@@ -8,15 +8,18 @@
         "dev": "nodemon index.js",
         "test": "echo \"Error: no test specified\" && exit 1",
         "db:check": "node scripts/database-check.js",
-        "update-geo": "node scripts/updateGeoDatabases.js"
+        "update-geo": "node scripts/updateGeoDatabases.js",
+        "generate-sitemap": "node scripts/generateSitemap.js"
     },
     "keywords": [],
     "author": "",
     "license": "ISC",
     "dependencies": {
+        "axios": "^1.8.1",
         "bcryptjs": "^2.4.3",
         "better-sqlite3": "^11.8.1",
         "cors": "^2.8.5",
+        "date-fns": "^2.30.0",
         "dotenv": "^16.4.7",
         "express": "^4.21.2",
         "jsonwebtoken": "^9.0.2",

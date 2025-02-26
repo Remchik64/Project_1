@@ -26,11 +26,38 @@ exports.getAllCities = async (req, res) => {
 exports.createCity = async (req, res) => {
     try {
         const { name } = req.body;
+        
+        // Проверяем, существует ли уже город с таким названием
+        const existingCity = await City.findOne({ 
+            where: { name },
+            paranoid: false // Включаем поиск среди удаленных записей
+        });
+        
+        if (existingCity) {
+            // Если город был удален (soft delete), восстанавливаем его
+            if (existingCity.deletedAt) {
+                await existingCity.restore();
+                return res.status(200).json({
+                    message: 'Город был восстановлен',
+                    city: existingCity
+                });
+            }
+            
+            return res.status(400).json({ 
+                message: 'Город с таким названием уже существует',
+                details: existingCity
+            });
+        }
+        
         const city = await City.create({ name });
         res.status(201).json(city);
     } catch (error) {
         console.error('Ошибка при создании города:', error);
-        res.status(500).json({ message: 'Ошибка при создании города' });
+        res.status(500).json({ 
+            message: 'Ошибка при создании города',
+            error: error.message,
+            stack: error.stack
+        });
     }
 };
 
@@ -62,6 +89,7 @@ exports.deleteCity = async (req, res) => {
             return res.status(404).json({ message: 'Город не найден' });
         }
 
+        // Используем soft delete вместо полного удаления
         await city.destroy();
         res.json({ message: 'Город успешно удален' });
     } catch (error) {

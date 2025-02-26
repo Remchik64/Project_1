@@ -1,0 +1,54 @@
+# Зависимости
+node_modules
+frontend/node_modules
+backend/node_modules
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Сборка
+frontend/build
+frontend/.cache
+
+# Окружение
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Система
+.DS_Store
+.idea
+.vscode
+*.swp
+*.swo
+
+# Загруженные файлы (будут монтироваться как том)
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Git
+.git
+.gitignore
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Тестовые скрипты
+backend/testAddCity.js
+backend/testDeleteCity.js
+backend/testRestoreCity.js
+backend/testCitySelector.js
+backend/testCityProfiles.js
+backend/testFrontendBehavior.js
+backend/testFrontendRequest.js
+backend/updateCityStatus.js
+backend/checkCities.js
+backend/checkDuplicates.js
+
+# Zeabur конфигурации (больше не используются)
+zbpack.backend.json
+zbpack.frontend.json
+zbpack.json 

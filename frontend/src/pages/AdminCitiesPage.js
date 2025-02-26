@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { getApiUrl, getMediaUrl } from '../config/api';
 import './AdminCitiesPage.css';
 
 const AdminCitiesPage = () => {
@@ -14,16 +15,17 @@ const AdminCitiesPage = () => {
     const [selectedProfiles, setSelectedProfiles] = useState([]);
     const [saveStatus, setSaveStatus] = useState('');
     const [autoClose, setAutoClose] = useState(true);
+    const [updatingCityId, setUpdatingCityId] = useState(null);
 
     // Загрузка городов и анкет
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const [citiesResponse, profilesResponse] = await Promise.all([
-                    axios.get('http://localhost:5000/api/cities', {
+                    axios.get(getApiUrl('/api/cities'), {
                         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
                     }),
-                    axios.get('http://localhost:5000/api/profiles', {
+                    axios.get(getApiUrl('/api/profiles'), {
                         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
                     })
                 ]);
@@ -51,38 +53,83 @@ const AdminCitiesPage = () => {
     // Создание нового города
     const handleCreateCity = async (e) => {
         e.preventDefault();
+        if (!newCityName.trim()) return;
+        
         try {
             const response = await axios.post(
-                'http://localhost:5000/api/cities',
+                getApiUrl('/api/cities'),
                 { name: newCityName },
                 {
                     headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
                 }
             );
-            setCities([...cities, response.data]);
-            setNewCityName('');
+            
+            // Проверяем, был ли город восстановлен
+            if (response.data.message === 'Город был восстановлен') {
+                setError('');
+                setCities(prevCities => {
+                    // Проверяем, есть ли уже город с таким ID в списке
+                    const cityExists = prevCities.some(city => city.id === response.data.city.id);
+                    if (cityExists) {
+                        // Обновляем существующий город
+                        return prevCities.map(city => 
+                            city.id === response.data.city.id ? response.data.city : city
+                        );
+                    } else {
+                        // Добавляем восстановленный город
+                        return [...prevCities, response.data.city];
+                    }
+                });
+                setNewCityName('');
+                alert(`Город "${response.data.city.name}" был успешно восстановлен!`);
+            } else {
+                // Обычное создание нового города
+                setCities([...cities, response.data]);
+                setNewCityName('');
+                setError(''); // Сбрасываем ошибку при успешном создании
+            }
         } catch (error) {
             console.error('Ошибка при создании города:', error);
-            setError('Ошибка при создании города');
+            
+            // Проверяем, есть ли детальная информация об ошибке
+            if (error.response) {
+                if (error.response.status === 400 && error.response.data.message === 'Город с таким названием уже существует') {
+                    setError(`Город с названием "${newCityName}" уже существует. Выберите другое название.`);
+                } else {
+                    setError(`Ошибка при создании города: ${error.response.data.message || 'Неизвестная ошибка'}`);
+                }
+            } else {
+                setError('Ошибка при создании города: Не удалось соединиться с сервером');
+            }
         }
     };
 
     // Обновление статуса города
     const handleUpdateStatus = async (cityId, isActive) => {
-        try {
-            const response = await axios.patch(
-                `http://localhost:5000/api/cities/${cityId}/status`,
-                { isActive },
-                {
-                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-                }
-            );
-            setCities(cities.map(city => 
-                city.id === cityId ? response.data : city
-            ));
-        } catch (error) {
-            console.error('Ошибка при обновлении статуса:', error);
-            setError('Ошибка при обновлении статуса');
+        const city = cities.find(c => c.id === cityId);
+        const statusChangeMessage = isActive 
+            ? `Вы уверены, что хотите сделать город "${city.name}" активным? Он станет доступен для просмотра пользователям.` 
+            : `Вы уверены, что хотите сделать город "${city.name}" неактивным? Он будет скрыт от пользователей, но все анкеты сохранятся.`;
+        
+        if (window.confirm(statusChangeMessage)) {
+            setUpdatingCityId(cityId);
+            try {
+                const response = await axios.patch(
+                    getApiUrl(`/api/cities/${cityId}/status`),
+                    { isActive },
+                    {
+                        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                    }
+                );
+                setCities(cities.map(city => 
+                    city.id === cityId ? response.data : city
+                ));
+            } catch (error) {
+                console.error('Ошибка при обновлении статуса:', error);
+                setError('Ошибка при обновлении статуса');
+            } finally {
+                setUpdatingCityId(null);
+            }
         }
     };
 
@@ -91,7 +138,7 @@ const AdminCitiesPage = () => {
         if (window.confirm('Вы уверены, что хотите удалить этот город?')) {
             try {
                 await axios.delete(
-                    `http://localhost:5000/api/cities/${cityId}`,
+                    getApiUrl(`/api/cities/${cityId}`),
                     {
                         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
                     }
@@ -109,7 +156,7 @@ const AdminCitiesPage = () => {
         setSaveStatus('saving');
         try {
             const response = await axios.post(
-                `http://localhost:5000/api/cities/${cityId}/profiles`,
+                getApiUrl(`/api/cities/${cityId}/profiles`),
                 { profileIds: selectedProfileIds },
                 {
                     headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
@@ -183,7 +230,7 @@ const AdminCitiesPage = () => {
     // Получение URL фотографии
     const getPhotoUrl = (photoPath) => {
         if (!photoPath) return null;
-        return `http://localhost:5000${photoPath}`;
+        return getMediaUrl(photoPath);
     };
 
     // Фильтрация профилей
@@ -198,12 +245,38 @@ const AdminCitiesPage = () => {
         return matchesSearch && matchesGender;
     });
 
+    // Сортировка городов: активные сначала, затем по имени
+    const sortedCities = [...cities].sort((a, b) => {
+        // Сначала сортируем по статусу (активные первыми)
+        if (a.isActive !== b.isActive) {
+            return a.isActive ? -1 : 1;
+        }
+        // Затем по имени в алфавитном порядке
+        return a.name.localeCompare(b.name);
+    });
+
+    // Подсчет активных и неактивных городов
+    const activeCitiesCount = cities.filter(city => city.isActive).length;
+    const inactiveCitiesCount = cities.length - activeCitiesCount;
+
     if (loading) return <div className="loading">Загрузка...</div>;
     if (error) return <div className="error-message">{error}</div>;
 
     return (
         <div className="admin-cities-page">
             <h1>Управление городами</h1>
+
+            <div className="info-message">
+                <div className="info-icon">ℹ</div>
+                <div className="info-content">
+                    <strong>Управление видимостью городов:</strong>
+                    <ul>
+                        <li><span className="status-text active">Активный город</span> - виден пользователям, анкеты доступны для просмотра.</li>
+                        <li><span className="status-text inactive">Неактивный город</span> - скрыт от пользователей, анкеты не отображаются, но сохраняются в системе.</li>
+                        <li>Удаление города следует использовать только если город был создан по ошибке. Все связанные анкеты будут отвязаны от города.</li>
+                    </ul>
+                </div>
+            </div>
 
             {/* Форма создания города */}
             <div className="create-city-form">
@@ -222,7 +295,22 @@ const AdminCitiesPage = () => {
 
             {/* Список городов */}
             <div className="cities-list">
-                <h2>Список городов</h2>
+                <div className="cities-header">
+                    <h2>Список городов</h2>
+                    <div className="cities-stats">
+                        <span className="city-stat active">
+                            <span className="status-dot"></span>
+                            Активных: {activeCitiesCount}
+                        </span>
+                        <span className="city-stat inactive">
+                            <span className="status-dot"></span>
+                            Неактивных: {inactiveCitiesCount}
+                        </span>
+                        <span className="city-stat total">
+                            Всего: {cities.length}
+                        </span>
+                    </div>
+                </div>
                 <table>
                     <thead>
                         <tr>
@@ -233,26 +321,55 @@ const AdminCitiesPage = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {cities.map(city => (
-                            <tr key={city.id}>
+                        {sortedCities.map(city => (
+                            <tr key={city.id} className={city.isActive ? 'city-active' : 'city-inactive'}>
                                 <td>{city.name}</td>
                                 <td>
-                                    <select
-                                        value={city.isActive ? 'active' : 'inactive'}
-                                        onChange={(e) => handleUpdateStatus(city.id, e.target.value === 'active')}
-                                    >
-                                        <option value="active">Активен</option>
-                                        <option value="inactive">Неактивен</option>
-                                    </select>
+                                    <div className="status-selector">
+                                        {updatingCityId === city.id ? (
+                                            <div className="status-loading">
+                                                <span className="spinner"></span> Обновление...
+                                            </div>
+                                        ) : (
+                                            <>
+                                                <select
+                                                    value={city.isActive ? 'active' : 'inactive'}
+                                                    onChange={(e) => handleUpdateStatus(city.id, e.target.value === 'active')}
+                                                    className={city.isActive ? 'status-active' : 'status-inactive'}
+                                                >
+                                                    <option value="active">Активен</option>
+                                                    <option value="inactive">Неактивен</option>
+                                                </select>
+                                                <div className="status-info">
+                                                    {city.isActive ? (
+                                                        <span className="status-badge active">
+                                                            <span className="status-dot"></span>
+                                                            Виден пользователям
+                                                        </span>
+                                                    ) : (
+                                                        <span className="status-badge inactive">
+                                                            <span className="status-dot"></span>
+                                                            Скрыт от пользователей
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </>
+                                        )}
+                                    </div>
                                 </td>
                                 <td>{city.Profiles?.length || 0}</td>
                                 <td>
-                                    <button onClick={() => setSelectedCity(city)}>
+                                    <button 
+                                        onClick={() => setSelectedCity(city)}
+                                        disabled={updatingCityId === city.id}
+                                    >
                                         Управление анкетами
                                     </button>
                                     <button 
                                         onClick={() => handleDeleteCity(city.id)}
                                         className="delete-button"
+                                        title="Удаление города необратимо. Рекомендуется сначала сделать город неактивным."
+                                        disabled={updatingCityId === city.id}
                                     >
                                         Удалить
                                     </button>

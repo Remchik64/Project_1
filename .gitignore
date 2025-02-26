@@ -83,3 +83,15 @@ pids
 
 # Distribution directory
 dist/
+
+# Тестовые скрипты
+backend/testAddCity.js
+backend/testDeleteCity.js
+backend/testRestoreCity.js
+backend/testCitySelector.js
+backend/testCityProfiles.js
+backend/testFrontendBehavior.js
+backend/testFrontendRequest.js
+backend/updateCityStatus.js
+backend/checkCities.js
+backend/checkDuplicates.js

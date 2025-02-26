@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navigation from './components/Navigation';
+import Footer from './components/Footer';
 import BackgroundProvider from './components/BackgroundProvider';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
@@ -13,6 +14,7 @@ import AdminSettingsPage from './pages/AdminSettingsPage';
 import AdminCitiesPage from './pages/AdminCitiesPage';
 import UserDashboard from './pages/UserDashboard';
 import AdminEditProfilePage from './pages/AdminEditProfilePage';
+import SiteMap from './components/SiteMap';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
@@ -35,6 +37,7 @@ function App() {
                 <Route path="/search" element={<SearchPage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
+                <Route path="/sitemap" element={<SiteMap />} />
 
                 {/* Маршруты для обычных пользователей */}
                 <Route
@@ -89,6 +92,7 @@ function App() {
                 />
               </Routes>
             </main>
+            <Footer />
           </div>
         </Router>
       </AuthProvider>
