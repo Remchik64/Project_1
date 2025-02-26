@@ -64,7 +64,7 @@ const ProfileCard = ({ profile }) => {
     return (
         <>
             <div className="profile-card">
-                <div className="profile-image">
+                <div className="profile-image clickable-image" onClick={handleOpenModal}>
                     {photoUrl && !imageError ? (
                         <img 
                             src={photoUrl} 
@@ -90,6 +90,9 @@ const ProfileCard = ({ profile }) => {
                             <span>Фото не загружено</span>
                         </div>
                     )}
+                    <div className="image-overlay">
+                        <span className="view-details-text">Нажмите для просмотра</span>
+                    </div>
                 </div>
                 
                 <div className="profile-info">
