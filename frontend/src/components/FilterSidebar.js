@@ -106,17 +106,17 @@ const FilterSidebar = ({
         </div>
 
         <div className="filter-section">
-          <label>Интересы</label>
+          <label>Прайс</label>
           <input
             type="text"
             value={interests}
             onChange={handleInterestsChange}
             onClick={stopPropagation}
-            placeholder="Введите интересы через запятую"
+            placeholder="Введите ценовые категории через запятую"
             className="interests-input"
           />
           <small className="input-help">
-            Например: спорт, музыка, путешествия
+            Например: 2000, 3000, 5000
           </small>
         </div>
 

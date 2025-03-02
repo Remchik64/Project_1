@@ -1,17 +1,43 @@
 // Настройка axios по умолчанию
 import axios from 'axios';
 
-// Базовый URL для API
-export const API_BASE_URL = 'http://localhost:3001';
+/**
+ * Конфигурация API и утилиты для работы с URL
+ */
 
-// Функция для формирования полного URL API
-export const getApiUrl = (path) => {
-    return `${process.env.REACT_APP_API_URL || 'http://localhost:5000'}${path}`;
+/**
+ * Получает базовый URL API из переменных окружения или использует значение по умолчанию
+ * @returns {string} Базовый URL API
+ */
+export const getApiBaseUrl = () => {
+  return process.env.REACT_APP_API_URL || 'http://localhost:5000';
 };
 
-// Функция для формирования полного URL для медиа-файлов
-export const getMediaUrl = (path) => 
-    path ? `${process.env.REACT_APP_API_URL || 'http://localhost:5000'}${path}` : null;
+/**
+ * Формирует полный URL для API запроса
+ * @param {string} path - Путь к API эндпоинту (должен начинаться с /)
+ * @returns {string} Полный URL для API запроса
+ */
+export const getApiUrl = (path) => {
+  return `${getApiBaseUrl()}${path}`;
+};
+
+/**
+ * Формирует URL для медиа-файлов (изображений, документов и т.д.)
+ * @param {string} path - Путь к медиа-файлу
+ * @returns {string|null} Полный URL для медиа-файла или null, если путь не указан
+ */
+export const getMediaUrl = (path) => {
+  if (!path) return null;
+  
+  // Если путь уже является полным URL (начинается с http:// или https://)
+  if (path.startsWith('http://') || path.startsWith('https://')) {
+    return path;
+  }
+  
+  // Если путь начинается с /, то это относительный путь от корня сервера
+  return `${getApiBaseUrl()}${path}`;
+};
 
 // Добавляем перехватчик для добавления токена к запросам
 axios.interceptors.request.use(

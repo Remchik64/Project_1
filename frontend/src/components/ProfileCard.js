@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { getApiUrl } from '../config/api';
+import { getApiUrl, getMediaUrl } from '../config/api';
 import SocialLinks from './SocialLinks';
 import './ProfileCard.css';
 
@@ -18,7 +18,7 @@ const ProfileCard = ({ profile }) => {
 
     // Формируем полный URL для фотографии
     const photoUrl = profile.photo ? 
-        `http://localhost:5000${profile.photo}` : 
+        getMediaUrl(profile.photo) : 
         null;
 
     useEffect(() => {
@@ -172,10 +172,6 @@ const ProfileCard = ({ profile }) => {
                                         <span>{profile.age ? `${profile.age} лет` : 'Не указан'}</span>
                                     </p>
                                     <p className="detail-item">
-                                        <span className="detail-label">Город:</span>
-                                        <span>{profile.city || 'Не указан'}</span>
-                                    </p>
-                                    <p className="detail-item">
                                         <span className="detail-label">Пол:</span>
                                         <span>{profile.gender}</span>
                                     </p>
@@ -204,7 +200,7 @@ const ProfileCard = ({ profile }) => {
                                 </div>
                                 {interestsArray.length > 0 && (
                                     <div className="interests-section">
-                                        <h3>Интересы</h3>
+                                        <h3>Прайс</h3>
                                         <div className="interests-list">
                                             {interestsArray.map((interest, index) => (
                                                 <span key={index} className="interest-tag">{interest}</span>

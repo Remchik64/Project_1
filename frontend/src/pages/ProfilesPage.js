@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import ProfileCard from '../components/ProfileCard';
 import FilterSidebar from '../components/FilterSidebar';
 import CitySelector from '../components/CitySelector';
+import { getApiUrl } from '../config/api';
 import { setPageMetadata, setStructuredData, createCityStructuredData } from '../utils/seo';
 import './ProfilesPage.css';
 
@@ -62,8 +63,8 @@ const ProfilesPage = () => {
 
       if (selectedCity) {
         [profilesResponse, cityResponse] = await Promise.all([
-          axios.get(`http://localhost:5000/api/cities/${selectedCity}/profiles`),
-          axios.get(`http://localhost:5000/api/cities/${selectedCity}`)
+          axios.get(getApiUrl(`/api/cities/${selectedCity}/profiles`)),
+          axios.get(getApiUrl(`/api/cities/${selectedCity}`))
         ]);
         
         if (cityResponse.data) {
@@ -88,7 +89,7 @@ const ProfilesPage = () => {
           setStructuredData(createCityStructuredData(cityResponse.data));
         }
       } else if (isAdmin) {
-        profilesResponse = await axios.get('http://localhost:5000/api/profiles', {
+        profilesResponse = await axios.get(getApiUrl('/api/profiles'), {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }

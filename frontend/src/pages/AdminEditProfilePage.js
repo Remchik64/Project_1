@@ -213,12 +213,12 @@ const AdminEditProfilePage = () => {
                     </div>
 
                     <div className="form-group">
-                        <label>Интересы (через запятую)</label>
+                        <label>Прайс (через запятую)</label>
                         <input
                             type="text"
                             value={profile.interests}
                             onChange={(e) => setProfile({...profile, interests: e.target.value})}
-                            placeholder="Например: спорт, музыка, путешествия"
+                            placeholder="Например: 2000, 3000, 5000"
                         />
                     </div>
 
@@ -250,12 +250,12 @@ const AdminEditProfilePage = () => {
                         </div>
 
                         <div className="form-group">
-                            <label>Телефон</label>
+                            <label>Номер телефона</label>
                             <input
                                 type="tel"
                                 value={profile.phone || ''}
                                 onChange={(e) => setProfile({...profile, phone: e.target.value})}
-                                placeholder="+7 (999) 999-99-99"
+                                placeholder="Например: +7 (999) 123-45-67"
                             />
                         </div>
                     </div>
@@ -267,24 +267,23 @@ const AdminEditProfilePage = () => {
                             onChange={(e) => setProfile({...profile, status: e.target.value})}
                             required
                         >
-                            <option value="pending">На модерации</option>
                             <option value="active">Активна</option>
-                            <option value="blocked">Заблокирована</option>
+                            <option value="pending">На модерации</option>
+                            <option value="rejected">Отклонена</option>
                         </select>
                     </div>
 
                     <div className="form-actions">
                         <button 
                             type="button" 
-                            onClick={() => navigate('/admin/profiles')} 
                             className="cancel-button"
-                            disabled={isLoading}
+                            onClick={() => navigate('/admin/profiles')}
                         >
                             Отмена
                         </button>
                         <button 
                             type="submit" 
-                            className="save-button"
+                            className="submit-button"
                             disabled={isLoading}
                         >
                             {isLoading ? 'Сохранение...' : 'Сохранить изменения'}

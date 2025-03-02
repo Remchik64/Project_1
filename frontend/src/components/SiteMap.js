@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { getApiUrl } from '../config/api';
 import { setPageMetadata, setStructuredData } from '../utils/seo';
 import './SiteMap.css';
 
@@ -53,7 +54,7 @@ const SiteMap = () => {
 
         const fetchCities = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/cities');
+                const response = await axios.get(getApiUrl('/api/cities'));
                 setCities(response.data);
                 setLoading(false);
             } catch (error) {

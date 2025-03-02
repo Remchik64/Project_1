@@ -21,6 +21,8 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  position: relative;
+  padding-bottom: 120px; /* Увеличенный отступ для футера */
 }
 
 .main-content {
@@ -30,7 +32,6 @@ body {
   max-width: 1200px;
   margin: 0 auto;
   width: 100%;
-  padding-bottom: 60px; /* Отступ для свернутого футера */
 }
 
 /* Стили для скрытия скролла при открытом футере */
@@ -43,6 +44,9 @@ body.footer-expanded {
   .main-content {
     padding-top: 80px; /* Меньший отступ для мобильных устройств */
     padding: 1rem;
-    padding-bottom: 50px; /* Меньший отступ для мобильных устройств */
+  }
+  
+  .app {
+    padding-bottom: 100px; /* Меньший отступ для мобильных устройств */
   }
 }

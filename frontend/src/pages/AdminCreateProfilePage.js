@@ -209,12 +209,12 @@ const AdminCreateProfilePage = () => {
           </div>
 
           <div className="form-group">
-            <label>Интересы (через запятую)</label>
+            <label>Прайс (через запятую)</label>
             <input
               type="text"
               value={profile.interests}
               onChange={(e) => setProfile({...profile, interests: e.target.value})}
-              placeholder="Например: спорт, музыка, путешествия"
+              placeholder="Например: 2000, 3000, 5000"
             />
           </div>
 
@@ -251,7 +251,7 @@ const AdminCreateProfilePage = () => {
                 type="tel"
                 value={profile.phone}
                 onChange={(e) => setProfile({...profile, phone: e.target.value})}
-                placeholder="+7 (999) 999-99-99"
+                placeholder="Например: +7 (999) 123-45-67"
               />
             </div>
           </div>
@@ -259,9 +259,8 @@ const AdminCreateProfilePage = () => {
           <div className="form-actions">
             <button 
               type="button" 
-              onClick={() => navigate('/admin/profiles')} 
               className="cancel-button"
-              disabled={isLoading}
+              onClick={() => navigate('/admin/profiles')}
             >
               Отмена
             </button>

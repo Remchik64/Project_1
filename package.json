@@ -5,12 +5,12 @@
   "main": "index.js",
   "scripts": {
     "install-all": "npm install && cd frontend && npm install && cd ../backend && npm install",
-    "build": "cd frontend && CI=false npm run build",
+    "build": "cd frontend && npm run build:prod",
     "start-backend": "cd backend && node index.js",
     "start-frontend": "cd frontend && npx serve -s build",
     "start": "concurrently \"npm run start-backend\" \"npm run start-frontend\"",
     "dev-backend": "cd backend && nodemon index.js",
-    "dev-frontend": "cd frontend && npm start",
+    "dev-frontend": "cd frontend && npm run start:dev",
     "dev": "concurrently \"npm run dev-backend\" \"npm run dev-frontend\"",
     "deploy": "npm run install-all && npm run build && npm run start",
     "generate-sitemap": "cd backend && node scripts/generateSitemap.js"
