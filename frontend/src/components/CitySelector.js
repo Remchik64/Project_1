@@ -9,6 +9,7 @@ const CitySelector = ({ onCitySelect }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [selectedCity, setSelectedCity] = useState('');
+    const [ageConfirmed, setAgeConfirmed] = useState(false);
     const { user } = useAuth();
     const isAdmin = user?.role === 'admin';
 
@@ -30,8 +31,9 @@ const CitySelector = ({ onCitySelect }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (selectedCity) {
+        if (selectedCity && (ageConfirmed || isAdmin)) {
             localStorage.setItem('selectedCity', selectedCity);
+            localStorage.setItem('ageConfirmed', 'true');
             onCitySelect(selectedCity);
         }
     };
@@ -64,9 +66,24 @@ const CitySelector = ({ onCitySelect }) => {
                         ))}
                     </select>
 
+                    <div className="age-confirmation">
+                        <label className="age-checkbox-label">
+                            <input
+                                type="checkbox"
+                                checked={ageConfirmed}
+                                onChange={(e) => setAgeConfirmed(e.target.checked)}
+                                required={!isAdmin}
+                            />
+                            <span>Я подтверждаю, что мне исполнилось 18 лет</span>
+                        </label>
+                    </div>
+
                     <div className="city-selector-buttons">
-                        <button type="submit" disabled={!selectedCity && !isAdmin}>
-                            Подтвердить выбор города
+                        <button 
+                            type="submit" 
+                            disabled={(!selectedCity || !ageConfirmed) && !isAdmin}
+                        >
+                            Подтвердить выбор
                         </button>
                         {isAdmin && (
                             <button 

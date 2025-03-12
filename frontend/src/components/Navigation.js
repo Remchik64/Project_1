@@ -4,9 +4,16 @@ import { useAuth } from '../context/AuthContext';
 import './Navigation.css';
 
 const Navigation = () => {
-  const { isAuthenticated, user, logout } = useAuth();
+  const { isAuthenticated, user, logout, isAdmin } = useAuth();
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  console.log('Navigation рендеринг:', { 
+    isAuthenticated, 
+    user, 
+    userRole: user?.role,
+    isAdmin 
+  });
 
   const handleLogout = () => {
     logout();
@@ -49,6 +56,9 @@ const Navigation = () => {
               </Link>
               <Link to="/admin/settings" className="nav-link" onClick={closeMobileMenu}>
                 Настройки
+              </Link>
+              <Link to="/admin/debug" className="nav-link" onClick={closeMobileMenu}>
+                Отладка
               </Link>
               <button onClick={handleLogout} className="nav-button">
                 Выход

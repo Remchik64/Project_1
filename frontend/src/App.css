@@ -9,6 +9,7 @@ body {
     "Helvetica Neue", Arial, sans-serif;
   background-color: #f5f5f5;
   color: #333;
+  overflow-x: hidden;
 }
 
 .App {
@@ -22,13 +23,13 @@ body {
   flex-direction: column;
   min-height: 100vh;
   position: relative;
-  padding-bottom: 120px; /* Увеличенный отступ для футера */
+  padding-bottom: 60px; /* Отступ для кнопки футера */
 }
 
 .main-content {
-  padding-top: 100px; /* Отступ от верхней навигации */
   flex: 1;
   padding: 2rem;
+  padding-top: 100px; /* Отступ от верхней навигации */
   max-width: 1200px;
   margin: 0 auto;
   width: 100%;
@@ -42,11 +43,16 @@ body.footer-expanded {
 /* Медиа-запросы для адаптивности */
 @media (max-width: 768px) {
   .main-content {
-    padding-top: 80px; /* Меньший отступ для мобильных устройств */
     padding: 1rem;
+    padding-top: 80px; /* Меньший отступ для мобильных устройств */
   }
   
   .app {
-    padding-bottom: 100px; /* Меньший отступ для мобильных устройств */
+    padding-bottom: 50px; /* Меньший отступ для мобильных устройств */
   }
+}
+
+/* Стили для страницы с открытым футером */
+body.footer-expanded .app {
+  padding-bottom: 0;
 }

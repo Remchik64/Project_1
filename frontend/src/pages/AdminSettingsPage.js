@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { getApiUrl, getMediaUrl } from '../config/api';
 import './AdminSettingsPage.css';
 
 const AdminSettingsPage = () => {
@@ -31,12 +32,20 @@ const AdminSettingsPage = () => {
 
   const fetchSettings = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/site-settings');
+      console.log('Загрузка настроек сайта...');
+      console.log('Токен:', localStorage.getItem('token'));
+      const response = await axios.get(getApiUrl('/api/site-settings'), {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      console.log('Получены настройки:', response.data);
       setSettings(response.data);
       setLoading(false);
     } catch (error) {
       console.error('Ошибка при загрузке настроек:', error);
-      setError('Ошибка при загрузке настроек');
+      console.error('Детали ошибки:', error.response?.data);
+      setError('Ошибка при загрузке настроек: ' + (error.response?.data?.message || error.message));
       setLoading(false);
     }
   };
@@ -312,7 +321,7 @@ const AdminSettingsPage = () => {
                   {(settings.siteBackgroundImage) && (
                     <div className="background-preview">
                       <img 
-                        src={`http://localhost:5000${settings.siteBackgroundImage}`}
+                        src={getMediaUrl(settings.siteBackgroundImage)}
                         alt="Preview" 
                       />
                       <button

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { getApiUrl } from '../config/api';
+import { getApiUrl, getMediaUrl } from '../config/api';
 
 const BackgroundProvider = ({ children }) => {
     const [settings, setSettings] = useState(null);
@@ -9,9 +9,7 @@ const BackgroundProvider = ({ children }) => {
         console.log('Обновление фона с данными:', data);
         
         if (data.siteBackground === 'image' && data.siteBackgroundImage) {
-            const imageUrl = data.siteBackgroundImage.startsWith('http') 
-                ? data.siteBackgroundImage 
-                : `http://localhost:5000${data.siteBackgroundImage}`;
+            const imageUrl = getMediaUrl(data.siteBackgroundImage);
                 
             console.log('Применяем фоновое изображение:', imageUrl);
             

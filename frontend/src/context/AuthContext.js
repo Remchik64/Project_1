@@ -26,10 +26,21 @@ export const AuthProvider = ({ children }) => {
 
     const login = (token, user) => {
         console.log('Вызван метод login:', { token, user });
+        console.log('Сохраняем токен и пользователя в localStorage');
         localStorage.setItem('token', token);
         localStorage.setItem('user', JSON.stringify(user));
+        console.log('Проверка сохраненных данных:', {
+            savedToken: localStorage.getItem('token'),
+            savedUser: localStorage.getItem('user')
+        });
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         setAuth({
+            token,
+            user,
+            isAuthenticated: true,
+            isAdmin: user?.role === 'admin'
+        });
+        console.log('Обновлено состояние auth:', {
             token,
             user,
             isAuthenticated: true,
@@ -54,6 +65,9 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const validateToken = async () => {
             const token = localStorage.getItem('token');
+            const storedUser = localStorage.getItem('user');
+            console.log('Проверка токена при загрузке:', { token, storedUser });
+            
             if (token) {
                 try {
                     console.log('Проверка токена...');
@@ -62,6 +76,8 @@ export const AuthProvider = ({ children }) => {
                     });
                     const user = response.data;
                     console.log('Токен валиден, пользователь:', user);
+                    console.log('Роль пользователя:', user?.role);
+                    console.log('isAdmin:', user?.role === 'admin');
                     setAuth({
                         token,
                         user,

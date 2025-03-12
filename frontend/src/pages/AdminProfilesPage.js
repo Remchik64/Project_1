@@ -13,11 +13,20 @@ const AdminProfilesPage = () => {
   useEffect(() => {
     const fetchProfiles = async () => {
       try {
-        const response = await axios.get(getApiUrl('/api/profiles'));
+        console.log('Загрузка профилей для администратора...');
+        console.log('Токен:', localStorage.getItem('token'));
+        const response = await axios.get(getApiUrl('/api/profiles'), {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        console.log('Получены профили:', response.data);
         setProfiles(response.data);
         setLoading(false);
       } catch (error) {
         console.error('Ошибка при загрузке анкет:', error);
+        console.error('Детали ошибки:', error.response?.data);
+        setError(error.response?.data?.message || 'Ошибка при загрузке анкет');
         setLoading(false);
       }
     };

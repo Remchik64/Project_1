@@ -13,9 +13,9 @@ const HomePage = () => {
     const getHeaderStyle = () => {
         console.log('Текущие настройки:', settings);
         if (settings.headerBackground === 'image' && settings.headerBackgroundImage) {
-            console.log('Применяется фоновое изображение:', `http://localhost:5000${settings.headerBackgroundImage}`);
+            console.log('Применяется фоновое изображение:', getMediaUrl(settings.headerBackgroundImage));
             return {
-                backgroundImage: `url(http://localhost:5000${settings.headerBackgroundImage})`,
+                backgroundImage: `url(${getMediaUrl(settings.headerBackgroundImage)})`,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 backgroundRepeat: 'no-repeat'

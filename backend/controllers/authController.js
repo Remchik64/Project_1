@@ -72,6 +72,13 @@ exports.login = async (req, res) => {
         );
 
         console.log('Успешный вход:', { id: user.id, email: user.email, role: user.role });
+        console.log('Сгенерированный токен:', token);
+        console.log('Данные пользователя для отправки:', {
+            id: user.id,
+            email: user.email,
+            role: user.role
+        });
+        
         res.json({
             token,
             user: {
@@ -89,14 +96,19 @@ exports.login = async (req, res) => {
 // Получение текущего пользователя
 exports.getCurrentUser = async (req, res) => {
     try {
+        console.log('Получение текущего пользователя...');
+        console.log('Данные пользователя из токена:', req.user);
+        
         const user = await User.findByPk(req.user.userId, {
             attributes: ['id', 'email', 'role']
         });
         
         if (!user) {
+            console.log('Пользователь не найден в базе данных');
             return res.status(404).json({ message: 'Пользователь не найден' });
         }
 
+        console.log('Пользователь найден:', user.toJSON());
         res.json(user);
     } catch (error) {
         console.error('Ошибка при получении пользователя:', error);
@@ -107,15 +119,23 @@ exports.getCurrentUser = async (req, res) => {
 // Middleware для проверки аутентификации
 exports.requireAuth = async (req, res, next) => {
     try {
+        console.log('Проверка аутентификации...');
+        console.log('Заголовки запроса:', req.headers);
+        
         const authHeader = req.headers.authorization;
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            console.log('Заголовок авторизации отсутствует или имеет неверный формат');
             return res.status(401).json({ message: 'Требуется авторизация' });
         }
 
         const token = authHeader.split(' ')[1];
+        console.log('Токен получен, проверка...');
+        
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        console.log('Токен декодирован:', decoded);
         
         req.user = decoded;
+        console.log('Аутентификация пройдена успешно');
         next();
     } catch (error) {
         console.error('Ошибка аутентификации:', error);

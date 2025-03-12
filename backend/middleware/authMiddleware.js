@@ -52,18 +52,26 @@ exports.requireAuth = (req, res, next) => {
 // Проверка роли админа (для старых маршрутов)
 exports.requireAdmin = (req, res, next) => {
     try {
+        console.log('Проверка прав администратора...');
+        console.log('Заголовки запроса:', req.headers);
+        
         const token = req.headers.authorization?.split(' ')[1];
         
         if (!token) {
+            console.log('Токен не предоставлен');
             return res.status(401).json({ message: 'Требуется аутентификация' });
         }
 
+        console.log('Токен получен, проверка...');
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        console.log('Токен декодирован:', decoded);
         
         if (decoded.role !== 'admin') {
+            console.log('Доступ запрещен: роль пользователя не admin, а', decoded.role);
             return res.status(403).json({ message: 'Доступ запрещен' });
         }
 
+        console.log('Проверка прав администратора пройдена успешно');
         req.user = decoded;
         next();
     } catch (error) {

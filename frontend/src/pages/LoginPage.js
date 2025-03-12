@@ -45,7 +45,9 @@ const LoginPage = () => {
     setError('');
 
     try {
+      console.log('Отправка запроса на вход:', credentials);
       const response = await axios.post(getApiUrl('/api/auth/login'), credentials);
+      console.log('Ответ от сервера:', response.data);
       
       if (response.data.user.role !== 'admin') {
         setError('Доступ разрешен только для администраторов');
@@ -53,6 +55,7 @@ const LoginPage = () => {
         return;
       }
 
+      console.log('Вход выполнен успешно, сохраняем данные пользователя:', response.data.user);
       login(response.data.token, response.data.user);
       navigate('/');
     } catch (error) {

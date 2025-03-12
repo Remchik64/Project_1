@@ -21,6 +21,9 @@ const AdminCitiesPage = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
+                console.log('Загрузка городов и анкет...');
+                console.log('Токен:', localStorage.getItem('token'));
+                
                 const [citiesResponse, profilesResponse] = await Promise.all([
                     axios.get(getApiUrl('/api/cities'), {
                         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
@@ -30,12 +33,16 @@ const AdminCitiesPage = () => {
                     })
                 ]);
 
+                console.log('Получены города:', citiesResponse.data);
+                console.log('Получены профили:', profilesResponse.data);
+                
                 setCities(citiesResponse.data);
                 setProfiles(profilesResponse.data);
                 setLoading(false);
             } catch (error) {
                 console.error('Ошибка при загрузке данных:', error);
-                setError('Ошибка при загрузке данных');
+                console.error('Детали ошибки:', error.response?.data);
+                setError('Ошибка при загрузке данных: ' + (error.response?.data?.message || error.message));
                 setLoading(false);
             }
         };

@@ -330,6 +330,8 @@ exports.uploadPhoto = async (req, res) => {
 // Получение публичных профилей
 exports.getPublicProfiles = async (req, res) => {
     try {
+        console.log('Получение публичных профилей...');
+        
         // Получаем все активные анкеты
         const profiles = await Profile.findAll({ 
             where: {
@@ -339,10 +341,9 @@ exports.getPublicProfiles = async (req, res) => {
             order: [['createdAt', 'DESC']]
         });
         
-        res.json({
-            profiles,
-            total: profiles.length
-        });
+        console.log(`Найдено ${profiles.length} публичных профилей`);
+        
+        res.json(profiles);
     } catch (error) {
         console.error('Ошибка при получении публичных анкет:', error);
         res.status(500).json({ message: 'Ошибка при получении анкет' });

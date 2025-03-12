@@ -3,9 +3,16 @@ const { City, Profile, ProfileCity } = require('../models');
 // Получение всех городов
 exports.getAllCities = async (req, res) => {
     try {
+        console.log('Получение городов...');
+        console.log('Заголовки запроса:', req.headers);
+        console.log('Данные пользователя:', req.user);
+        
         // Для админа возвращаем все города, для остальных только активные
         const isAdmin = req.user?.role === 'admin';
+        console.log('Пользователь является администратором:', isAdmin);
+        
         const where = isAdmin ? {} : { isActive: true };
+        console.log('Условия запроса:', where);
 
         const cities = await City.findAll({
             where,
@@ -15,6 +22,8 @@ exports.getAllCities = async (req, res) => {
             }],
             order: [['name', 'ASC']]
         });
+        
+        console.log(`Найдено ${cities.length} городов`);
         res.json(cities);
     } catch (error) {
         console.error('Ошибка при получении городов:', error);

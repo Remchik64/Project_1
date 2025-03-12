@@ -20,7 +20,23 @@ const app = express();
 
 // Настройка CORS
 app.use(cors({
-    origin: 'http://localhost:3000',
+    origin: function(origin, callback) {
+        // Разрешаем запросы без origin (например, от мобильных приложений)
+        if (!origin) return callback(null, true);
+        
+        // Список разрешенных доменов
+        const allowedOrigins = [
+            'http://localhost:3000',
+            'https://example.com',  // Замените на ваш домен
+            process.env.FRONTEND_URL // Берем из переменной окружения, если она задана
+        ].filter(Boolean); // Удаляем пустые значения
+        
+        if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+            callback(null, true);
+        } else {
+            callback(new Error('Запрещено CORS политикой'));
+        }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Content-Length', 'X-Requested-With', 'X-Upload-Field']

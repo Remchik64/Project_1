@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { getApiUrl, getMediaUrl } from '../config/api';
 import './Footer.css';
 
 const Footer = () => {
@@ -27,7 +28,7 @@ const Footer = () => {
   // Загрузка настроек с сервера
   const fetchSettings = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/site-settings');
+      const response = await axios.get(getApiUrl('/api/site-settings'));
       setSettings(response.data);
     } catch (error) {
       console.error('Ошибка при загрузке настроек:', error);

@@ -5,9 +5,15 @@ const path = require('path');
 // Получение настроек
 exports.getSettings = async (req, res) => {
     try {
+        console.log('Получение настроек сайта...');
+        console.log('Заголовки запроса:', req.headers);
+        
         let settings = await SiteSettings.findOne();
         if (!settings) {
+            console.log('Настройки не найдены, создаем новые');
             settings = await SiteSettings.create({});
+        } else {
+            console.log('Настройки найдены:', settings.toJSON());
         }
         res.json(settings);
     } catch (error) {

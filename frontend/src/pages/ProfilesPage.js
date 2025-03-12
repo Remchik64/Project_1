@@ -16,6 +16,7 @@ const ProfilesPage = () => {
   const [showCitySelector, setShowCitySelector] = useState(true);
   const [selectedCity, setSelectedCity] = useState(null);
   const [cityName, setCityName] = useState('');
+  const [cities, setCities] = useState([]);
   const { user } = useAuth();
   const isAdmin = user?.role === 'admin';
   const [filters, setFilters] = useState({
@@ -28,7 +29,9 @@ const ProfilesPage = () => {
 
   useEffect(() => {
     const savedCity = localStorage.getItem('selectedCity');
-    if (savedCity || isAdmin) {
+    const ageConfirmed = localStorage.getItem('ageConfirmed');
+    
+    if ((savedCity && ageConfirmed) || isAdmin) {
       setSelectedCity(savedCity);
       setShowCitySelector(false);
     }
@@ -47,6 +50,18 @@ const ProfilesPage = () => {
         image: `${window.location.origin}/og-image.jpg`
       }
     });
+
+    // Загружаем список городов
+    const fetchCities = async () => {
+      try {
+        const response = await axios.get(getApiUrl('/api/cities'));
+        setCities(response.data);
+      } catch (error) {
+        console.error('Ошибка при загрузке городов:', error);
+      }
+    };
+    
+    fetchCities();
   }, [isAdmin]);
 
   useEffect(() => {
@@ -57,66 +72,40 @@ const ProfilesPage = () => {
 
   const fetchProfiles = async () => {
     try {
+      console.log('Загрузка публичных профилей...');
       setLoading(true);
-      let profilesResponse;
-      let cityResponse;
-
-      if (selectedCity) {
-        [profilesResponse, cityResponse] = await Promise.all([
-          axios.get(getApiUrl(`/api/cities/${selectedCity}/profiles`)),
-          axios.get(getApiUrl(`/api/cities/${selectedCity}`))
-        ]);
-        
-        if (cityResponse.data) {
-          setCityName(cityResponse.data.name);
-          
-          // Обновляем SEO метаданные с учетом выбранного города
-          setPageMetadata({
-            title: `Анкеты в городе ${cityResponse.data.name} | Сервис знакомств`,
-            description: `Просмотр анкет для знакомств в городе ${cityResponse.data.name}. Найдите интересных людей в вашем городе.`,
-            keywords: `анкеты ${cityResponse.data.name}, знакомства ${cityResponse.data.name}, поиск анкет, просмотр анкет`,
-            canonical: window.location.href,
-            og: {
-              title: `Анкеты в городе ${cityResponse.data.name} | Сервис знакомств`,
-              description: `Просмотр анкет для знакомств в городе ${cityResponse.data.name}. Найдите интересных людей в вашем городе.`,
-              type: 'website',
-              url: window.location.href,
-              image: `${window.location.origin}/og-image.jpg`
-            }
-          });
-          
-          // Устанавливаем структурированные данные для города
-          setStructuredData(createCityStructuredData(cityResponse.data));
-        }
-      } else if (isAdmin) {
-        profilesResponse = await axios.get(getApiUrl('/api/profiles'), {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        });
-      }
       
-      if (profilesResponse.data) {
-        setProfiles(Array.isArray(profilesResponse.data) ? profilesResponse.data : []);
-      }
-
+      const response = await axios.get(getApiUrl('/api/public/profiles'));
+      console.log('Получены публичные профили:', response.data);
+      
+      setProfiles(response.data);
       setLoading(false);
     } catch (error) {
       console.error('Ошибка при загрузке анкет:', error);
-      setError('Ошибка при загрузке анкет');
+      console.error('Детали ошибки:', error.response?.data);
+      setError('Не удалось загрузить анкеты');
       setLoading(false);
-      
-      if (error.response?.status === 404 && !isAdmin) {
-        localStorage.removeItem('selectedCity');
-        setSelectedCity(null);
-        setShowCitySelector(true);
-      }
     }
   };
 
-  const handleCitySelect = (cityId) => {
+  const handleCitySelect = (cityId, ageConfirmed = false) => {
+    if (ageConfirmed) {
+      localStorage.setItem('ageConfirmed', 'true');
+    }
+    
     setSelectedCity(cityId);
+    localStorage.setItem('selectedCity', cityId);
     setShowCitySelector(false);
+    
+    // Обновляем структурированные данные для SEO
+    if (cityId) {
+      const city = cities.find(c => c.id === cityId);
+      if (city) {
+        setCityName(city.name);
+        // Обновляем структурированные данные для SEO с учетом выбранного города
+        createCityStructuredData(city.name);
+      }
+    }
   };
 
   const filteredProfiles = profiles.filter(profile => {
@@ -252,4 +241,4 @@ const ProfilesPage = () => {
   );
 };
 
-export default ProfilesPage; 
+export default ProfilesPage;

@@ -8,6 +8,7 @@
         "dev": "nodemon index.js",
         "test": "echo \"Error: no test specified\" && exit 1",
         "db:check": "node scripts/database-check.js",
+        "create-admin": "node scripts/create-admin.js",
         "update-geo": "node scripts/updateGeoDatabases.js",
         "generate-sitemap": "node scripts/generateSitemap.js"
     },
