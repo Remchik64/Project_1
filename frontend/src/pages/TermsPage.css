@@ -1,0 +1,159 @@
+.terms-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  color: #333;
+}
+
+.terms-container {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  padding: 2.5rem;
+  margin-bottom: 2rem;
+}
+
+.terms-page h1 {
+  font-size: 2.2rem;
+  color: #2c3e50;
+  margin-bottom: 2rem;
+  text-align: center;
+  position: relative;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.terms-section {
+  margin-bottom: 2.5rem;
+}
+
+.terms-section h2 {
+  font-size: 1.6rem;
+  color: #2c3e50;
+  margin-bottom: 1.2rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.terms-section h3 {
+  font-size: 1.3rem;
+  color: #34495e;
+  margin-bottom: 0.8rem;
+  margin-top: 1.2rem;
+}
+
+.terms-section p {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: #444;
+  margin-bottom: 1rem;
+  text-align: justify;
+}
+
+.important-notice {
+  background-color: #fff8e1;
+  border-left: 4px solid #ffc107;
+  padding: 1rem 1.5rem;
+  margin: 1.5rem 0;
+  border-radius: 4px;
+}
+
+.important-notice p {
+  margin-bottom: 0;
+  font-weight: 500;
+}
+
+.important-notice strong {
+  color: #e65100;
+}
+
+.steps-list {
+  counter-reset: steps;
+  padding-left: 0;
+  margin: 1.5rem 0;
+}
+
+.steps-list li {
+  position: relative;
+  padding-left: 2.5rem;
+  margin-bottom: 1.5rem;
+  list-style-type: none;
+}
+
+.steps-list li::before {
+  counter-increment: steps;
+  content: counter(steps);
+  position: absolute;
+  left: 0;
+  top: 0.2rem;
+  width: 1.8rem;
+  height: 1.8rem;
+  background-color: #3f51b5;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.faq-list, .rules-list {
+  padding-left: 1.5rem;
+  margin: 1rem 0 1.5rem;
+}
+
+.faq-list li, .rules-list li {
+  margin-bottom: 0.7rem;
+  position: relative;
+  padding-left: 0.5rem;
+  line-height: 1.5;
+}
+
+.rules-list li {
+  color: #d32f2f;
+}
+
+.rules-list li::marker {
+  color: #d32f2f;
+}
+
+.faq-list li::marker {
+  color: #3f51b5;
+}
+
+.terms-footer {
+  margin-top: 3rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e0e0e0;
+  text-align: right;
+  font-size: 0.9rem;
+  color: #777;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .terms-page {
+    padding: 1rem;
+  }
+  
+  .terms-container {
+    padding: 1.5rem;
+  }
+  
+  .terms-page h1 {
+    font-size: 1.8rem;
+  }
+  
+  .terms-section h2 {
+    font-size: 1.4rem;
+  }
+  
+  .terms-section h3 {
+    font-size: 1.2rem;
+  }
+  
+  .terms-section p {
+    font-size: 1rem;
+  }
+} 
