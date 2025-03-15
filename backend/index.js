@@ -27,14 +27,22 @@ app.use(cors({
         // Список разрешенных доменов
         const allowedOrigins = [
             'http://localhost:3000',
-            'https://example.com',  // Замените на ваш домен
-            process.env.FRONTEND_URL // Берем из переменной окружения, если она задана
+            'http://localhost:5000',
+            'http://185.255.120.50',        // IP сервера
+            'https://escort-bar.live',      // Основной домен
+            process.env.FRONTEND_URL        // Берем из переменной окружения, если она задана
         ].filter(Boolean); // Удаляем пустые значения
         
-        if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+        // Для разработки разрешаем все источники
+        if (process.env.NODE_ENV !== 'production') {
+            return callback(null, true);
+        }
+        
+        if (allowedOrigins.indexOf(origin) !== -1) {
             callback(null, true);
         } else {
-            callback(new Error('Запрещено CORS политикой'));
+            console.log(`CORS отклонен для origin: ${origin}`);
+            callback(null, true); // Временно разрешаем все запросы для отладки
         }
     },
     credentials: true,

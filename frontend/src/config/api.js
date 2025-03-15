@@ -10,7 +10,10 @@ import axios from 'axios';
  * @returns {string} Базовый URL API
  */
 export const getApiBaseUrl = () => {
-  return process.env.REACT_APP_API_URL || 'http://localhost:5000';
+  const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+  console.log('API URL из переменной окружения:', process.env.REACT_APP_API_URL);
+  console.log('Используемый API URL:', apiUrl);
+  return apiUrl;
 };
 
 /**
@@ -19,7 +22,14 @@ export const getApiBaseUrl = () => {
  * @returns {string} Полный URL для API запроса
  */
 export const getApiUrl = (path) => {
-  return `${getApiBaseUrl()}${path}`;
+  const baseUrl = getApiBaseUrl();
+  
+  // Если baseUrl уже содержит /api и path тоже начинается с /api, убираем дублирование
+  if (baseUrl.endsWith('/api') && path.startsWith('/api')) {
+    return `${baseUrl}${path.substring(4)}`;
+  }
+  
+  return `${baseUrl}${path}`;
 };
 
 /**
