@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { getApiUrl } from '../config/api';
 import './CreateProfilePage.css';
 
 const AdminCreateProfilePage = () => {
@@ -65,7 +66,7 @@ const AdminCreateProfilePage = () => {
         }
 
         const response = await axios.post(
-            'http://localhost:5000/api/profiles',
+            getApiUrl('/api/profiles'),
             formData,
             {
                 headers: {

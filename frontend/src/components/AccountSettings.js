@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { getApiUrl } from '../config/api';
 import './AccountSettings.css';
 
 const AccountSettings = ({ user }) => {
@@ -43,7 +44,7 @@ const AccountSettings = ({ user }) => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.put(
-        'http://localhost:5000/api/user/settings',
+        getApiUrl('/api/user/settings'),
         {
           email: formData.email,
           currentPassword: formData.currentPassword,

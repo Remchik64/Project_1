@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
+import { getApiUrl, getMediaUrl } from '../config/api';
 import './UserDashboard.css';
 
 const UserDashboard = () => {
@@ -14,7 +15,7 @@ const UserDashboard = () => {
       try {
         console.log('Загрузка профиля пользователя:', user?.id);
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:5000/api/user/profile', {
+        const response = await axios.get(getApiUrl('/api/user/profile'), {
           headers: { Authorization: `Bearer ${token}` }
         });
         console.log('Получен профиль:', response.data);
@@ -61,7 +62,7 @@ const UserDashboard = () => {
       const formData = new FormData(e.target);
       
       const response = await axios.post(
-        'http://localhost:5000/api/user/profile',
+        getApiUrl('/api/user/profile'),
         formData,
         {
           headers: {
@@ -101,13 +102,16 @@ const UserDashboard = () => {
           {profile ? (
             <div className="profile-info">
               <div className="profile-header">
-                {profile.photo && (
-                  <img 
-                    src={`http://localhost:5000${profile.photo}`} 
-                    alt="Фото профиля" 
-                    className="profile-photo"
-                  />
-                )}
+                <div className="user-profile-photo">
+                  {profile.photo ? (
+                    <img 
+                      alt={`Фото профиля ${profile.name}`} 
+                      src={getMediaUrl(profile.photo)}
+                    />
+                  ) : (
+                    <div className="no-photo">Фото не загружено</div>
+                  )}
+                </div>
                 <div className="profile-details">
                   <h3>{profile.name || 'Имя не указано'}</h3>
                   {profile.age && <p>{profile.age} лет</p>}

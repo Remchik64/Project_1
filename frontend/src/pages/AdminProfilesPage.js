@@ -37,7 +37,7 @@ const AdminProfilesPage = () => {
   const handleStatusChange = async (id, newStatus) => {
     try {
       const response = await axios.patch(
-        `http://localhost:5000/api/profiles/${id}/status`,
+        getApiUrl(`/api/profiles/${id}/status`),
         { status: newStatus },
         {
           headers: {
@@ -60,7 +60,7 @@ const AdminProfilesPage = () => {
     if (window.confirm('Вы уверены, что хотите удалить эту анкету?')) {
       try {
         await axios.delete(
-          `http://localhost:5000/api/profiles/${id}`,
+          getApiUrl(`/api/profiles/${id}`),
           {
             headers: {
               'Authorization': `Bearer ${localStorage.getItem('token')}`

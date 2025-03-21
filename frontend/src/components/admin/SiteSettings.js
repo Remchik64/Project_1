@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
-import { getApiUrl } from '../../config/api';
+import { getApiUrl, getMediaUrl } from '../../config/api';
 import './SiteSettings.css';
 
 const SiteSettings = () => {
@@ -178,23 +178,20 @@ const SiteSettings = () => {
           )}
 
           {settings.headerBackgroundImage && (
-            <div className="form-group">
-              <label>Текущая фотография заголовка</label>
-              <div className="current-image">
-                <img 
-                  src={`http://localhost:5000${settings.headerBackgroundImage}`} 
-                  alt="Фон заголовка" 
-                  style={{ maxWidth: '200px' }} 
-                />
-                <button 
-                  type="button" 
-                  className="delete-button"
-                  onClick={handleRemoveHeaderImage}
-                  disabled={isLoading}
-                >
-                  Удалить фотографию
-                </button>
-              </div>
+            <div className="current-image">
+              <p>Текущее фоновое изображение:</p>
+              <img 
+                src={getMediaUrl(settings.headerBackgroundImage)} 
+                alt="Фоновое изображение" 
+              />
+              <button 
+                type="button" 
+                className="delete-button"
+                onClick={handleRemoveHeaderImage}
+                disabled={isLoading}
+              >
+                Удалить фотографию
+              </button>
             </div>
           )}
         </div>
