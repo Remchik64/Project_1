@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { getApiUrl, getMediaUrl } from '../config/api';
 import './Header.css';
 
 const Header = () => {
@@ -20,7 +21,7 @@ const Header = () => {
 
     const fetchSettings = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/api/site-settings');
+            const response = await axios.get(getApiUrl('/api/site-settings'));
             console.log('Полученные настройки:', response.data);
             setSettings(response.data);
         } catch (error) {
@@ -30,7 +31,7 @@ const Header = () => {
 
     const headerStyle = {
         background: settings.headerBackground === 'image' && settings.headerBackgroundImage
-            ? `url(http://localhost:5000${settings.headerBackgroundImage}) center/cover no-repeat`
+            ? `url(${getMediaUrl(settings.headerBackgroundImage)}) center/cover no-repeat`
             : settings.headerBackgroundColor || 'linear-gradient(135deg, #6e8efb, #a777e3)'
     };
 

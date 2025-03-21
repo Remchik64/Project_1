@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
+import { getApiUrl, getMediaUrl } from '../config/api';
 import './CreateProfilePage.css'; // Используем те же стили
 
 const EditProfilePage = () => {
@@ -23,7 +24,7 @@ const EditProfilePage = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/profiles/${id}`, {
+        const response = await axios.get(`${getApiUrl('/api/profiles')}/${id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`
           }
@@ -76,7 +77,7 @@ const EditProfilePage = () => {
       }
 
       const response = await axios.put(
-        `http://localhost:5000/api/profiles/${id}`,
+        getApiUrl(`/api/profiles/${id}`),
         formData,
         {
           headers: {
@@ -104,7 +105,7 @@ const EditProfilePage = () => {
       return URL.createObjectURL(photoFile);
     }
     if (profile.photo) {
-      return `http://localhost:5000${profile.photo}`;
+      return getMediaUrl(profile.photo);
     }
     return null;
   };

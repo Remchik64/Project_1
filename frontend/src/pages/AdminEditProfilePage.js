@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
-import { getApiUrl } from '../config/api';
+import { getApiUrl, getMediaUrl } from '../config/api';
 import './CreateProfilePage.css';
 
 const AdminEditProfilePage = () => {
@@ -124,7 +124,7 @@ const AdminEditProfilePage = () => {
                             {(profile.photo || photoFile) ? (
                                 <div className="photo-preview-container">
                                     <img 
-                                        src={photoFile ? URL.createObjectURL(photoFile) : `http://localhost:5000${profile.photo}`}
+                                        src={photoFile ? URL.createObjectURL(photoFile) : getMediaUrl(profile.photo)}
                                         alt="Preview" 
                                         className="photo-preview" 
                                     />

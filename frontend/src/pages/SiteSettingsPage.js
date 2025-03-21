@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { getApiUrl } from '../config/api';
 import './SiteSettingsPage.css';
 
 const SiteSettingsPage = () => {
@@ -20,7 +21,7 @@ const SiteSettingsPage = () => {
 
   const fetchSettings = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/api/site-settings');
+      const response = await axios.get(getApiUrl('/api/site-settings'));
       setSettings(response.data);
       setIsLoading(false);
     } catch (error) {
@@ -38,7 +39,7 @@ const SiteSettingsPage = () => {
     try {
       const token = localStorage.getItem('token');
       await axios.put(
-        'http://localhost:8080/api/site-settings',
+        getApiUrl('/api/site-settings'),
         settings,
         {
           headers: {
