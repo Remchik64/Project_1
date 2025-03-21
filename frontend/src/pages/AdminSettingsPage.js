@@ -83,7 +83,7 @@ const AdminSettingsPage = () => {
 
     try {
         const response = await axios.put(
-            'http://localhost:5000/api/site-settings',
+            getApiUrl('/api/site-settings'),
             formData,
             {
                 headers: {
@@ -232,7 +232,7 @@ const AdminSettingsPage = () => {
                     <div className="background-preview">
                       <img 
                         src={backgroundFile ? URL.createObjectURL(backgroundFile) : 
-                          `http://localhost:5000${settings.headerBackgroundImage}`} 
+                          getMediaUrl(settings.headerBackgroundImage)} 
                         alt="Preview" 
                       />
                       <button
@@ -348,7 +348,7 @@ const AdminSettingsPage = () => {
                         }
                         const formData = new FormData();
                         formData.append('siteBackground', file);
-                        axios.post('http://localhost:5000/api/site-settings/background', formData, {
+                        axios.post(getApiUrl('/api/site-settings/background'), formData, {
                           headers: {
                             'Content-Type': 'multipart/form-data',
                             'Authorization': `Bearer ${localStorage.getItem('token')}`
