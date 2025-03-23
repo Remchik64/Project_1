@@ -807,3 +807,55 @@
     padding: 0 20px 20px;
   }
 }
+
+/* Стили для метки "Проверено" */
+.verified-badge {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  background-color: rgba(76, 175, 80, 0.9);
+  color: white;
+  padding: 5px 15px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  z-index: 10;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: rotate(-5deg);
+}
+
+.verified-badge::before {
+  content: "✓";
+  margin-right: 5px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* Для модального окна */
+.modal-image .verified-badge {
+  top: 20px;
+  left: 20px;
+  font-size: 16px;
+  padding: 6px 18px;
+}
+
+/* Для мобильного модального окна */
+.mobile-modal-image .verified-badge {
+  top: 20px;
+  left: 20px;
+  font-size: 16px;
+  padding: 6px 18px;
+}
+
+@media (max-width: 768px) {
+  .verified-badge {
+    font-size: 12px;
+    padding: 4px 12px;
+    top: 10px;
+    left: 10px;
+  }
+}

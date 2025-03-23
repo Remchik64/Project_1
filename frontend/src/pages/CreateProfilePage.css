@@ -197,3 +197,37 @@
   font-size: 1.2rem;
   font-weight: 500;
 }
+
+.verification-group {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: rgba(76, 175, 80, 0.1);
+  border-radius: 8px;
+  border-left: 4px solid #4CAF50;
+}
+
+.verification-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.verification-checkbox {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+  accent-color: #4CAF50;
+}
+
+.verification-text {
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+}
+
+.verification-hint {
+  margin-top: 5px;
+  font-size: 14px;
+  color: #666;
+  margin-left: 30px;
+}

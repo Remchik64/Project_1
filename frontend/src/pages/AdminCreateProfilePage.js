@@ -16,7 +16,8 @@ const AdminCreateProfilePage = () => {
     status: 'pending',
     height: '',
     weight: '',
-    phone: ''
+    phone: '',
+    verified: false
   });
   const [photoFile, setPhotoFile] = useState(null);
   const [error, setError] = useState('');
@@ -44,6 +45,7 @@ const AdminCreateProfilePage = () => {
         formData.append('name', profile.name.trim());
         formData.append('age', Number(profile.age));
         formData.append('gender', profile.gender);
+        formData.append('verified', profile.verified);
         
         if (profile.about) formData.append('about', profile.about.trim());
         if (profile.interests) formData.append('interests', profile.interests.trim());
@@ -254,6 +256,19 @@ const AdminCreateProfilePage = () => {
                 onChange={(e) => setProfile({...profile, phone: e.target.value})}
                 placeholder="Например: +7 (999) 123-45-67"
               />
+            </div>
+            
+            <div className="form-group verification-group">
+              <label className="verification-label">
+                <input
+                  type="checkbox"
+                  checked={profile.verified}
+                  onChange={(e) => setProfile({...profile, verified: e.target.checked})}
+                  className="verification-checkbox"
+                />
+                <span className="verification-text">Отметить как "Проверено"</span>
+              </label>
+              <p className="verification-hint">Добавляет метку "Проверено" на фото профиля</p>
             </div>
           </div>
 

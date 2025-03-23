@@ -3,11 +3,23 @@ import axios from 'axios';
 import { getApiUrl, getMediaUrl } from '../config/api';
 import SocialLinks from './SocialLinks';
 import './ProfileCard.css';
+import {
+  FaPhone,
+  FaInstagram,
+  FaTelegram,
+  FaFacebook,
+  FaTwitter,
+  FaWhatsapp,
+  FaLink,
+  FaTimes,
+  FaEnvelope
+} from 'react-icons/fa';
 
-const ProfileCard = ({ profile }) => {
+const ProfileCard = ({ profile, onImageError, onSwipe }) => {
     const [imageError, setImageError] = useState(false);
     const [settings, setSettings] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
     
     console.log('Данные профиля в ProfileCard:', profile);
     
@@ -35,6 +47,18 @@ const ProfileCard = ({ profile }) => {
         fetchSettings();
     }, []);
 
+    // Проверка размера экрана при изменении размера окна
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 768);
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+
     const handleOpenModal = () => {
         setIsModalOpen(true);
         document.body.style.overflow = 'hidden';
@@ -47,12 +71,19 @@ const ProfileCard = ({ profile }) => {
 
     // Форматирование номера телефона
     const formatPhoneNumber = (phone) => {
-        if (!phone) return 'Не указан';
-        const cleaned = phone.replace(/\D/g, '');
-        if (cleaned.length === 11) {
-            return `+${cleaned[0]} (${cleaned.slice(1,4)}) ${cleaned.slice(4,7)}-${cleaned.slice(7,9)}-${cleaned.slice(9)}`;
+        if (!phone) return '';
+        
+        // Очищаем номер от всего лишнего
+        const cleanedPhone = getCleanPhoneNumber(phone);
+        
+        if (cleanedPhone.length === 11 && (cleanedPhone.startsWith('7') || cleanedPhone.startsWith('8'))) {
+            // Форматируем российский номер
+            const formatted = `+7 (${cleanedPhone.substring(1, 4)}) ${cleanedPhone.substring(4, 7)}-${cleanedPhone.substring(7, 9)}-${cleanedPhone.substring(9, 11)}`;
+            return formatted;
+        } else {
+            // Другой формат номера
+            return phone;
         }
-        return phone;
     };
 
     // Получение чистого номера телефона для ссылки tel:
@@ -60,6 +91,14 @@ const ProfileCard = ({ profile }) => {
         if (!phone) return '';
         return phone.replace(/\D/g, '');
     };
+
+    const handleImgError = () => {
+        setImageError(true);
+        if (onImageError) onImageError();
+    };
+
+    // Проверка для отображения возраста
+    const hasAge = profile.age && profile.age !== '0' && profile.age !== 0;
 
     return (
         <>
@@ -74,10 +113,7 @@ const ProfileCard = ({ profile }) => {
                             src={photoUrl} 
                             alt={profile.name} 
                             itemProp="image"
-                            onError={(e) => {
-                                console.error('Ошибка загрузки изображения:', e.target.src);
-                                setImageError(true);
-                            }}
+                            onError={handleImgError}
                         />
                     ) : (
                         <div className="placeholder-image">
@@ -95,6 +131,7 @@ const ProfileCard = ({ profile }) => {
                             <span>Фото не загружено</span>
                         </div>
                     )}
+                    {profile.verified && <div className="verified-badge">Проверено</div>}
                     <div className="image-overlay">
                         <span className="view-details-text">Нажмите для просмотра</span>
                     </div>
@@ -136,16 +173,25 @@ const ProfileCard = ({ profile }) => {
             </div>
 
             {isModalOpen && (
-                <div className="profile-modal-overlay" onClick={handleCloseModal}>
-                    <div className="profile-modal" onClick={e => e.stopPropagation()}>
-                        <button className="close-modal" onClick={handleCloseModal}>×</button>
-                        <div className="modal-content">
-                            <div className="modal-image">
+                isMobile ? (
+                    // Мобильная версия модального окна (полноэкранная)
+                    <div className="mobile-fullscreen-modal">
+                        <button className="mobile-close-button" onClick={handleCloseModal}>
+                            <FaTimes />
+                        </button>
+                        
+                        <div className="mobile-modal-header">
+                            <h2>{profile.name}{hasAge ? `, ${profile.age}` : ''}</h2>
+                        </div>
+                        
+                        <div className="mobile-modal-content">
+                            <div className="mobile-modal-image">
                                 {photoUrl && !imageError ? (
                                     <img 
                                         src={photoUrl} 
                                         alt={profile.name} 
                                         className="full-photo"
+                                        onError={handleImgError}
                                     />
                                 ) : (
                                     <div className="placeholder-image">
@@ -163,9 +209,10 @@ const ProfileCard = ({ profile }) => {
                                         <span>Фото не загружено</span>
                                     </div>
                                 )}
+                                {profile.verified && <div className="verified-badge">Проверено</div>}
                             </div>
-                            <div className="modal-info">
-                                <h2>{profile.name || 'Имя не указано'}</h2>
+                            
+                            <div className="mobile-modal-info">
                                 <div className="profile-details">
                                     <p className="detail-item">
                                         <span className="detail-label">Возраст:</span>
@@ -214,7 +261,92 @@ const ProfileCard = ({ profile }) => {
                             </div>
                         </div>
                     </div>
-                </div>
+                ) : (
+                    // Десктопная версия модального окна
+                    <div className="profile-modal-overlay" onClick={handleCloseModal}>
+                        <div className="profile-modal" onClick={e => e.stopPropagation()}>
+                            <button className="close-modal" onClick={handleCloseModal}>
+                                <FaTimes />
+                            </button>
+                            <div className="modal-content">
+                                <div className="modal-image">
+                                    {photoUrl && !imageError ? (
+                                        <img 
+                                            src={photoUrl} 
+                                            alt={profile.name} 
+                                            className="full-photo"
+                                            onError={handleImgError}
+                                        />
+                                    ) : (
+                                        <div className="placeholder-image">
+                                            <svg 
+                                                width="100" 
+                                                height="100" 
+                                                viewBox="0 0 100 100" 
+                                                fill="none" 
+                                                xmlns="http://www.w3.org/2000/svg"
+                                            >
+                                                <rect width="100" height="100" fill="#E5E5E5"/>
+                                                <circle cx="50" cy="40" r="20" fill="#CCCCCC"/>
+                                                <path d="M20 80C20 63.4315 33.4315 50 50 50C66.5685 50 80 63.4315 80 80" stroke="#CCCCCC" strokeWidth="4"/>
+                                            </svg>
+                                            <span>Фото не загружено</span>
+                                        </div>
+                                    )}
+                                    {profile.verified && <div className="verified-badge">Проверено</div>}
+                                </div>
+                                <div className="modal-info">
+                                    <h2>{profile.name || 'Имя не указано'}</h2>
+                                    <div className="profile-details">
+                                        <p className="detail-item">
+                                            <span className="detail-label">Возраст:</span>
+                                            <span>{profile.age ? `${profile.age} лет` : 'Не указан'}</span>
+                                        </p>
+                                        <p className="detail-item">
+                                            <span className="detail-label">Пол:</span>
+                                            <span>{profile.gender}</span>
+                                        </p>
+                                        <p className="detail-item">
+                                            <span className="detail-label">Рост:</span>
+                                            <span>{profile.height ? `${profile.height} см` : 'Не указан'}</span>
+                                        </p>
+                                        <p className="detail-item">
+                                            <span className="detail-label">Вес:</span>
+                                            <span>{profile.weight ? `${profile.weight} кг` : 'Не указан'}</span>
+                                        </p>
+                                        <p className="detail-item">
+                                            <span className="detail-label">Телефон:</span>
+                                            {profile.phone ? (
+                                                <a href={`tel:${getCleanPhoneNumber(profile.phone)}`} className="clickable-phone">
+                                                    <FaPhone className="detail-icon" /> {formatPhoneNumber(profile.phone)}
+                                                </a>
+                                            ) : (
+                                                <span>Не указан</span>
+                                            )}
+                                        </p>
+                                    </div>
+                                    <div className="about-section">
+                                        <h3>О себе</h3>
+                                        <p>{profile.about || 'Информация о себе не указана'}</p>
+                                    </div>
+                                    {interestsArray.length > 0 && (
+                                        <div className="interests-section">
+                                            <h3>Прайс</h3>
+                                            <div className="interests-list">
+                                                {interestsArray.map((interest, index) => (
+                                                    <span key={index} className="interest-tag">{interest}</span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                    <div className="modal-social-links">
+                                        <SocialLinks profile={profile} settings={settings} />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )
             )}
         </>
     );

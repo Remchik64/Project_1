@@ -134,7 +134,8 @@ exports.createProfile = async (req, res) => {
             height: req.body.height ? parseInt(req.body.height) : null,
             weight: req.body.weight ? parseInt(req.body.weight) : null,
             phone: req.body.phone || '',
-            status: 'pending'
+            status: 'pending',
+            verified: req.body.verified === 'true' || req.body.verified === true
         };
 
         // Добавляем фото, если оно есть
@@ -209,7 +210,8 @@ exports.updateProfile = async (req, res) => {
             status: req.body.status || profile.status,
             height: req.body.height ? parseInt(req.body.height) : null,
             weight: req.body.weight ? parseInt(req.body.weight) : null,
-            phone: req.body.phone || ''
+            phone: req.body.phone || '',
+            verified: req.body.verified === 'true' || req.body.verified === true
         };
 
         // Обработка фото
@@ -337,7 +339,7 @@ exports.getPublicProfiles = async (req, res) => {
             where: {
                 status: 'active'
             },
-            attributes: ['id', 'name', 'age', 'gender', 'photo', 'about', 'interests', 'height', 'weight', 'phone'],
+            attributes: ['id', 'name', 'age', 'gender', 'photo', 'about', 'interests', 'height', 'weight', 'phone', 'verified'],
             order: [['createdAt', 'DESC']]
         });
         

@@ -16,7 +16,8 @@ const AdminEditProfilePage = () => {
         height: '',
         weight: '',
         phone: '',
-        status: 'pending'
+        status: 'pending',
+        verified: false
     });
     const [photoFile, setPhotoFile] = useState(null);
     const [error, setError] = useState('');
@@ -69,6 +70,7 @@ const AdminEditProfilePage = () => {
             formData.append('about', profile.about ? profile.about.trim() : '');
             formData.append('interests', profile.interests ? profile.interests.trim() : '');
             formData.append('status', profile.status);
+            formData.append('verified', profile.verified);
             
             // Добавляем дополнительные поля
             if (profile.height) formData.append('height', Number(profile.height));
@@ -257,6 +259,19 @@ const AdminEditProfilePage = () => {
                                 onChange={(e) => setProfile({...profile, phone: e.target.value})}
                                 placeholder="Например: +7 (999) 123-45-67"
                             />
+                        </div>
+                        
+                        <div className="form-group verification-group">
+                            <label className="verification-label">
+                                <input
+                                    type="checkbox"
+                                    checked={profile.verified || false}
+                                    onChange={(e) => setProfile({...profile, verified: e.target.checked})}
+                                    className="verification-checkbox"
+                                />
+                                <span className="verification-text">Отметить как "Проверено"</span>
+                            </label>
+                            <p className="verification-hint">Добавляет метку "Проверено" на фото профиля</p>
                         </div>
                     </div>
 
