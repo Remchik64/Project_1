@@ -83,6 +83,18 @@ if (!fs.existsSync(backgroundsDir)) {
 app.post('/api/auth/login', authController.login);
 app.post('/api/auth/register', authController.register);
 app.get('/api/auth/me', authController.requireAuth, authController.getCurrentUser);
+// Маршруты для изменения пароля
+app.post('/api/auth/change-password', authController.requireAuth, authController.changePassword);
+
+// Маршрут изменения пароля администратора - только в режиме разработки
+if (process.env.NODE_ENV !== 'production') {
+  app.post('/api/auth/change-admin-password', authController.requireAdmin, authController.changeAdminPassword);
+} else {
+  // В продакшене возвращаем 404 для безопасности
+  app.post('/api/auth/change-admin-password', (req, res) => {
+    res.status(404).json({ message: 'Маршрут не найден' });
+  });
+}
 
 // Маршруты профилей
 app.get('/api/profiles', authController.requireAdmin, profileController.getAllProfiles);
@@ -125,7 +137,7 @@ app.use((err, req, res, next) => {
     res.status(500).json({ message: 'Ошибка сервера' });
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || (process.env.NODE_ENV === 'production' ? 8080 : 5000);
 
 // Запуск сервера
 async function startServer() {
@@ -138,8 +150,41 @@ async function startServer() {
             process.exit(1);
         }
 
-        app.listen(PORT, () => {
+        console.log(`Запуск сервера в режиме ${process.env.NODE_ENV || 'development'} на порту ${PORT}...`);
+        const server = app.listen(PORT, () => {
             console.log(`Сервер запущен на порту ${PORT}`);
+        }).on('error', (err) => {
+            if (err.code === 'EADDRINUSE') {
+                console.error(`Порт ${PORT} уже используется.`);
+                
+                if (process.env.NODE_ENV === 'production') {
+                    console.error('Перезапустите сервер через PM2: pm2 restart all');
+                } else {
+                    console.error('Попробуйте выполнить команду npm run free-port');
+                }
+                
+                process.exit(1);
+            } else {
+                console.error('Ошибка при запуске сервера:', err);
+                process.exit(1);
+            }
+        });
+
+        // Обработка завершения работы
+        process.on('SIGTERM', () => {
+            console.log('Получен сигнал SIGTERM. Закрытие сервера...');
+            server.close(() => {
+                console.log('Сервер закрыт');
+                process.exit(0);
+            });
+        });
+
+        process.on('SIGINT', () => {
+            console.log('Получен сигнал SIGINT. Закрытие сервера...');
+            server.close(() => {
+                console.log('Сервер закрыт');
+                process.exit(0);
+            });
         });
     } catch (error) {
         console.error('Критическая ошибка:', error);
