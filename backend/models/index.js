@@ -3,6 +3,7 @@ const User = require('./User');
 const SiteSettings = require('./SiteSettings');
 const City = require('./City');
 const ProfileCity = require('./ProfileCity');
+const AuditLog = require('./AuditLog');
 
 // Настройка ассоциаций
 User.hasOne(Profile, { foreignKey: 'userId' });
@@ -18,11 +19,16 @@ City.belongsToMany(Profile, {
     foreignKey: 'cityId'
 });
 
+// Связь для аудита
+User.hasMany(AuditLog, { foreignKey: 'userId' });
+AuditLog.belongsTo(User, { foreignKey: 'userId' });
+
 // Экспорт моделей
 module.exports = {
     Profile,
     User,
     SiteSettings,
     City,
-    ProfileCity
+    ProfileCity,
+    AuditLog
 }; 

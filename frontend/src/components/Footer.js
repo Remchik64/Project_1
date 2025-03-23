@@ -53,6 +53,10 @@ const Footer = () => {
     setIsExpanded(!isExpanded);
   };
 
+  const closeFooter = () => {
+    setIsExpanded(false);
+  };
+
   return (
     <footer className={`footer ${isExpanded ? 'expanded' : 'collapsed'}`} itemScope itemType="https://schema.org/WPFooter">
       <div className="footer-toggle" onClick={toggleFooter}>
@@ -65,6 +69,12 @@ const Footer = () => {
       </div>
       
       <div className="footer-content">
+        {isExpanded && (
+          <div className="mobile-close-button" onClick={closeFooter}>
+            <span className="close-text">Свернуть</span>
+            <span className="close-icon">▲</span>
+          </div>
+        )}
         <div className="footer-container">
           <div className="footer-section">
             <h3>О сервисе</h3>

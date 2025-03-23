@@ -1,0 +1,7 @@
+[33mcommit 81d14e30be846dd3060b76dbcccfb1393eae1b9e[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m
+Author: Promeney25 <grib0195@gmail.com>
+Date:   Sun Mar 23 22:41:19 2025 +0400
+
+    Исправлена проблема со скроллингом в мобильном модальном окне
+
+frontend/src/components/ProfileCard.css

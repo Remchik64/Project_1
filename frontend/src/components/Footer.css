@@ -332,6 +332,11 @@
   .social-links {
     justify-content: center;
   }
+  
+  /* Показываем мобильную кнопку закрытия только на мобильных устройствах */
+  .mobile-close-button {
+    display: flex;
+  }
 }
 
 /* Стили для анимации появления/исчезновения футера */
@@ -372,4 +377,31 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* Стили для мобильной кнопки закрытия */
+.mobile-close-button {
+  display: none;
+  padding: 10px;
+  margin: 0 auto 15px;
+  background-color: #333;
+  color: #f5f5f5;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+  width: 120px;
+  font-size: 14px;
+  transition: background-color 0.3s, transform 0.3s;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.mobile-close-button:hover {
+  background-color: #444;
+  transform: translateY(-2px);
+}
+
+.mobile-close-button .close-icon {
+  font-size: 12px;
 } 
