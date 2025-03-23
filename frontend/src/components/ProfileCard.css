@@ -361,11 +361,32 @@
 
 @media (max-width: 768px) {
   .profile-modal {
-    width: 95%;
+    width: 100%;
+    height: 100%;
+    max-height: 100vh;
+    border-radius: 0;
+    margin: 0;
+  }
+  
+  .profile-modal-overlay {
+    padding: 0;
   }
 
   .modal-image {
     height: 300px;
+  }
+  
+  .modal-content {
+    max-height: 100vh;
+  }
+  
+  .close-modal {
+    top: 20px;
+    right: 20px;
+    width: 36px;
+    height: 36px;
+    font-size: 24px;
+    background: rgba(0, 0, 0, 0.5);
   }
 }
 
@@ -626,5 +647,164 @@
   .profile-info .social-link span {
     font-size: 10px;
     bottom: -20px;
+  }
+}
+
+/* Новые стили для мобильного модального окна */
+.mobile-modal-overlay {
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background-color: rgb(0, 0, 0) !important;
+}
+
+.mobile-modal {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100vh !important;
+  margin: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+}
+
+.mobile-content {
+  border-radius: 0 !important;
+  max-height: 100vh !important;
+}
+
+/* Стили для полноэкранного мобильного модального окна */
+.mobile-fullscreen-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #212121;
+  z-index: 1000;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.mobile-close-button {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  font-size: 24px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.mobile-modal-header {
+  padding: 20px 20px 10px;
+  text-align: center;
+}
+
+.mobile-modal-header h2 {
+  color: white;
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.mobile-modal-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.mobile-modal-image {
+  width: 100%;
+  height: 300px;
+}
+
+.mobile-modal-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mobile-modal-info {
+  padding: 20px;
+  color: white;
+}
+
+.mobile-modal-info .detail-item {
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mobile-modal-info .detail-label {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.mobile-modal-info .about-section,
+.mobile-modal-info .interests-section {
+  margin-bottom: 20px;
+}
+
+.mobile-modal-info h3 {
+  margin-bottom: 10px;
+  font-size: 1.2rem;
+  color: white;
+}
+
+/* Убираем стили, которые могут конфликтовать */
+@media screen and (max-width: 768px) {
+  .mobile-fullscreen-modal .modal-social-links {
+    margin-top: 20px;
+  }
+}
+
+/* Переопределяем медиа-запросы, чтобы они не влияли на мобильное модальное окно */
+@media (max-width: 768px) {
+  .mobile-fullscreen-modal {
+    width: 100vw;
+    height: 100vh;
+    max-width: none;
+    max-height: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    overflow: hidden;
   }
 }
