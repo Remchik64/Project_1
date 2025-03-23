@@ -86,6 +86,11 @@ const Profile = sequelize.define('Profile', {
         type: DataTypes.TEXT,
         allowNull: true
     },
+    verified: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+    },
     userId: {
         type: DataTypes.INTEGER,
         references: {

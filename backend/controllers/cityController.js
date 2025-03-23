@@ -18,7 +18,7 @@ exports.getAllCities = async (req, res) => {
             where,
             include: [{
                 model: Profile,
-                attributes: ['id', 'name', 'age', 'gender']
+                attributes: ['id', 'name', 'age', 'gender', 'verified']
             }],
             order: [['name', 'ASC']]
         });
@@ -183,7 +183,7 @@ exports.getCityProfiles = async (req, res) => {
             where,
             include: [{
                 model: Profile,
-                attributes: ['id', 'name', 'age', 'gender', 'photo', 'status', 'about', 'interests', 'height', 'weight', 'phone'],
+                attributes: ['id', 'name', 'age', 'gender', 'photo', 'status', 'about', 'interests', 'height', 'weight', 'phone', 'verified'],
                 where: { status: 'active' }
             }]
         });
