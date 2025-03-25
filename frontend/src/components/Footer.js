@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { getApiUrl, getMediaUrl } from '../config/api';
+import { FooterContext, useFooter } from '../App';
 import './Footer.css';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
-  const [isExpanded, setIsExpanded] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Используем контекст вместо локального состояния
+  const { isExpanded, setIsExpanded, closeFooter } = useFooter();
+  
   const [settings, setSettings] = useState({
     telegramLink: 'https://t.me/yourname',
     whatsappLink: 'https://wa.me/79999999999'
@@ -25,6 +30,11 @@ const Footer = () => {
       window.removeEventListener('settingsUpdated', fetchSettings);
     };
   }, []);
+
+  // Закрывать футер при изменении маршрута
+  useEffect(() => {
+    closeFooter();
+  }, [location.pathname, closeFooter]);
 
   // Загрузка настроек с сервера
   const fetchSettings = async () => {
@@ -54,7 +64,7 @@ const Footer = () => {
   useEffect(() => {
     const handleEscKey = (event) => {
       if (event.key === 'Escape' && isExpanded) {
-        setIsExpanded(false);
+        closeFooter();
       }
     };
 
@@ -63,14 +73,20 @@ const Footer = () => {
     return () => {
       window.removeEventListener('keydown', handleEscKey);
     };
-  }, [isExpanded]);
+  }, [isExpanded, closeFooter]);
 
   const toggleFooter = () => {
     setIsExpanded(!isExpanded);
-  };
-
-  const closeFooter = () => {
-    setIsExpanded(false);
+    
+    // Если футер открывается на мобильном, прокручиваем к нему
+    if (!isExpanded && window.innerWidth <= 768) {
+      setTimeout(() => {
+        window.scrollTo({
+          top: document.body.scrollHeight,
+          behavior: 'smooth'
+        });
+      }, 100);
+    }
   };
 
   // Обработчик клика по ссылке

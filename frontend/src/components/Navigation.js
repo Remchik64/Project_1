@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useFooter } from '../App';
 import './Navigation.css';
 
 const Navigation = () => {
   const { isAuthenticated, user, logout, isAdmin } = useAuth();
+  const { closeFooter } = useFooter();
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -19,6 +21,7 @@ const Navigation = () => {
     logout();
     navigate('/');
     setIsMobileMenuOpen(false);
+    closeFooter();
   };
 
   const toggleMobileMenu = () => {
@@ -29,13 +32,27 @@ const Navigation = () => {
     setIsMobileMenuOpen(false);
   };
 
+  const handleBrandClick = () => {
+    closeMobileMenu();
+    closeFooter();
+    
+    if (window.location.pathname === '/') {
+      window.location.reload();
+    } else {
+      navigate('/');
+    }
+  };
+
   return (
     <nav className="navigation">
       <div className={`nav-content ${isMobileMenuOpen ? 'mobile-menu-open' : ''}`}>
         <div className="nav-left">
-          <Link to="/" className="nav-brand" onClick={closeMobileMenu}>
+          <a href="/" className="nav-brand" onClick={(e) => {
+            e.preventDefault();
+            handleBrandClick();
+          }}>
             Сайт знакомств
-          </Link>
+          </a>
           <Link to="/profiles" className="nav-link" onClick={closeMobileMenu}>
             Анкеты
           </Link>
