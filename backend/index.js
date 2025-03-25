@@ -28,11 +28,8 @@ app.use(cors({
         const allowedOrigins = [
             'http://localhost:3000',
             'http://localhost:5000',
-            'http://185.255.120.50',        // IP сервера
             'https://185.255.120.50',       // IP сервера с https
-            'http://escort-bar.live',       // Основной домен
             'https://escort-bar.live',      // Основной домен с https
-            'http://www.escort-bar.live',   // www субдомен
             'https://www.escort-bar.live',  // www субдомен с https
             process.env.FRONTEND_URL        // Берем из переменной окружения, если она задана
         ].filter(Boolean); // Удаляем пустые значения
