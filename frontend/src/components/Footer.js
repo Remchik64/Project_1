@@ -80,7 +80,6 @@ const Footer = () => {
             <h3>О сервисе</h3>
             <ul>
               <li><Link to="/about" itemProp="relatedLink">О нас</Link></li>
-              <li><Link to="/contact" itemProp="relatedLink">Контакты</Link></li>
               <li><Link to="/terms" itemProp="relatedLink">Условия использования</Link></li>
               <li><Link to="/privacy" itemProp="relatedLink">Политика конфиденциальности</Link></li>
             </ul>
@@ -99,7 +98,6 @@ const Footer = () => {
           <div className="footer-section" itemScope itemType="https://schema.org/Organization">
             <meta itemProp="name" content="Сервис знакомств" />
             <h3>Контакты</h3>
-            <p>Email: <a href="mailto:support@example.com" itemProp="email">support@example.com</a></p>
             <div className="social-links">
               <a href={settings.telegramLink || "https://t.me/yourname"} target="_blank" rel="noopener noreferrer" className="social-link telegram">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

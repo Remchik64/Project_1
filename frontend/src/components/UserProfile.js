@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { getApiUrl, getMediaUrl } from '../config/api';
 import './UserProfile.css';
 
 const UserProfile = ({ userId }) => {
@@ -28,7 +29,7 @@ const UserProfile = ({ userId }) => {
   const fetchProfile = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`https://localhost:8080/api/user/profile`, {
+      const response = await axios.get(getApiUrl('/api/user/profile'), {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -45,7 +46,7 @@ const UserProfile = ({ userId }) => {
           interests: response.data.interests || ''
         });
         if (response.data.photo) {
-          setPhotoPreview(`https://localhost:8080${response.data.photo}`);
+          setPhotoPreview(getMediaUrl(response.data.photo));
         }
       }
     } catch (error) {
@@ -91,8 +92,8 @@ const UserProfile = ({ userId }) => {
       }
 
       const url = profile 
-        ? `https://localhost:8080/api/user/profile/${profile._id}`
-        : 'https://localhost:8080/api/user/profile';
+        ? getApiUrl(`/api/user/profile/${profile._id}`)
+        : getApiUrl('/api/user/profile');
       
       const method = profile ? 'put' : 'post';
 

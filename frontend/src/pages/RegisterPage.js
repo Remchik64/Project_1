@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
+import { getApiUrl } from '../config/api';
 import './RegisterPage.css';
 
 const RegisterPage = () => {
@@ -41,7 +42,7 @@ const RegisterPage = () => {
     }
 
     try {
-      const response = await axios.post('https://localhost:8080/api/auth/register', {
+      const response = await axios.post(getApiUrl('/api/auth/register'), {
         email: formData.email,
         password: formData.password
       });
