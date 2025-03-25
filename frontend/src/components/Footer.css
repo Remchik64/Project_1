@@ -336,6 +336,32 @@
   /* Показываем мобильную кнопку закрытия только на мобильных устройствах */
   .mobile-close-button {
     display: flex;
+    z-index: 200;
+    margin-top: 10px;
+  }
+  
+  /* Для мобильных устройств делаем футер абсолютным, чтобы он не пересекал шапку */
+  .footer.expanded {
+    position: absolute;
+    top: auto;
+    bottom: 0;
+    height: auto;
+    max-height: 80vh; /* Ограничиваем высоту до 80% высоты экрана */
+    overflow-y: auto; /* Добавляем прокрутку */
+    -webkit-overflow-scrolling: touch; /* Плавная прокрутка для iOS */
+  }
+  
+  /* Предотвращаем скролл основного документа при открытом футере */
+  body.footer-expanded {
+    overflow: hidden;
+  }
+  
+  /* Кнопки внутри футера должны иметь больший размер для лучшего взаимодействия на мобильных */
+  .footer-section a, 
+  .footer-section li {
+    padding: 8px 0;
+    display: block;
+    font-size: 16px;
   }
 }
 
@@ -395,6 +421,8 @@
   align-items: center;
   justify-content: center;
   gap: 5px;
+  position: sticky;
+  top: 0;
 }
 
 .mobile-close-button:hover {
