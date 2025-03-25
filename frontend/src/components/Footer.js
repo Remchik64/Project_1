@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { getApiUrl } from '../config/api';
+import { FaTelegram, FaWhatsapp } from 'react-icons/fa';
 import './Footer.css';
 
 const Footer = () => {
@@ -98,7 +99,7 @@ const Footer = () => {
                 title="Telegram"
                 aria-label="Перейти в Telegram"
               >
-                <span className="sr-only">Telegram</span>
+                <FaTelegram />
               </a>
               <a 
                 href={settings.whatsappLink} 
@@ -108,7 +109,7 @@ const Footer = () => {
                 title="WhatsApp"
                 aria-label="Перейти в WhatsApp"
               >
-                <span className="sr-only">WhatsApp</span>
+                <FaWhatsapp />
               </a>
             </div>
           </div>
