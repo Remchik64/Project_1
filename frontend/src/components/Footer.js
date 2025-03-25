@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { getApiUrl } from '../config/api';
-import { FaTelegram, FaWhatsapp } from 'react-icons/fa';
+import { FaTelegram, FaWhatsapp, FaTimes } from 'react-icons/fa';
 import './Footer.css';
 
 const Footer = () => {
@@ -64,7 +64,7 @@ const Footer = () => {
       <div className="footer-content">
         {isExpanded && (
           <button className="close-button" onClick={() => setIsExpanded(false)}>
-            Закрыть
+            <FaTimes />
           </button>
         )}
         
@@ -117,7 +117,7 @@ const Footer = () => {
         
         {isExpanded && (
           <button className="close-button" onClick={() => setIsExpanded(false)}>
-            Закрыть
+            <FaTimes />
           </button>
         )}
       </div>
