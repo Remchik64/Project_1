@@ -90,11 +90,25 @@ const Footer = () => {
           <div className="footer-section">
             <h3>Контакты</h3>
             <div className="social-links">
-              <a href={settings.telegramLink} target="_blank" rel="noopener noreferrer" className="social-link telegram">
-                Telegram
+              <a 
+                href={settings.telegramLink} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="social-link telegram" 
+                title="Telegram"
+                aria-label="Перейти в Telegram"
+              >
+                <span className="sr-only">Telegram</span>
               </a>
-              <a href={settings.whatsappLink} target="_blank" rel="noopener noreferrer" className="social-link whatsapp">
-                WhatsApp
+              <a 
+                href={settings.whatsappLink} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="social-link whatsapp" 
+                title="WhatsApp"
+                aria-label="Перейти в WhatsApp"
+              >
+                <span className="sr-only">WhatsApp</span>
               </a>
             </div>
           </div>
