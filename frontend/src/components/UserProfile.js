@@ -28,7 +28,7 @@ const UserProfile = ({ userId }) => {
   const fetchProfile = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`http://localhost:8080/api/user/profile`, {
+      const response = await axios.get(`https://localhost:8080/api/user/profile`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -45,7 +45,7 @@ const UserProfile = ({ userId }) => {
           interests: response.data.interests || ''
         });
         if (response.data.photo) {
-          setPhotoPreview(`http://localhost:8080${response.data.photo}`);
+          setPhotoPreview(`https://localhost:8080${response.data.photo}`);
         }
       }
     } catch (error) {
@@ -91,8 +91,8 @@ const UserProfile = ({ userId }) => {
       }
 
       const url = profile 
-        ? `http://localhost:8080/api/user/profile/${profile._id}`
-        : 'http://localhost:8080/api/user/profile';
+        ? `https://localhost:8080/api/user/profile/${profile._id}`
+        : 'https://localhost:8080/api/user/profile';
       
       const method = profile ? 'put' : 'post';
 

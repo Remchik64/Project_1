@@ -26,8 +26,8 @@ app.use(cors({
         
         // Список разрешенных доменов
         const allowedOrigins = [
-            'http://localhost:3000',
-            'http://localhost:5000',
+            'https://localhost:3000',
+            'https://localhost:5000',
             'https://185.255.120.50',       // IP сервера с https
             'https://escort-bar.live',      // Основной домен с https
             'https://www.escort-bar.live',  // www субдомен с https

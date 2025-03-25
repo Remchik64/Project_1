@@ -13,7 +13,7 @@ export const getApiBaseUrl = () => {
   // В продакшене используем значение из .env.production
   // В разработке используем localhost
   const isProduction = process.env.NODE_ENV === 'production';
-  const defaultUrl = isProduction ? window.location.origin + '/api' : 'http://localhost:5000';
+  const defaultUrl = isProduction ? window.location.origin + '/api' : 'https://localhost:5000';
   const apiUrl = process.env.REACT_APP_API_URL || defaultUrl;
   
   console.log('Текущее окружение:', process.env.NODE_ENV);
