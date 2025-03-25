@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
-import { getApiUrl, getMediaUrl } from '../config/api';
-import { FooterContext, useFooter } from '../App';
+import { getApiUrl } from '../config/api';
+import { useFooter } from '../App';
 import './Footer.css';
 
 const Footer = () => {
@@ -75,29 +75,16 @@ const Footer = () => {
     };
   }, [isExpanded, closeFooter]);
 
-  const toggleFooter = (e) => {
-    // Предотвращаем всплытие события
-    e.stopPropagation();
-    
-    // Переключаем состояние футера
-    setIsExpanded(!isExpanded);
-    
-    // Если футер открывается на мобильном, прокручиваем к нему
-    if (!isExpanded && window.innerWidth <= 768) {
-      setTimeout(() => {
-        // Прокручиваем к футеру
-        const footerEl = document.querySelector('.footer');
-        if (footerEl) {
-          footerEl.scrollIntoView({ behavior: 'smooth', block: 'end' });
-        }
-      }, 100);
-    }
+  // Упрощенная функция для раскрытия футера
+  const openFooter = (e) => {
+    if(e) e.stopPropagation();
+    setIsExpanded(true);
   };
 
   // Обработчик клика по ссылке
   const handleLinkClick = (e, to) => {
-    // Предотвращаем всплытие события, чтобы не срабатывал toggleFooter
-    e.stopPropagation();
+    // Предотвращаем всплытие события
+    if(e) e.stopPropagation();
     
     // Закрываем футер
     closeFooter();
@@ -108,7 +95,7 @@ const Footer = () => {
 
   return (
     <footer className={`footer ${isExpanded ? 'expanded' : 'collapsed'}`} itemScope itemType="https://schema.org/WPFooter">
-      <div className="footer-toggle" onClick={toggleFooter}>
+      <div className="footer-toggle" onClick={openFooter}>
         <span className="footer-toggle-text">
           {isExpanded ? 'Свернуть информацию' : 'Показать больше информации'}
         </span>
@@ -128,19 +115,19 @@ const Footer = () => {
           <div className="footer-section">
             <h3>О сервисе</h3>
             <ul>
-              <li><a href="#" onClick={(e) => handleLinkClick(e, '/about')} itemProp="relatedLink">О нас</a></li>
-              <li><a href="#" onClick={(e) => handleLinkClick(e, '/terms')} itemProp="relatedLink">Условия использования</a></li>
-              <li><a href="#" onClick={(e) => handleLinkClick(e, '/privacy')} itemProp="relatedLink">Политика конфиденциальности</a></li>
+              <li><a href="#" onClick={(e) => handleLinkClick(e, '/about')}>О нас</a></li>
+              <li><a href="#" onClick={(e) => handleLinkClick(e, '/terms')}>Условия использования</a></li>
+              <li><a href="#" onClick={(e) => handleLinkClick(e, '/privacy')}>Политика конфиденциальности</a></li>
             </ul>
           </div>
           
           <div className="footer-section">
             <h3>Навигация</h3>
             <ul>
-              <li><a href="#" onClick={(e) => handleLinkClick(e, '/')} itemProp="relatedLink">Главная</a></li>
-              <li><a href="#" onClick={(e) => handleLinkClick(e, '/profiles')} itemProp="relatedLink">Анкеты</a></li>
-              <li><a href="#" onClick={(e) => handleLinkClick(e, '/search')} itemProp="relatedLink">Поиск</a></li>
-              <li><a href="#" onClick={(e) => handleLinkClick(e, '/sitemap')} itemProp="relatedLink">Карта сайта</a></li>
+              <li><a href="#" onClick={(e) => handleLinkClick(e, '/')}>Главная</a></li>
+              <li><a href="#" onClick={(e) => handleLinkClick(e, '/profiles')}>Анкеты</a></li>
+              <li><a href="#" onClick={(e) => handleLinkClick(e, '/search')}>Поиск</a></li>
+              <li><a href="#" onClick={(e) => handleLinkClick(e, '/sitemap')}>Карта сайта</a></li>
             </ul>
           </div>
           
@@ -176,7 +163,7 @@ const Footer = () => {
       <div className="footer-bottom" onClick={(e) => e.stopPropagation()}>
         <p itemProp="copyrightNotice">&copy; {currentYear} Сервис знакомств. Все права защищены.</p>
         <p>
-          <a href="#" onClick={(e) => handleLinkClick(e, '/sitemap')} itemProp="relatedLink">Карта сайта</a>
+          <a href="#" onClick={(e) => handleLinkClick(e, '/sitemap')}>Карта сайта</a>
         </p>
       </div>
     </footer>

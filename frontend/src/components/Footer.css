@@ -3,12 +3,11 @@
   color: #f5f5f5;
   position: fixed;
   bottom: 0;
-  width: 90%;
-  max-width: 1200px;
-  z-index: 100;
-  transition: all 0.5s ease;
-  left: 50%;
-  transform: translateX(-50%);
+  width: 100%;
+  z-index: 1000;
+  transition: all 0.3s ease;
+  left: 0;
+  right: 0;
 }
 
 /* Стили для свернутого футера */
@@ -23,31 +22,36 @@
   padding: 0;
   margin: 0;
   opacity: 0;
-  transition: max-height 0.5s ease, opacity 0.3s ease, padding 0.3s ease;
+  visibility: hidden;
+  transition: all 0.3s ease;
 }
 
 .footer.collapsed .footer-toggle {
-  border-radius: 16px;
-  margin-bottom: 20px;
+  border-radius: 16px 16px 0 0;
+  margin-bottom: 0;
 }
 
 /* Стили для развернутого футера */
 .footer.expanded {
+  height: auto;
   background-color: #1a1a1a;
-  border-radius: 16px;
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
 }
 
 .footer.expanded .footer-content {
-  max-height: 1000px; /* Достаточно большое значение для любого содержимого */
+  max-height: 80vh;
   opacity: 1;
-  transition: max-height 0.5s ease, opacity 0.5s ease;
+  visibility: visible;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  transition: all 0.3s ease;
 }
 
 .footer.expanded .footer-bottom {
   max-height: 100px;
   opacity: 1;
-  transition: max-height 0.5s ease, opacity 0.5s ease;
+  visibility: visible;
+  transition: all 0.3s ease;
 }
 
 /* Кнопка переключения */
@@ -62,18 +66,13 @@
   gap: 10px;
   border-top-left-radius: 16px;
   border-top-right-radius: 16px;
-  transition: background-color 0.3s ease, border-radius 0.3s ease, transform 0.3s ease;
+  transition: background-color 0.3s ease;
   position: relative;
-  z-index: 10;
+  z-index: 1001;
 }
 
 .footer-toggle:hover {
   background-color: #333;
-  transform: translateY(-2px);
-}
-
-.footer-toggle:active {
-  transform: translateY(0);
 }
 
 .footer-toggle-text {
@@ -305,9 +304,42 @@
   .footer {
     width: 100%;
     bottom: 0;
-    transform: none; /* Убираем transform для мобильных устройств */
+    transform: none;
     left: 0;
     right: 0;
+  }
+  
+  /* Для мобильных устройств делаем футер фиксированным и поверх содержимого */
+  .footer.expanded {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    width: 100%;
+    max-height: 100vh;
+    max-width: none;
+    overflow-y: auto;
+    z-index: 9999;
+    background-color: #1a1a1a;
+    transform: none;
+    padding-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .footer.expanded .footer-content {
+    flex: 1;
+    display: block;
+    padding: 1rem 0;
+    overflow-y: auto;
+    max-height: none;
+  }
+  
+  .footer.expanded .footer-toggle {
+    border-radius: 0;
+    margin: 0;
   }
   
   .footer.collapsed .footer-toggle {
@@ -329,49 +361,33 @@
   }
   
   .footer-toggle-text {
-    font-size: 12px;
+    font-size: 14px;
   }
   
   .social-links {
     justify-content: center;
   }
   
-  /* Показываем мобильную кнопку закрытия только на мобильных устройствах */
-  .mobile-close-button {
-    display: flex;
-    z-index: 200;
-    margin-top: 10px;
-  }
-  
-  /* Для мобильных устройств делаем футер фиксированным и поверх содержимого */
-  .footer.expanded {
-    position: fixed;
-    top: auto;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: auto;
-    max-height: 85vh;
-    width: 100%;
-    max-width: 100%;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    z-index: 1000;
-    transform: none; /* Убираем transform */
-    padding-bottom: 20px; /* Добавляем отступ снизу для кнопки */
+  /* Кнопки внутри футера должны иметь больший размер для лучшего взаимодействия на мобильных */
+  .footer-section a, 
+  .footer-section li {
+    padding: 12px 0;
+    display: block;
+    font-size: 16px;
   }
   
   /* Предотвращаем скролл основного документа при открытом футере */
   body.footer-expanded {
     overflow: hidden;
+    position: fixed;
+    width: 100%;
+    height: 100%;
   }
   
-  /* Кнопки внутри футера должны иметь больший размер для лучшего взаимодействия на мобильных */
-  .footer-section a, 
-  .footer-section li {
-    padding: 8px 0;
-    display: block;
-    font-size: 16px;
+  /* Показываем обе кнопки закрытия */
+  .mobile-close-button, 
+  .mobile-close-button-bottom {
+    display: flex;
   }
 }
 
@@ -418,64 +434,54 @@
 /* Стили для мобильной кнопки закрытия сверху */
 .mobile-close-button {
   display: none;
-  padding: 10px;
-  margin: 0 auto 15px;
-  background-color: #333;
-  color: #f5f5f5;
-  border-radius: 8px;
-  cursor: pointer;
-  text-align: center;
-  width: 120px;
-  font-size: 14px;
-  transition: background-color 0.3s, transform 0.3s;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  position: sticky;
-  top: 0;
-  z-index: 1001;
-}
-
-.mobile-close-button:hover {
-  background-color: #444;
-  transform: translateY(-2px);
-}
-
-.mobile-close-button .close-icon {
-  font-size: 12px;
-}
-
-/* Стили для кнопки закрытия внизу футера */
-.mobile-close-button-bottom {
-  display: none;
-  padding: 12px;
-  margin: 15px auto 5px;
+  padding: 15px;
+  margin: 10px auto;
   background-color: #333;
   color: #f5f5f5;
   border-radius: 8px;
   cursor: pointer;
   text-align: center;
   width: 140px;
-  font-size: 14px;
-  transition: background-color 0.3s, transform 0.3s;
+  font-size: 16px;
+  transition: background-color 0.3s;
   align-items: center;
   justify-content: center;
-  gap: 5px;
+  gap: 8px;
+  position: sticky;
+  top: 0;
+  z-index: 1001;
+}
+
+.mobile-close-button:hover,
+.mobile-close-button:active {
+  background-color: #444;
+}
+
+.mobile-close-button .close-icon {
+  font-size: 14px;
+}
+
+/* Стили для кнопки закрытия внизу футера */
+.mobile-close-button-bottom {
+  display: none;
+  padding: 15px;
+  margin: 20px auto 10px;
+  background-color: #333;
+  color: #f5f5f5;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+  width: 160px;
+  font-size: 16px;
+  transition: background-color 0.3s;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   position: relative;
   box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
 }
 
-.mobile-close-button-bottom:hover {
+.mobile-close-button-bottom:hover,
+.mobile-close-button-bottom:active {
   background-color: #444;
-}
-
-.mobile-close-button-bottom .close-icon {
-  font-size: 12px;
-}
-
-@media (max-width: 768px) {
-  .mobile-close-button, 
-  .mobile-close-button-bottom {
-    display: flex;
-  }
 } 
