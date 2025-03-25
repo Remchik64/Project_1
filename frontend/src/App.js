@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navigation from './components/Navigation';
 import Footer from './components/Footer';
@@ -24,115 +24,92 @@ import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
 import './App.css';
 
-// Создаем контекст для управления футером
-export const FooterContext = createContext();
-
-// Хук для использования контекста футера
-export const useFooter = () => useContext(FooterContext);
-
 function App() {
   console.log('App компонент рендерится');
-  
-  // Состояние для управления открытием/закрытием футера
-  const [isFooterExpanded, setIsFooterExpanded] = useState(false);
-  
-  // Функция для закрытия футера
-  const closeFooter = () => {
-    setIsFooterExpanded(false);
-  };
-  
-  // Значение контекста
-  const footerValue = {
-    isExpanded: isFooterExpanded,
-    setIsExpanded: setIsFooterExpanded,
-    closeFooter
-  };
   
   return (
     <BackgroundProvider>
       <AuthProvider>
-        <FooterContext.Provider value={footerValue}>
-          <Router>
-            <div className="app">
-              <Navigation />
-              <main className="main-content">
-                <Routes>
-                  {/* Публичные маршруты */}
-                  <Route path="/" element={<HomePage />} />
-                  <Route path="/profiles" element={<ProfilesPage />} />
-                  <Route path="/search" element={<SearchPage />} />
-                  <Route path="/login" element={<LoginPage />} />
-                  <Route path="/register" element={<RegisterPage />} />
-                  <Route path="/about" element={<AboutPage />} />
-                  <Route path="/terms" element={<TermsPage />} />
-                  <Route path="/privacy" element={<PrivacyPage />} />
-                  <Route path="/sitemap" element={<SiteMap />} />
+        <Router>
+          <div className="app">
+            <Navigation />
+            <main className="main-content">
+              <Routes>
+                {/* Публичные маршруты */}
+                <Route path="/" element={<HomePage />} />
+                <Route path="/profiles" element={<ProfilesPage />} />
+                <Route path="/search" element={<SearchPage />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
+                <Route path="/about" element={<AboutPage />} />
+                <Route path="/terms" element={<TermsPage />} />
+                <Route path="/privacy" element={<PrivacyPage />} />
+                <Route path="/sitemap" element={<SiteMap />} />
 
-                  {/* Маршруты для обычных пользователей */}
-                  <Route
-                    path="/cabinet"
-                    element={
-                      <ProtectedRoute>
-                        <UserDashboard />
-                      </ProtectedRoute>
-                    }
-                  />
+                {/* Маршруты для обычных пользователей */}
+                <Route
+                  path="/cabinet"
+                  element={
+                    <ProtectedRoute>
+                      <UserDashboard />
+                    </ProtectedRoute>
+                  }
+                />
 
-                  {/* Маршруты для администраторов */}
-                  <Route
-                    path="/admin/profiles"
-                    element={
-                      <AdminRoute>
-                        <AdminProfilesPage />
-                      </AdminRoute>
-                    }
-                  />
-                  <Route
-                    path="/admin/create"
-                    element={
-                      <AdminRoute>
-                        <AdminCreateProfilePage />
-                      </AdminRoute>
-                    }
-                  />
-                  <Route
-                    path="/admin/edit/:id"
-                    element={
-                      <AdminRoute>
-                        <AdminEditProfilePage />
-                      </AdminRoute>
-                    }
-                  />
-                  <Route
-                    path="/admin/settings"
-                    element={
-                      <AdminRoute>
-                        <AdminSettingsPage />
-                      </AdminRoute>
-                    }
-                  />
-                  <Route
-                    path="/admin/cities"
-                    element={
-                      <AdminRoute>
-                        <AdminCitiesPage />
-                      </AdminRoute>
-                    }
-                  />
-                  <Route
-                    path="/admin/debug"
-                    element={
-                      <AdminRoute>
-                        <AdminDebugPage />
-                      </AdminRoute>
-                    }
-                  />
-                </Routes>
-              </main>
-              <Footer />
-            </div>
-          </Router>
-        </FooterContext.Provider>
+                {/* Маршруты для администраторов */}
+                <Route
+                  path="/admin/profiles"
+                  element={
+                    <AdminRoute>
+                      <AdminProfilesPage />
+                    </AdminRoute>
+                  }
+                />
+                <Route
+                  path="/admin/create"
+                  element={
+                    <AdminRoute>
+                      <AdminCreateProfilePage />
+                    </AdminRoute>
+                  }
+                />
+                <Route
+                  path="/admin/edit/:id"
+                  element={
+                    <AdminRoute>
+                      <AdminEditProfilePage />
+                    </AdminRoute>
+                  }
+                />
+                <Route
+                  path="/admin/settings"
+                  element={
+                    <AdminRoute>
+                      <AdminSettingsPage />
+                    </AdminRoute>
+                  }
+                />
+                <Route
+                  path="/admin/cities"
+                  element={
+                    <AdminRoute>
+                      <AdminCitiesPage />
+                    </AdminRoute>
+                  }
+                />
+                <Route
+                  path="/admin/debug"
+                  element={
+                    <AdminRoute>
+                      <AdminDebugPage />
+                    </AdminRoute>
+                  }
+                />
+              </Routes>
+            </main>
+            <Footer />
+          </div>
+        </Router>
       </AuthProvider>
     </BackgroundProvider>
   );

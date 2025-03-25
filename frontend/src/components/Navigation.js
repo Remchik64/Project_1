@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { useFooter } from '../App';
 import './Navigation.css';
 
 const Navigation = () => {
   const { isAuthenticated, user, logout, isAdmin } = useAuth();
-  const { closeFooter } = useFooter();
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -21,7 +19,6 @@ const Navigation = () => {
     logout();
     navigate('/');
     setIsMobileMenuOpen(false);
-    closeFooter();
   };
 
   const toggleMobileMenu = () => {
@@ -34,7 +31,6 @@ const Navigation = () => {
 
   const handleBrandClick = () => {
     closeMobileMenu();
-    closeFooter();
     
     if (window.location.pathname === '/') {
       window.location.reload();
