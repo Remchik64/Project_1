@@ -305,6 +305,9 @@
   .footer {
     width: 100%;
     bottom: 0;
+    transform: none; /* Убираем transform для мобильных устройств */
+    left: 0;
+    right: 0;
   }
   
   .footer.collapsed .footer-toggle {
@@ -348,13 +351,14 @@
     right: 0;
     bottom: 0;
     height: auto;
-    max-height: 85vh; /* Увеличиваем немного высоту */
-    overflow-y: auto; /* Добавляем прокрутку */
-    -webkit-overflow-scrolling: touch; /* Плавная прокрутка для iOS */
-    z-index: 1000; /* Поверх всего содержимого */
-    transform: translateX(-50%); /* Компенсируем transform из общих стилей */
+    max-height: 85vh;
     width: 100%;
     max-width: 100%;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    z-index: 1000;
+    transform: none; /* Убираем transform */
+    padding-bottom: 20px; /* Добавляем отступ снизу для кнопки */
   }
   
   /* Предотвращаем скролл основного документа при открытом футере */
@@ -411,7 +415,7 @@
   }
 }
 
-/* Стили для мобильной кнопки закрытия */
+/* Стили для мобильной кнопки закрытия сверху */
 .mobile-close-button {
   display: none;
   padding: 10px;
@@ -429,6 +433,7 @@
   gap: 5px;
   position: sticky;
   top: 0;
+  z-index: 1001;
 }
 
 .mobile-close-button:hover {
@@ -438,4 +443,39 @@
 
 .mobile-close-button .close-icon {
   font-size: 12px;
+}
+
+/* Стили для кнопки закрытия внизу футера */
+.mobile-close-button-bottom {
+  display: none;
+  padding: 12px;
+  margin: 15px auto 5px;
+  background-color: #333;
+  color: #f5f5f5;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+  width: 140px;
+  font-size: 14px;
+  transition: background-color 0.3s, transform 0.3s;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  position: relative;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.mobile-close-button-bottom:hover {
+  background-color: #444;
+}
+
+.mobile-close-button-bottom .close-icon {
+  font-size: 12px;
+}
+
+@media (max-width: 768px) {
+  .mobile-close-button, 
+  .mobile-close-button-bottom {
+    display: flex;
+  }
 } 

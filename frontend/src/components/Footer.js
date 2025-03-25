@@ -75,16 +75,21 @@ const Footer = () => {
     };
   }, [isExpanded, closeFooter]);
 
-  const toggleFooter = () => {
+  const toggleFooter = (e) => {
+    // Предотвращаем всплытие события
+    e.stopPropagation();
+    
+    // Переключаем состояние футера
     setIsExpanded(!isExpanded);
     
     // Если футер открывается на мобильном, прокручиваем к нему
     if (!isExpanded && window.innerWidth <= 768) {
       setTimeout(() => {
-        window.scrollTo({
-          top: document.body.scrollHeight,
-          behavior: 'smooth'
-        });
+        // Прокручиваем к футеру
+        const footerEl = document.querySelector('.footer');
+        if (footerEl) {
+          footerEl.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }
       }, 100);
     }
   };
@@ -158,6 +163,14 @@ const Footer = () => {
             </div>
           </div>
         </div>
+        
+        {/* Добавляем кнопку закрытия внизу */}
+        {isExpanded && (
+          <div className="mobile-close-button-bottom" onClick={closeFooter}>
+            <span className="close-text">Закрыть</span>
+            <span className="close-icon">▲</span>
+          </div>
+        )}
       </div>
       
       <div className="footer-bottom" onClick={(e) => e.stopPropagation()}>
