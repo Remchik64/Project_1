@@ -70,9 +70,6 @@ const Navigation = () => {
               <Link to="/admin/settings" className="nav-link" onClick={closeMobileMenu}>
                 Настройки
               </Link>
-              <Link to="/admin/debug" className="nav-link" onClick={closeMobileMenu}>
-                Отладка
-              </Link>
               <button onClick={handleLogout} className="nav-button">
                 Выход
               </button>

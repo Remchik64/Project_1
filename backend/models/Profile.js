@@ -38,6 +38,11 @@ const Profile = sequelize.define('Profile', {
         type: DataTypes.STRING,
         allowNull: true
     },
+    photos: {
+        type: DataTypes.JSON,
+        allowNull: true,
+        defaultValue: []
+    },
     status: {
         type: DataTypes.STRING,
         allowNull: false,

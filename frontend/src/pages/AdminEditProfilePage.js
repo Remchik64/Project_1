@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { getApiUrl, getMediaUrl } from '../config/api';
+import ImageSlider from '../components/ImageSlider';
 import './CreateProfilePage.css';
 
 const AdminEditProfilePage = () => {
@@ -17,11 +18,14 @@ const AdminEditProfilePage = () => {
         weight: '',
         phone: '',
         status: 'pending',
-        verified: false
+        verified: false,
+        photos: []
     });
-    const [photoFile, setPhotoFile] = useState(null);
+    const [photoFiles, setPhotoFiles] = useState([]);
+    const [originalPhotos, setOriginalPhotos] = useState([]);
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(true);
+    const [photoLoading, setPhotoLoading] = useState(false);
 
     useEffect(() => {
         const fetchProfile = async () => {
@@ -36,7 +40,33 @@ const AdminEditProfilePage = () => {
                 );
                 
                 console.log('Полученные данные профиля:', response.data);
-                setProfile(response.data);
+                const profileData = response.data;
+
+                // Обработка фотографий
+                let photos = [];
+                if (profileData.photos) {
+                    // Если photos пришло как строка, пробуем распарсить JSON
+                    if (typeof profileData.photos === 'string') {
+                        try {
+                            photos = JSON.parse(profileData.photos);
+                        } catch (e) {
+                            console.error('Ошибка парсинга photos JSON:', e);
+                            // Если парсинг не удался, но есть одиночное фото, используем его
+                            if (profileData.photo) {
+                                photos = [profileData.photo];
+                            }
+                        }
+                    } else if (Array.isArray(profileData.photos)) {
+                        // Если photos уже массив, используем его
+                        photos = profileData.photos;
+                    }
+                } else if (profileData.photo) {
+                    // Если нет photos, но есть photo, используем его
+                    photos = [profileData.photo];
+                }
+                
+                setOriginalPhotos(photos);
+                setProfile({...profileData, photos});
                 setIsLoading(false);
             } catch (error) {
                 console.error('Ошибка при загрузке данных:', error);
@@ -60,7 +90,7 @@ const AdminEditProfilePage = () => {
                 navigate('/login');
                 return;
             }
-
+            
             const formData = new FormData();
 
             // Добавляем основные поля
@@ -77,9 +107,25 @@ const AdminEditProfilePage = () => {
             if (profile.weight) formData.append('weight', Number(profile.weight));
             if (profile.phone) formData.append('phone', profile.phone.trim());
 
-            // Добавляем фото, если оно было изменено
-            if (photoFile) {
-                formData.append('photo', photoFile);
+            // Добавляем фотографии, которые уже загружены
+            if (profile.photos.length > 0) {
+                // Преобразуем полные URL обратно в относительные пути для сохранения в БД
+                const photos = profile.photos.map(url => {
+                    // Удаляем origin из URL, оставляя только путь
+                    return url.replace(window.location.origin, '');
+                });
+                
+                // Сохраняем массив путей как JSON строку в поле photos
+                formData.append('photos', JSON.stringify(photos));
+                
+                // Добавляем первое фото как основное
+                formData.append('photo', photos[0]);
+            }
+
+            // Для отладки - проверяем содержимое FormData
+            console.log('Отправляемые данные:');
+            for (let [key, value] of formData.entries()) {
+                console.log(`${key}:`, value);
             }
 
             const response = await axios.put(
@@ -103,12 +149,69 @@ const AdminEditProfilePage = () => {
         }
     };
 
-    const handlePhotoChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            console.log('Выбран файл:', file.name, 'размер:', file.size, 'тип:', file.type);
-            setPhotoFile(file);
-        }
+    const handlePhotoChange = (e, index) => {
+        const files = Array.from(e.target.files);
+        
+        if (files.length === 0) return;
+
+        setPhotoLoading(true);
+        const formData = new FormData();
+        
+        files.forEach(file => {
+            formData.append('photos', file);
+        });
+
+        // Добавляем отладочную информацию
+        console.log('Отправляемые файлы:', files.map(f => ({ name: f.name, size: f.size, type: f.type })));
+        console.log('URL запроса:', getApiUrl('/api/upload/photos'));
+        console.log('Авторизационный токен:', localStorage.getItem('token') ? 'Присутствует' : 'Отсутствует');
+
+        axios.post(getApiUrl('/api/upload/photos'), formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        })
+        .then(response => {
+            console.log('Ответ от сервера при загрузке фото:', response.data);
+            
+            // Преобразуем относительные пути в полные URL для отображения
+            const uploadedPhotos = response.data.map(item => {
+                // Используем полный URL для отображения
+                const baseUrl = window.location.origin; // например http://localhost:3000
+                return `${baseUrl}${item.path}`; // добавляем путь к серверному URL
+            });
+            
+            console.log('Полные URL фотографий:', uploadedPhotos);
+            
+            const updatedPhotos = [...profile.photos];
+            updatedPhotos[index] = uploadedPhotos[0];
+            
+            setProfile({
+                ...profile,
+                photos: updatedPhotos
+            });
+            setPhotoLoading(false);
+        })
+        .catch(error => {
+            console.error('Ошибка загрузки фото:', error);
+            console.error('Детали ошибки:', {
+                response: error.response,
+                message: error.message,
+                config: error.config
+            });
+            setError('Ошибка при загрузке фотографии. Попробуйте еще раз.');
+            setPhotoLoading(false);
+        });
+    };
+
+    const removePhoto = (index) => {
+        const updatedPhotos = [...profile.photos];
+        updatedPhotos.splice(index, 1);
+        setProfile({
+            ...profile,
+            photos: updatedPhotos
+        });
     };
 
     if (isLoading) return <div className="loading">Загрузка...</div>;
@@ -121,52 +224,150 @@ const AdminEditProfilePage = () => {
                 
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
-                        <label>Фото</label>
+                        <label>Фотографии (до 3 шт)</label>
                         <div className="photo-upload">
-                            {(profile.photo || photoFile) ? (
-                                <div className="photo-preview-container">
-                                    <img 
-                                        src={photoFile ? URL.createObjectURL(photoFile) : getMediaUrl(profile.photo)}
-                                        alt="Preview" 
-                                        className="photo-preview" 
-                                    />
-                                    <button 
-                                        type="button" 
-                                        className="remove-photo"
-                                        onClick={() => {
-                                            setPhotoFile(null);
-                                            setProfile({...profile, photo: null});
-                                        }}
-                                    >
-                                        ✕
-                                    </button>
-                                </div>
-                            ) : (
-                                <div className="photo-placeholder">
-                                    <div>
-                                        <svg 
-                                            width="40" 
-                                            height="40" 
-                                            viewBox="0 0 40 40" 
-                                            fill="none" 
-                                            xmlns="http://www.w3.org/2000/svg"
+                            <div className="photo-slots">
+                                {/* Слот 1 */}
+                                <div className="photo-slot">
+                                    {profile.photos[0] ? (
+                                        <div className="photo-preview-container">
+                                            <img 
+                                                src={profile.photos[0]} 
+                                                alt="Фото 1"
+                                                className="photo-preview" 
+                                            />
+                                            <button 
+                                                type="button" 
+                                                className="remove-photo" 
+                                                onClick={() => removePhoto(0)}
+                                            >
+                                                &times;
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <div 
+                                            className="photo-placeholder" 
+                                            onClick={() => {
+                                                const input = document.createElement('input');
+                                                input.type = 'file';
+                                                input.accept = 'image/*';
+                                                input.onchange = (e) => handlePhotoChange(e, 0);
+                                                input.click();
+                                            }}
                                         >
-                                            <path d="M20 0L23.5 3.5H16.5L20 0Z" fill="#666"/>
-                                            <rect x="18" y="3" width="4" height="25" fill="#666"/>
-                                            <path d="M8 20L12 24V16L8 20Z" fill="#666"/>
-                                            <path d="M32 20L28 24V16L32 20Z" fill="#666"/>
-                                        </svg>
-                                        <span>Нажмите для загрузки фото</span>
-                                    </div>
+                                            <div>
+                                                <svg 
+                                                    width="40" 
+                                                    height="40" 
+                                                    viewBox="0 0 40 40" 
+                                                    fill="none" 
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                >
+                                                    <path d="M20 0L23.5 3.5H16.5L20 0Z" fill="#666"/>
+                                                    <rect x="18" y="3" width="4" height="25" fill="#666"/>
+                                                    <path d="M8 20L12 24V16L8 20Z" fill="#666"/>
+                                                    <path d="M32 20L28 24V16L32 20Z" fill="#666"/>
+                                                </svg>
+                                                <span>Фото 1</span>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
-                            )}
-                            <input
-                                type="file"
-                                accept="image/*"
-                                onChange={handlePhotoChange}
-                                className="photo-input"
-                                onClick={(e) => e.stopPropagation()}
-                            />
+                                
+                                {/* Слот 2 */}
+                                <div className="photo-slot">
+                                    {profile.photos[1] ? (
+                                        <div className="photo-preview-container">
+                                            <img 
+                                                src={profile.photos[1]} 
+                                                alt="Фото 2"
+                                                className="photo-preview" 
+                                            />
+                                            <button 
+                                                type="button" 
+                                                className="remove-photo" 
+                                                onClick={() => removePhoto(1)}
+                                            >
+                                                &times;
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <div 
+                                            className="photo-placeholder" 
+                                            onClick={() => {
+                                                const input = document.createElement('input');
+                                                input.type = 'file';
+                                                input.accept = 'image/*';
+                                                input.onchange = (e) => handlePhotoChange(e, 1);
+                                                input.click();
+                                            }}
+                                        >
+                                            <div>
+                                                <svg 
+                                                    width="40" 
+                                                    height="40" 
+                                                    viewBox="0 0 40 40" 
+                                                    fill="none" 
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                >
+                                                    <path d="M20 0L23.5 3.5H16.5L20 0Z" fill="#666"/>
+                                                    <rect x="18" y="3" width="4" height="25" fill="#666"/>
+                                                    <path d="M8 20L12 24V16L8 20Z" fill="#666"/>
+                                                    <path d="M32 20L28 24V16L32 20Z" fill="#666"/>
+                                                </svg>
+                                                <span>Фото 2</span>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                                
+                                {/* Слот 3 */}
+                                <div className="photo-slot">
+                                    {profile.photos[2] ? (
+                                        <div className="photo-preview-container">
+                                            <img 
+                                                src={profile.photos[2]} 
+                                                alt="Фото 3"
+                                                className="photo-preview" 
+                                            />
+                                            <button 
+                                                type="button" 
+                                                className="remove-photo" 
+                                                onClick={() => removePhoto(2)}
+                                            >
+                                                &times;
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <div 
+                                            className="photo-placeholder" 
+                                            onClick={() => {
+                                                const input = document.createElement('input');
+                                                input.type = 'file';
+                                                input.accept = 'image/*';
+                                                input.onchange = (e) => handlePhotoChange(e, 2);
+                                                input.click();
+                                            }}
+                                        >
+                                            <div>
+                                                <svg 
+                                                    width="40" 
+                                                    height="40" 
+                                                    viewBox="0 0 40 40" 
+                                                    fill="none" 
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                >
+                                                    <path d="M20 0L23.5 3.5H16.5L20 0Z" fill="#666"/>
+                                                    <rect x="18" y="3" width="4" height="25" fill="#666"/>
+                                                    <path d="M8 20L12 24V16L8 20Z" fill="#666"/>
+                                                    <path d="M32 20L28 24V16L32 20Z" fill="#666"/>
+                                                </svg>
+                                                <span>Фото 3</span>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
                         </div>
                     </div>
 

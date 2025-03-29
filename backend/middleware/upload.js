@@ -47,7 +47,8 @@ const upload = multer({
     }
 }).fields([
     { name: 'photo', maxCount: 1 },
-    { name: 'headerBackgroundImage', maxCount: 1 }
+    { name: 'headerBackgroundImage', maxCount: 1 },
+    { name: 'photos', maxCount: 5 } // Добавляем поле photos для множественной загрузки
 ]);
 
 // Middleware для загрузки фото профиля
@@ -128,6 +129,59 @@ const uploadMiddleware = (req, res, next) => {
     });
 };
 
+// Middleware для загрузки множественных фотографий
+const uploadMultiplePhotos = (req, res, next) => {
+    console.log('Начало обработки загрузки нескольких фотографий');
+    console.log('Content-Type:', req.headers['content-type']);
+    
+    // Используем более простую версию multer непосредственно здесь
+    const photoUpload = multer({
+        storage: storage,
+        fileFilter: fileFilter,
+        limits: { fileSize: 10 * 1024 * 1024 } // 10MB
+    }).array('photos', 3); // Максимум 3 фото, поле 'photos'
+    
+    photoUpload(req, res, (err) => {
+        if (err instanceof multer.MulterError) {
+            console.error('Ошибка Multer при загрузке фотографий:', err);
+            return res.status(400).json({
+                message: 'Ошибка при загрузке фотографий',
+                error: err.message,
+                code: err.code
+            });
+        } else if (err) {
+            console.error('Общая ошибка при загрузке фотографий:', err);
+            return res.status(400).json({
+                message: 'Ошибка при загрузке фотографий',
+                error: err.message
+            });
+        }
+        
+        // Проверка наличия файлов
+        if (!req.files || req.files.length === 0) {
+            console.log('Фотографии не были загружены');
+            return res.status(400).json({ message: 'Не выбраны фотографии для загрузки' });
+        }
+        
+        console.log(`Загружено ${req.files.length} фотографий`);
+        
+        // Преобразуем информацию о файлах в удобный формат
+        const uploadedPhotos = req.files.map(file => {
+            return {
+                originalname: file.originalname,
+                filename: file.filename,
+                path: `/uploads/${file.filename}`, // Относительный путь для доступа к файлу
+                size: file.size
+            };
+        });
+        
+        console.log('Фотографии успешно загружены:', uploadedPhotos);
+        
+        // Отправляем ответ с информацией о загруженных файлах
+        res.status(200).json(uploadedPhotos);
+    });
+};
+
 // Middleware для оптимизации изображений
 const optimizeImage = async (req, res, next) => {
     if (!req.file) {
@@ -181,5 +235,6 @@ const optimizeImage = async (req, res, next) => {
 module.exports = {
     uploadMiddleware,
     uploadProfilePhoto,
-    optimizeImage
+    optimizeImage,
+    uploadMultiplePhotos
 }; 

@@ -15,6 +15,7 @@ const { uploadMiddleware, optimizeImage } = require('./middleware/upload');
 // Импорт роутов
 const siteSettingsRoutes = require('./routes/siteSettingsRoutes');
 const cityRoutes = require('./routes/cityRoutes');
+const uploadRoutes = require('./routes/uploadRoutes');
 
 const app = express();
 
@@ -127,6 +128,9 @@ app.use('/api/site-settings', siteSettingsRoutes);
 
 // Маршруты для городов
 app.use('/api/cities', cityRoutes);
+
+// Маршруты для загрузки файлов
+app.use('/api/upload', uploadRoutes);
 
 // Обработка ошибок
 app.use((err, req, res, next) => {

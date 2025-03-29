@@ -138,24 +138,50 @@ exports.createProfile = async (req, res) => {
             verified: req.body.verified === 'true' || req.body.verified === true
         };
 
-        // Добавляем фото, если оно есть
-        if (req.files && req.files.photo && req.files.photo[0]) {
-            const photoFile = req.files.photo[0];
-            console.log('Обработка загруженного файла:', {
-                originalname: photoFile.originalname,
-                filename: photoFile.filename,
-                path: photoFile.path,
-                mimetype: photoFile.mimetype,
-                size: photoFile.size
-            });
-            
-            // Формируем URL для фото
-            const photoUrl = `/uploads/${photoFile.filename}`;
-            profileData.photo = photoUrl;
-            console.log('Добавлено фото:', photoUrl);
-        } else {
-            console.log('Файл не был загружен');
+        // Обработка загруженных фотографий
+        let photos = [];
+        
+        // Проверяем наличие JSON массива фотографий
+        if (req.body.photos) {
+            try {
+                photos = JSON.parse(req.body.photos);
+                console.log('Получены фотографии из JSON:', photos);
+            } catch (error) {
+                console.error('Ошибка при разборе JSON массива фотографий:', error);
+            }
         }
+        
+        // Добавляем фото, если оно есть в традиционном формате
+        if (req.files && req.files.photo) {
+            console.log('Обработка загруженных файлов:', req.files.photo.length);
+            
+            // Сохраняем массив фотографий
+            for (let i = 0; i < req.files.photo.length; i++) {
+                const photoFile = req.files.photo[i];
+                console.log('Обработка загруженного файла:', {
+                    originalname: photoFile.originalname,
+                    filename: photoFile.filename,
+                    path: photoFile.path,
+                    mimetype: photoFile.mimetype,
+                    size: photoFile.size
+                });
+                
+                // Формируем URL для фото
+                const photoUrl = `/uploads/${photoFile.filename}`;
+                photos.push(photoUrl);
+                console.log('Добавлено фото:', photoUrl);
+            }
+        } else {
+            console.log('Файлы не были загружены традиционным способом');
+        }
+            
+        // Для обратной совместимости сохраняем первое фото в поле photo
+        if (photos.length > 0) {
+            profileData.photo = photos[0];
+        }
+        
+        // Сохраняем все фото в массив photos
+        profileData.photos = photos;
 
         console.log('Создаем профиль с данными:', profileData);
 
@@ -169,13 +195,15 @@ exports.createProfile = async (req, res) => {
     } catch (error) {
         console.error('Ошибка при создании профиля:', error);
         
-        // Если произошла ошибка, пытаемся удалить загруженный файл
-        if (req.files && req.files.photo && req.files.photo[0]) {
+        // Если произошла ошибка, пытаемся удалить загруженные файлы
+        if (req.files && req.files.photo) {
             try {
-                await fs.promises.unlink(req.files.photo[0].path);
-                console.log('Загруженный файл удален после ошибки');
+                for (const photoFile of req.files.photo) {
+                    await fs.promises.unlink(photoFile.path);
+                }
+                console.log('Загруженные файлы удалены после ошибки');
             } catch (unlinkError) {
-                console.error('Ошибка при удалении файла:', unlinkError);
+                console.error('Ошибка при удалении файлов:', unlinkError);
             }
         }
 
@@ -191,7 +219,7 @@ exports.updateProfile = async (req, res) => {
     try {
         console.log('Обновление профиля:', req.params.id);
         console.log('Данные для обновления:', req.body);
-        console.log('Файл:', req.file);
+        console.log('Файлы:', req.files);
 
         const profile = await Profile.findByPk(req.params.id);
         
@@ -214,20 +242,63 @@ exports.updateProfile = async (req, res) => {
             verified: req.body.verified === 'true' || req.body.verified === true
         };
 
-        // Обработка фото
-        if (req.file) {
-            // Удаляем старое фото, если оно есть
-            if (profile.photo) {
-                const oldPhotoPath = path.join(__dirname, '..', profile.photo);
-                if (fs.existsSync(oldPhotoPath)) {
-                    try {
-                        fs.unlinkSync(oldPhotoPath);
-                    } catch (error) {
-                        console.error('Ошибка при удалении старого фото:', error);
+        // Получаем массив фотографий
+        let photos = [];
+        
+        // Проверяем наличие JSON массива фотографий
+        if (req.body.photos) {
+            try {
+                photos = JSON.parse(req.body.photos);
+                console.log('Получены фотографии из JSON:', photos);
+            } catch (error) {
+                console.error('Ошибка при разборе JSON массива фотографий:', error);
+            }
+        }
+
+        // Обработка загруженных фотографий традиционным способом
+        if (req.files && req.files.photo && req.files.photo.length > 0) {
+            // Если есть фотографии, удаляем старые только если не было массива photos в JSON
+            if (photos.length === 0) {
+                if (profile.photos && profile.photos.length > 0) {
+                    for (const oldPhoto of profile.photos) {
+                        const oldPhotoPath = path.join(__dirname, '..', oldPhoto);
+                        if (fs.existsSync(oldPhotoPath)) {
+                            try {
+                                fs.unlinkSync(oldPhotoPath);
+                                console.log('Удалено старое фото:', oldPhoto);
+                            } catch (error) {
+                                console.error('Ошибка при удалении старого фото:', error);
+                            }
+                        }
+                    }
+                } else if (profile.photo) {
+                    // Удаляем старое одиночное фото, если оно есть
+                    const oldPhotoPath = path.join(__dirname, '..', profile.photo);
+                    if (fs.existsSync(oldPhotoPath)) {
+                        try {
+                            fs.unlinkSync(oldPhotoPath);
+                            console.log('Удалено старое фото:', profile.photo);
+                        } catch (error) {
+                            console.error('Ошибка при удалении старого фото:', error);
+                        }
                     }
                 }
+                
+                // Сохраняем новые фотографии
+                for (const photoFile of req.files.photo) {
+                    const photoUrl = `/uploads/${photoFile.filename}`;
+                    photos.push(photoUrl);
+                    console.log('Добавлено новое фото:', photoUrl);
+                }
             }
-            updateData.photo = `/uploads/${req.file.filename}`;
+        }
+        
+        // Обновляем данные профиля
+        if (photos.length > 0) {
+            updateData.photos = photos;
+            
+            // Для обратной совместимости
+            updateData.photo = photos[0];
         }
 
         console.log('Данные для обновления:', updateData);
@@ -339,7 +410,7 @@ exports.getPublicProfiles = async (req, res) => {
             where: {
                 status: 'active'
             },
-            attributes: ['id', 'name', 'age', 'gender', 'photo', 'about', 'interests', 'height', 'weight', 'phone', 'verified'],
+            attributes: ['id', 'name', 'age', 'gender', 'photo', 'photos', 'about', 'interests', 'height', 'weight', 'phone', 'verified'],
             order: [['createdAt', 'DESC']]
         });
         

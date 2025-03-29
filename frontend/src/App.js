@@ -7,6 +7,7 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ProfilesPage from './pages/ProfilesPage';
+import ProfilePage from './pages/ProfilePage';
 import SearchPage from './pages/SearchPage';
 import AdminProfilesPage from './pages/AdminProfilesPage';
 import AdminCreateProfilePage from './pages/AdminCreateProfilePage';
@@ -14,7 +15,6 @@ import AdminSettingsPage from './pages/AdminSettingsPage';
 import AdminCitiesPage from './pages/AdminCitiesPage';
 import UserDashboard from './pages/UserDashboard';
 import AdminEditProfilePage from './pages/AdminEditProfilePage';
-import AdminDebugPage from './pages/AdminDebugPage';
 import AboutPage from './pages/AboutPage';
 import TermsPage from './pages/TermsPage';
 import PrivacyPage from './pages/PrivacyPage';
@@ -38,6 +38,7 @@ function App() {
                 {/* Публичные маршруты */}
                 <Route path="/" element={<HomePage />} />
                 <Route path="/profiles" element={<ProfilesPage />} />
+                <Route path="/profile/:id" element={<ProfilePage />} />
                 <Route path="/search" element={<SearchPage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
@@ -94,14 +95,6 @@ function App() {
                   element={
                     <AdminRoute>
                       <AdminCitiesPage />
-                    </AdminRoute>
-                  }
-                />
-                <Route
-                  path="/admin/debug"
-                  element={
-                    <AdminRoute>
-                      <AdminDebugPage />
                     </AdminRoute>
                   }
                 />

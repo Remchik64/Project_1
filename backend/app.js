@@ -16,12 +16,14 @@ const profileRoutes = require('./routes/profileRoutes');
 const siteSettingsRoutes = require('./routes/siteSettingsRoutes');
 const cityRoutes = require('./routes/cityRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const uploadRoutes = require('./routes/uploadRoutes');
 
 // Подключение маршрутов
 app.use('/api/auth', authRoutes);
 app.use('/api/profiles', profileRoutes);
 app.use('/api/site-settings', siteSettingsRoutes);
 app.use('/api/cities', cityRoutes);
+app.use('/api/upload', uploadRoutes);
 
 // Административные маршруты с аудитом
 app.use('/api/admin', adminRoutes);
