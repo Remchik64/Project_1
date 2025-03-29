@@ -1,13 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const { uploadMultiplePhotos } = require('../middleware/upload');
-
-// Тестовый маршрут для проверки доступности API
-router.get('/test', (req, res) => {
-    res.json({ message: 'Upload API is working' });
-});
+const authController = require('../controllers/authController');
 
 // Маршрут для загрузки фотографий
-router.post('/photos', uploadMultiplePhotos);
+// Добавляем проверку авторизации
+router.post('/photos', authController.requireAuth, uploadMultiplePhotos);
 
 module.exports = router; 

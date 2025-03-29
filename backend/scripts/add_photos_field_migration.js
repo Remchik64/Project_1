@@ -21,7 +21,7 @@ async function runMigration() {
             
             await sequelize.query(`
                 ALTER TABLE Profiles 
-                ADD COLUMN photos TEXT DEFAULT '[]'
+                ADD COLUMN photos JSON DEFAULT '[]'
             `);
             
             console.log('Поле photos успешно добавлено в таблицу Profiles');
