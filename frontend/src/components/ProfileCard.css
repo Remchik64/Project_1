@@ -239,7 +239,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.75);
+  background: rgba(0, 0, 0, 0.85);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -249,12 +249,13 @@
 
 .profile-modal {
   background: #212121;
-  border-radius: 8px;
-  max-width: 500px;
+  border-radius: 12px;
+  max-width: 550px;
   width: 90%;
   position: relative;
   animation: modalFadeIn 0.3s ease-out;
   overflow: hidden;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
 }
 
 @keyframes modalFadeIn {
@@ -268,14 +269,15 @@
   }
 }
 
+/* Стили для кнопки закрытия модального окна */
 .close-modal {
   position: absolute;
   top: 15px;
   right: 15px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.6);
   border: none;
-  width: 30px;
-  height: 30px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   font-size: 20px;
   color: #fff;
@@ -283,12 +285,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.2s;
-  z-index: 2;
+  transition: all 0.2s ease;
+  z-index: 1010 !important;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
 }
 
 .close-modal:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.8);
+  transform: scale(1.1);
 }
 
 .modal-content {
@@ -317,26 +321,32 @@
   background: #888;
 }
 
+/* Улучшенный вид для фотографий в модальном окне */
 .modal-image {
   width: 100%;
-  height: 500px;
+  height: 450px;
+  position: relative;
+  overflow: hidden;
+  background-color: #000;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
-.modal-image img.full-photo {
+.modal-image .image-slider {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  background-color: #000;
 }
 
 .modal-info {
-  padding: 20px;
+  padding: 25px 20px;
   background: #212121;
 }
 
 .modal-info h2 {
   color: #fff;
   margin: 0 0 20px 0;
-  font-size: 1.8rem;
+  font-size: 1.7rem;
+  text-align: center;
 }
 
 .detail-item {
@@ -359,6 +369,38 @@
   display: block;
 }
 
+/* Стили для кнопок слайдера */
+.slider-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1005;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s;
+}
+
+.slider-btn:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.slider-btn.prev {
+  left: 15px;
+}
+
+.slider-btn.next {
+  right: 15px;
+}
+
+/* Адаптация стилей для мобильных устройств */
 @media (max-width: 768px) {
   .profile-modal {
     width: 100%;
@@ -387,6 +429,30 @@
     height: 36px;
     font-size: 24px;
     background: rgba(0, 0, 0, 0.5);
+    z-index: 1010;
+  }
+}
+
+/* Удаляем двухколоночный вид, так как хотим вертикальную компоновку и в десктопе */
+@media (min-width: 769px) {
+  .modal-content {
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: space-between;
+    max-height: 80vh;
+  }
+  
+  .modal-image {
+    width: 60%;
+    height: auto;
+    max-height: 80vh;
+  }
+  
+  .modal-info {
+    width: 40%;
+    overflow-y: auto;
+    max-height: 80vh;
+    padding: 30px;
   }
 }
 
@@ -694,11 +760,19 @@
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  margin: 0;
+}
+
+.mobile-fullscreen-modal .mobile-modal-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   padding: 0;
-  border: none;
-  border-radius: 0;
-  box-shadow: none;
+}
+
+.mobile-fullscreen-modal .mobile-modal-image {
+  width: 100%;
+  height: 40vh; /* Занимает 40% высоты экрана */
+  min-height: 300px;
 }
 
 .mobile-close-button {
@@ -716,7 +790,7 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  z-index: 10;
+  z-index: 1010;
 }
 
 .mobile-modal-header {
@@ -745,6 +819,14 @@
 .mobile-modal-image {
   width: 100%;
   height: 300px;
+  position: relative;
+  margin-bottom: 1rem;
+  background-color: #000;
+}
+
+.mobile-modal-image .image-slider {
+  width: 100%;
+  height: 100%;
 }
 
 .mobile-modal-image img {
@@ -858,4 +940,429 @@
     top: 10px;
     left: 10px;
   }
+}
+
+/* Стили для контейнера изображения профиля */
+.profile-image-container {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Стили для контейнера фотографий в форме профиля */
+.photos-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.photos-preview {
+  width: 100%;
+  min-height: 200px;
+  max-height: 300px;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.photos-info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.photos-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.add-more-photos,
+.remove-all-photos {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.add-more-photos {
+  background-color: #4a90e2;
+  color: white;
+}
+
+.add-more-photos:hover {
+  background-color: #3a80d2;
+}
+
+.remove-all-photos {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.remove-all-photos:hover {
+  background-color: #d44233;
+}
+
+/* Стили для модального окна с изображениями */
+.mobile-modal-image {
+  width: 100%;
+  height: 50vh;
+  max-height: 60vh;
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.modal-image {
+  width: 50%;
+  height: 500px;
+  position: relative;
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .modal-image {
+    width: 100%;
+    height: 300px;
+  }
+
+  .photos-actions {
+    flex-wrap: wrap;
+  }
+  
+  .photos-preview {
+    max-height: 250px;
+  }
+}
+
+.view-profile-btn {
+  padding: 12px 24px;
+  background: #ce00ff5e;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  animation: pulse 2s infinite;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  margin-top: 10px;
+  text-align: center;
+  display: block;
+}
+
+.view-profile-btn:hover {
+  background: #3f0015;
+  animation: none;
+  transform: translateY(-2px);
+}
+
+.view-profile-btn::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  transform: rotate(45deg);
+  animation: shine 3s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(206, 0, 255, 0.4);
+  }
+  
+  70% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(206, 0, 255, 0);
+  }
+  
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(206, 0, 255, 0);
+  }
+}
+
+@keyframes shine {
+  0% {
+    transform: translateX(-100%) rotate(45deg);
+  }
+  
+  50%, 100% {
+    transform: translateX(100%) rotate(45deg);
+  }
+}
+
+/* Улучшенное модальное содержимое */
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  color: #fff;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #212121;
+}
+
+/* Улучшенный полноэкранный режим для изображений */
+.image-slider.contain-mode .slide img {
+  object-fit: contain;
+  background-color: #000;
+  width: 100%;
+  height: 100%;
+}
+
+/* Стили для кнопок слайдера в модальном окне */
+.modal-image .slider-btn,
+.mobile-modal-image .slider-btn {
+  width: 44px;
+  height: 44px;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 1005;
+}
+
+.modal-image .slider-indicators,
+.mobile-modal-image .slider-indicators {
+  z-index: 1005;
+}
+
+/* Улучшаем отображение изображений в модальном окне */
+.modal-image {
+  width: 100%;
+  height: 500px;
+  min-height: 400px;
+  position: relative;
+  overflow: hidden;
+  background-color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-image .image-slider {
+  width: 100%;
+  height: 100%;
+  background-color: #000;
+  position: relative;
+}
+
+.modal-image .slide {
+  background-color: #000;
+}
+
+.modal-image .slide img {
+  object-fit: contain;
+  max-height: 100%;
+  max-width: 100%;
+}
+
+/* Улучшаем отображение кнопок слайдера */
+.slider-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1005;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s;
+}
+
+.slider-btn:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+/* Увеличиваем размер и заметность индикаторов */
+.slider-indicators {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1005;
+  display: flex;
+  gap: 10px;
+}
+
+.indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: background-color 0.3s;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+}
+
+.indicator.active {
+  background-color: white;
+  transform: scale(1.2);
+}
+
+/* Для десктопных модальных окон делаем двухколоночный вид */
+@media (min-width: 769px) {
+  .profile-modal {
+    max-width: 650px;
+    width: 95%;
+    height: auto;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .modal-content {
+    flex-direction: column !important;
+    align-items: normal;
+    justify-content: flex-start;
+    max-height: 90vh;
+    width: 100%;
+  }
+  
+  .modal-image {
+    width: 100% !important;
+    height: 450px;
+    min-height: 350px;
+    max-height: 50vh;
+  }
+  
+  .modal-info {
+    width: 100% !important;
+    padding: 25px;
+    overflow-y: auto;
+  }
+
+  /* Увеличиваем размер информационного раздела */
+  .modal-info h2 {
+    font-size: 1.8rem;
+    margin-bottom: 25px;
+  }
+  
+  .detail-item {
+    margin-bottom: 18px;
+    padding-bottom: 12px;
+  }
+  
+  .detail-label {
+    font-size: 1rem;
+  }
+  
+  .detail-item span:last-child {
+    font-size: 1.1rem;
+  }
+
+  /* Улучшаем отображение фотографий */
+  .modal-image .image-slider {
+    width: 100%;
+    height: 100%;
+  }
+  
+  .modal-image .slide img {
+    object-fit: contain;
+    background-color: #000;
+  }
+  
+  /* Ярче делаем слайдер и кнопки */
+  .slider-btn {
+    width: 48px;
+    height: 48px;
+    background-color: rgba(0, 0, 0, 0.7);
+  }
+  
+  .indicator {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+/* Стили для контейнера изображения в модальном окне */
+.modal-image-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  background-color: #000;
+}
+
+/* Увеличенные изображения в модальном окне */
+@media (min-width: 769px) {
+  .modal-image-container {
+    width: 100%;
+    max-height: 60vh;
+    background-color: #000;
+  }
+
+  .modal-image {
+    width: 100% !important;
+    height: 450px;
+    max-height: 60vh;
+    background-color: #000;
+  }
+
+  .modal-image .slide {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #000;
+  }
+
+  .modal-image .slide img {
+    max-height: 60vh;
+    max-width: 100%;
+    object-fit: contain;
+    background-color: #000;
+  }
+}
+
+/* Скрываем элементы навигации основного слайдера, когда открыто модальное окно */
+body:has(.profile-modal-overlay) .profile-card .slider-btn,
+body:has(.mobile-fullscreen-modal) .profile-card .slider-btn {
+  display: none !important;
+}
+
+/* Более широкая поддержка браузеров, на случай если :has не поддерживается */
+.profile-modal-overlay ~ .profile-card .slider-btn,
+.mobile-fullscreen-modal ~ .profile-card .slider-btn {
+  display: none !important;
+}
+
+/* Дополнительно повышаем z-index модального окна */
+.profile-modal-overlay {
+  z-index: 9999;
+}
+.profile-modal {
+  z-index: 10000;
+}
+.mobile-fullscreen-modal {
+  z-index: 9999;
+}
+
+/* Скрываем элементы навигации слайдера когда модальное окно открыто */
+body.modal-open .slider-btn {
+  visibility: hidden !important;
+  pointer-events: none !important;
+  opacity: 0 !important;
+}
+
+/* Обеспечиваем видимость только кнопок навигации в модальном окне */
+body.modal-open .profile-modal .slider-btn,
+body.modal-open .mobile-fullscreen-modal .slider-btn {
+  visibility: visible !important;
+  pointer-events: auto !important;
+  opacity: 1 !important;
 }

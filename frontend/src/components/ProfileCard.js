@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { getApiUrl, getMediaUrl } from '../config/api';
 import SocialLinks from './SocialLinks';
+import ImageSlider from './ImageSlider';
 import './ProfileCard.css';
 import {
   FaPhone,
@@ -14,12 +15,14 @@ import {
   FaTimes,
   FaEnvelope
 } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 
 const ProfileCard = ({ profile, onImageError, onSwipe }) => {
     const [imageError, setImageError] = useState(false);
     const [settings, setSettings] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+    const [selectedImageIndex, setSelectedImageIndex] = useState(0);
     
     console.log('Данные профиля в ProfileCard:', profile);
     
@@ -28,10 +31,80 @@ const ProfileCard = ({ profile, onImageError, onSwipe }) => {
         profile.interests.split(',').map(interest => interest.trim()) : 
         [];
 
-    // Формируем полный URL для фотографии
-    const photoUrl = profile.photo ? 
-        getMediaUrl(profile.photo) : 
-        null;
+    // Обработка фотографий профиля - новый улучшенный подход
+    // Создаем пустой массив для хранения путей к фотографиям
+    let profileImages = [];
+
+    // Функция для обработки различных форматов данных о фотографиях
+    const processPhotos = () => {
+        // Если у нас есть массив photos
+        if (profile.photos) {
+            console.log('Обрабатываем поле photos:', profile.photos, typeof profile.photos);
+            
+            // Случай 1: photos - это строка JSON
+            if (typeof profile.photos === 'string') {
+                try {
+                    // Пытаемся распарсить JSON
+                    const parsedPhotos = JSON.parse(profile.photos);
+                    console.log('Распарсили JSON photos:', parsedPhotos);
+                    
+                    // Если получили массив
+                    if (Array.isArray(parsedPhotos)) {
+                        // Фильтруем пустые значения и формируем полные URL
+                        const validPhotos = parsedPhotos
+                            .filter(photo => photo && typeof photo === 'string' && photo.trim() !== '')
+                            .map(photo => getMediaUrl(photo));
+                        
+                        if (validPhotos.length > 0) {
+                            console.log('Получили массив фото из JSON:', validPhotos);
+                            return validPhotos;
+                        }
+                    }
+                    // Если JSON не дал валидных URL, продолжаем проверки дальше
+                } catch (e) {
+                    console.log('Ошибка при парсинге JSON photos:', e);
+                    // Если строка не является JSON, проверяем, может это просто путь к фото
+                    if (profile.photos.trim() && !profile.photos.includes('null') && !profile.photos.includes('undefined')) {
+                        console.log('Используем photos как путь к одиночному фото');
+                        return [getMediaUrl(profile.photos)];
+                    }
+                }
+            }
+            
+            // Случай 2: photos - это уже массив
+            else if (Array.isArray(profile.photos)) {
+                const validPhotos = profile.photos
+                    .filter(photo => photo && typeof photo === 'string' && photo.trim() !== '')
+                    .map(photo => getMediaUrl(photo));
+                
+                if (validPhotos.length > 0) {
+                    console.log('Использую массив photos напрямую:', validPhotos);
+                    return validPhotos;
+                }
+            }
+        }
+        
+        // Случай 3: Используем одиночное поле photo, если photos не дало результатов
+        if (profile.photo && typeof profile.photo === 'string' && profile.photo.trim() !== '') {
+            console.log('Использую одиночное поле photo:', profile.photo);
+            return [getMediaUrl(profile.photo)];
+        }
+        
+        // Если ничего не нашли, возвращаем пустой массив
+        console.warn('Не удалось найти фотографии в профиле!');
+        return [];
+    };
+
+    // Получаем фотографии
+    profileImages = processPhotos();
+
+    // Отображаем результат в консоли для отладки
+    console.log('Итоговый массив фотографий:', profileImages);
+    if (profileImages.length === 0) {
+        console.warn('ВНИМАНИЕ: Массив фотографий пуст!');
+    } else {
+        console.log('Первое изображение:', profileImages[0]);
+    }
 
     useEffect(() => {
         const fetchSettings = async () => {
@@ -60,13 +133,26 @@ const ProfileCard = ({ profile, onImageError, onSwipe }) => {
     }, []);
 
     const handleOpenModal = () => {
+        console.log('ProfileCard - Открываем модальное окно, фотографии:', profileImages);
         setIsModalOpen(true);
         document.body.style.overflow = 'hidden';
+        
+        // Добавляем класс к body для управления стилями
+        document.body.classList.add('modal-open');
     };
 
     const handleCloseModal = () => {
         setIsModalOpen(false);
         document.body.style.overflow = 'unset';
+        
+        // Удаляем класс с body
+        document.body.classList.remove('modal-open');
+    };
+
+    const handleImageClick = (images, index) => {
+        console.log('ProfileCard - handleImageClick - индекс:', index);
+        setSelectedImageIndex(index);
+        setIsModalOpen(true);
     };
 
     // Форматирование номера телефона
@@ -93,6 +179,7 @@ const ProfileCard = ({ profile, onImageError, onSwipe }) => {
     };
 
     const handleImgError = () => {
+        console.log('ProfileCard - handleImgError вызван');
         setImageError(true);
         if (onImageError) onImageError();
     };
@@ -108,29 +195,13 @@ const ProfileCard = ({ profile, onImageError, onSwipe }) => {
                 {profile.city && <meta itemProp="homeLocation" content={profile.city} />}
                 
                 <div className="profile-image clickable-image" onClick={handleOpenModal}>
-                    {photoUrl && !imageError ? (
-                        <img 
-                            src={photoUrl} 
-                            alt={profile.name} 
-                            itemProp="image"
-                            onError={handleImgError}
+                    <div className="profile-image-container">
+                        <ImageSlider 
+                            images={profileImages} 
+                            onImageError={handleImgError}
+                            onClick={handleImageClick}
                         />
-                    ) : (
-                        <div className="placeholder-image">
-                            <svg 
-                                width="100" 
-                                height="100" 
-                                viewBox="0 0 100 100" 
-                                fill="none" 
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <rect width="100" height="100" fill="#E5E5E5"/>
-                                <circle cx="50" cy="40" r="20" fill="#CCCCCC"/>
-                                <path d="M20 80C20 63.4315 33.4315 50 50 50C66.5685 50 80 63.4315 80 80" stroke="#CCCCCC" strokeWidth="4"/>
-                            </svg>
-                            <span>Фото не загружено</span>
-                        </div>
-                    )}
+                    </div>
                     {profile.verified && <div className="verified-badge">Проверено</div>}
                     <div className="image-overlay">
                         <span className="view-details-text">Нажмите для просмотра</span>
@@ -165,7 +236,7 @@ const ProfileCard = ({ profile, onImageError, onSwipe }) => {
                         )}
                     </div>
                     
-                    <button className="details-button" onClick={handleOpenModal}>
+                    <button onClick={handleOpenModal} className="view-profile-btn">
                         Подробнее
                     </button>
                     <SocialLinks profile={profile} settings={settings} />
@@ -186,29 +257,13 @@ const ProfileCard = ({ profile, onImageError, onSwipe }) => {
                         
                         <div className="mobile-modal-content">
                             <div className="mobile-modal-image">
-                                {photoUrl && !imageError ? (
-                                    <img 
-                                        src={photoUrl} 
-                                        alt={profile.name} 
-                                        className="full-photo"
-                                        onError={handleImgError}
-                                    />
-                                ) : (
-                                    <div className="placeholder-image">
-                                        <svg 
-                                            width="100" 
-                                            height="100" 
-                                            viewBox="0 0 100 100" 
-                                            fill="none" 
-                                            xmlns="http://www.w3.org/2000/svg"
-                                        >
-                                            <rect width="100" height="100" fill="#E5E5E5"/>
-                                            <circle cx="50" cy="40" r="20" fill="#CCCCCC"/>
-                                            <path d="M20 80C20 63.4315 33.4315 50 50 50C66.5685 50 80 63.4315 80 80" stroke="#CCCCCC" strokeWidth="4"/>
-                                        </svg>
-                                        <span>Фото не загружено</span>
-                                    </div>
-                                )}
+                                <ImageSlider 
+                                    images={profileImages} 
+                                    onImageError={handleImgError}
+                                    onClick={handleImageClick}
+                                    className="contain-mode"
+                                    initialIndex={selectedImageIndex}
+                                />
                                 {profile.verified && <div className="verified-badge">Проверено</div>}
                             </div>
                             
@@ -262,41 +317,30 @@ const ProfileCard = ({ profile, onImageError, onSwipe }) => {
                         </div>
                     </div>
                 ) : (
-                    // Десктопная версия модального окна
+                    // Десктопная версия модального окна (вертикальная компоновка как на мобильном)
                     <div className="profile-modal-overlay" onClick={handleCloseModal}>
                         <div className="profile-modal" onClick={e => e.stopPropagation()}>
                             <button className="close-modal" onClick={handleCloseModal}>
                                 <FaTimes />
                             </button>
+                            {/* Вертикальная компоновка: фото сверху, информация снизу */}
                             <div className="modal-content">
-                                <div className="modal-image">
-                                    {photoUrl && !imageError ? (
-                                        <img 
-                                            src={photoUrl} 
-                                            alt={profile.name} 
-                                            className="full-photo"
-                                            onError={handleImgError}
+                                {/* Фотографии сверху */}
+                                <div className="modal-image-container">
+                                    <div className="modal-image">
+                                        <ImageSlider 
+                                            images={profileImages} 
+                                            onImageError={handleImgError}
+                                            className="contain-mode"
+                                            initialIndex={selectedImageIndex}
                                         />
-                                    ) : (
-                                        <div className="placeholder-image">
-                                            <svg 
-                                                width="100" 
-                                                height="100" 
-                                                viewBox="0 0 100 100" 
-                                                fill="none" 
-                                                xmlns="http://www.w3.org/2000/svg"
-                                            >
-                                                <rect width="100" height="100" fill="#E5E5E5"/>
-                                                <circle cx="50" cy="40" r="20" fill="#CCCCCC"/>
-                                                <path d="M20 80C20 63.4315 33.4315 50 50 50C66.5685 50 80 63.4315 80 80" stroke="#CCCCCC" strokeWidth="4"/>
-                                            </svg>
-                                            <span>Фото не загружено</span>
-                                        </div>
-                                    )}
-                                    {profile.verified && <div className="verified-badge">Проверено</div>}
+                                        {profile.verified && <div className="verified-badge">Проверено</div>}
+                                    </div>
                                 </div>
+                                
+                                {/* Информация снизу */}
                                 <div className="modal-info">
-                                    <h2>{profile.name || 'Имя не указано'}</h2>
+                                    <h2>{profile.name || 'Имя не указано'}{hasAge ? `, ${profile.age}` : ''}</h2>
                                     <div className="profile-details">
                                         <p className="detail-item">
                                             <span className="detail-label">Возраст:</span>
@@ -318,7 +362,7 @@ const ProfileCard = ({ profile, onImageError, onSwipe }) => {
                                             <span className="detail-label">Телефон:</span>
                                             {profile.phone ? (
                                                 <a href={`tel:${getCleanPhoneNumber(profile.phone)}`} className="clickable-phone">
-                                                    <FaPhone className="detail-icon" /> {formatPhoneNumber(profile.phone)}
+                                                    {formatPhoneNumber(profile.phone)}
                                                 </a>
                                             ) : (
                                                 <span>Не указан</span>
