@@ -105,12 +105,12 @@ const ProfilesPage = () => {
     
     const numericCityId = cityId ? Number(cityId) : null;
     setSelectedCity(numericCityId);
-    localStorage.setItem('selectedCity', cityId);
+    localStorage.setItem('selectedCity', numericCityId);
     setShowCitySelector(false);
     
     // Обновляем структурированные данные для SEO
     if (cityId) {
-      const city = cities.find(c => c.id === cityId);
+      const city = cities.find(c => c.id === Number(cityId));
       if (city) {
         setCityName(city.name);
         // Обновляем структурированные данные для SEO с учетом выбранного города

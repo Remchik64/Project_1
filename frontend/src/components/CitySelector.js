@@ -32,9 +32,10 @@ const CitySelector = ({ onCitySelect }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         if (selectedCity && (ageConfirmed || isAdmin)) {
-            localStorage.setItem('selectedCity', selectedCity);
+            const numericCityId = Number(selectedCity);
+            localStorage.setItem('selectedCity', numericCityId);
             localStorage.setItem('ageConfirmed', 'true');
-            onCitySelect(selectedCity);
+            onCitySelect(numericCityId);
         }
     };
 
