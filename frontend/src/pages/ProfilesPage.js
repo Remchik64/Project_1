@@ -32,7 +32,7 @@ const ProfilesPage = () => {
     const ageConfirmed = localStorage.getItem('ageConfirmed');
     
     if ((savedCity && ageConfirmed) || isAdmin) {
-      setSelectedCity(savedCity);
+      setSelectedCity(savedCity ? Number(savedCity) : null);
       setShowCitySelector(false);
     }
     
@@ -78,8 +78,9 @@ const ProfilesPage = () => {
       let response;
       if (selectedCity) {
         // Получаем анкеты только для выбранного города
-        console.log(`Загрузка анкет для города с ID: ${selectedCity}`);
-        response = await axios.get(getApiUrl(`/api/cities/${selectedCity}/profiles`));
+        const cityId = Number(selectedCity);
+        console.log(`Загрузка анкет для города с ID: ${cityId}`);
+        response = await axios.get(getApiUrl(`/api/cities/${cityId}/profiles`));
         console.log('Получены анкеты для выбранного города:', response.data);
       } else {
         // Если город не выбран, получаем все публичные анкеты
@@ -102,7 +103,8 @@ const ProfilesPage = () => {
       localStorage.setItem('ageConfirmed', 'true');
     }
     
-    setSelectedCity(cityId);
+    const numericCityId = cityId ? Number(cityId) : null;
+    setSelectedCity(numericCityId);
     localStorage.setItem('selectedCity', cityId);
     setShowCitySelector(false);
     
@@ -216,36 +218,6 @@ const ProfilesPage = () => {
   return (
     <div className="profiles-page" itemScope itemType="https://schema.org/CollectionPage">
       <meta itemProp="name" content={`Анкеты ${cityName ? `в городе ${cityName}` : ''}`} />
-      <meta itemProp="description" content={`Просмотр анкет для знакомств ${cityName ? `в городе ${cityName}` : ''}. Найдите интересных людей в вашем городе.`} />
-      
-      <div className="profiles-header">
-        <div className="header-content">
-          <h1>Анкеты {cityName && `в городе ${cityName}`}</h1>
-        </div>
-        <button 
-          className="hamburger-button"
-          onClick={() => setIsFilterOpen(true)}
-        >
-          <span className="hamburger-icon">☰</span>
-        </button>
-      </div>
-
-      <FilterSidebar
-        isOpen={isFilterOpen}
-        onClose={() => setIsFilterOpen(false)}
-        filters={filters}
-        setFilters={setFilters}
-        onSearch={() => {
-          setIsFilterOpen(false);
-          fetchProfiles();
-        }}
-      />
-      
-      <div className="profiles-grid">
-        {filteredProfiles.map(profile => (
-          <ProfileCard key={profile.id} profile={profile} />
-        ))}
-      </div>
     </div>
   );
 };
