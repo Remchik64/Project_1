@@ -175,14 +175,14 @@ exports.getCityProfiles = async (req, res) => {
         const { cityId } = req.params;
         const isAdmin = req.user?.role === 'admin';
         
-        // ВРЕМЕННОЕ РЕШЕНИЕ: Всегда используем город с ID 1 (Москва)
-        const where = { id: 1 }; 
+        // Используем запрашиваемый cityId
+        const where = { id: Number(cityId) };
         
         if (!isAdmin) {
             where.isActive = true;
         }
 
-        console.log(`Запрос анкет для города с ID: ${cityId}, используется город ID=1`);
+        console.log(`Запрос анкет для города с ID: ${cityId}`);
 
         // Находим город
         const city = await City.findOne({
@@ -201,7 +201,7 @@ exports.getCityProfiles = async (req, res) => {
             return res.status(404).json({ message: 'Город не найден' });
         }
 
-        console.log(`Найдено ${city.Profiles.length} анкет для города Москва (ID=1)`);
+        console.log(`Найдено ${city.Profiles.length} анкет для города ${city.name} (ID=${city.id})`);
         res.json(city.Profiles);
     } catch (error) {
         console.error('Ошибка при получении анкет города:', error);
