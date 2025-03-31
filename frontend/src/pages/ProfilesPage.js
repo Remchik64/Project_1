@@ -218,6 +218,31 @@ const ProfilesPage = () => {
   return (
     <div className="profiles-page" itemScope itemType="https://schema.org/CollectionPage">
       <meta itemProp="name" content={`Анкеты ${cityName ? `в городе ${cityName}` : ''}`} />
+      
+      <FilterSidebar 
+        isOpen={isFilterOpen}
+        onClose={() => setIsFilterOpen(false)}
+        filters={filters}
+        setFilters={setFilters}
+      />
+      
+      <div className="profiles-header">
+        <div className="header-content">
+          <h1>Анкеты {cityName && `в городе ${cityName}`}</h1>
+          <button 
+            className="filter-toggle"
+            onClick={() => setIsFilterOpen(!isFilterOpen)}
+          >
+            {isFilterOpen ? 'Скрыть фильтры' : 'Показать фильтры'}
+          </button>
+        </div>
+      </div>
+      
+      <div className="profiles-grid">
+        {filteredProfiles.map(profile => (
+          <ProfileCard key={profile.id} profile={profile} />
+        ))}
+      </div>
     </div>
   );
 };
