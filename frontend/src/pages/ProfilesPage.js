@@ -75,8 +75,17 @@ const ProfilesPage = () => {
       console.log('Загрузка публичных профилей...');
       setLoading(true);
       
-      const response = await axios.get(getApiUrl('/api/public/profiles'));
-      console.log('Получены публичные профили:', response.data);
+      let response;
+      if (selectedCity) {
+        // Получаем анкеты только для выбранного города
+        console.log(`Загрузка анкет для города с ID: ${selectedCity}`);
+        response = await axios.get(getApiUrl(`/api/cities/${selectedCity}/profiles`));
+        console.log('Получены анкеты для выбранного города:', response.data);
+      } else {
+        // Если город не выбран, получаем все публичные анкеты
+        response = await axios.get(getApiUrl('/api/public/profiles'));
+        console.log('Получены все публичные анкеты:', response.data);
+      }
       
       setProfiles(response.data);
       setLoading(false);

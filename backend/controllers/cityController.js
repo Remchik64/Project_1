@@ -179,12 +179,18 @@ exports.getCityProfiles = async (req, res) => {
             where.isActive = true;
         }
 
+        console.log(`Получение анкет для города с ID: ${cityId}`);
+
+        // Находим город
         const city = await City.findOne({
             where,
             include: [{
                 model: Profile,
-                attributes: ['id', 'name', 'age', 'gender', 'photo', 'status', 'about', 'interests', 'height', 'weight', 'phone', 'verified'],
-                where: { status: 'active' }
+                attributes: ['id', 'name', 'age', 'gender', 'photo', 'photos', 'status', 'about', 'interests', 'height', 'weight', 'phone', 'verified'],
+                // Для публичного доступа показываем только активные анкеты
+                where: { status: 'active' },
+                // Важно! Без этого параметра Sequelize может возвращать все анкеты, а не только те, что связаны с городом
+                through: { attributes: [] }
             }]
         });
 
@@ -192,6 +198,7 @@ exports.getCityProfiles = async (req, res) => {
             return res.status(404).json({ message: 'Город не найден' });
         }
 
+        console.log(`Найдено ${city.Profiles.length} анкет для города с ID: ${cityId}`);
         res.json(city.Profiles);
     } catch (error) {
         console.error('Ошибка при получении анкет города:', error);
