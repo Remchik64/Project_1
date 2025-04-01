@@ -1,12 +1,19 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Navigation.css';
 
-const Navigation = () => {
+const Navigation = ({ toggleFilters, isFilterOpen }) => {
   const { isAuthenticated, user, logout, isAdmin } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showFilterButton, setShowFilterButton] = useState(false);
+
+  useEffect(() => {
+    // Показывать кнопку фильтров только на странице профилей
+    setShowFilterButton(location.pathname === '/profiles');
+  }, [location]);
 
   console.log('Navigation рендеринг:', { 
     isAuthenticated, 
@@ -52,6 +59,21 @@ const Navigation = () => {
           <Link to="/profiles" className="nav-link" onClick={closeMobileMenu}>
             Анкеты
           </Link>
+        </div>
+
+        <div className="nav-center">
+          {showFilterButton && (
+            <button 
+              className={`filter-nav-button ${isFilterOpen ? 'active' : ''}`}
+              onClick={toggleFilters}
+              title={isFilterOpen ? 'Скрыть фильтры' : 'Показать фильтры'}
+              aria-label={isFilterOpen ? 'Скрыть фильтры' : 'Показать фильтры'}
+              aria-expanded={isFilterOpen}
+            >
+              <span className="filter-text">Фильтры</span>
+              <span className="filter-icon">⚙️</span>
+            </button>
+          )}
         </div>
 
         <button className="mobile-menu-button" onClick={toggleMobileMenu}>

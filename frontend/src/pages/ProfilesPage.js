@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import { useFilters } from '../App';
 import ProfileCard from '../components/ProfileCard';
 import FilterSidebar from '../components/FilterSidebar';
 import CitySelector from '../components/CitySelector';
@@ -12,12 +13,12 @@ const ProfilesPage = () => {
   const [profiles, setProfiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [showCitySelector, setShowCitySelector] = useState(true);
   const [selectedCity, setSelectedCity] = useState(null);
   const [cityName, setCityName] = useState('');
   const [cities, setCities] = useState([]);
   const { user } = useAuth();
+  const { isFilterOpen, toggleFilters } = useFilters();
   const isAdmin = user?.role === 'admin';
   const [filters, setFilters] = useState({
     ageRange: 'all',
@@ -221,7 +222,7 @@ const ProfilesPage = () => {
       
       <FilterSidebar 
         isOpen={isFilterOpen}
-        onClose={() => setIsFilterOpen(false)}
+        onClose={toggleFilters}
         filters={filters}
         setFilters={setFilters}
       />
@@ -229,12 +230,6 @@ const ProfilesPage = () => {
       <div className="profiles-header">
         <div className="header-content">
           <h1>Анкеты {cityName && `в городе ${cityName}`}</h1>
-          <button 
-            className="filter-toggle"
-            onClick={() => setIsFilterOpen(!isFilterOpen)}
-          >
-            {isFilterOpen ? 'Скрыть фильтры' : 'Показать фильтры'}
-          </button>
         </div>
       </div>
       

@@ -19,9 +19,9 @@ body {
 }
 
 .app {
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
   position: relative;
   padding-bottom: 60px; /* Отступ для кнопки футера */
 }
@@ -55,4 +55,18 @@ body.footer-expanded {
 /* Стили для страницы с открытым футером */
 body.footer-expanded .app {
   padding-bottom: 0;
+}
+
+/* Стили для состояния, когда меню фильтров открыто */
+.filter-menu-open .slider-btn {
+  display: none !important;
+}
+
+/* Скрываем стрелки слайдера, чтобы не конфликтовали с фильтрами */
+@media (max-width: 768px) {
+  body:has(.filter-sidebar.open) .slider-btn,
+  body.filter-menu-open .slider-btn {
+    display: none !important;
+    pointer-events: none !important;
+  }
 }

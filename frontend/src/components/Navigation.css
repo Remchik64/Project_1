@@ -25,6 +25,12 @@
   gap: 1rem;
 }
 
+.nav-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .nav-brand {
   color: rgb(255, 255, 255);
   text-decoration: none;
@@ -106,6 +112,41 @@
   z-index: 999;
 }
 
+.filter-nav-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(206, 0, 255, 0.25);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.filter-nav-button:hover {
+  background: rgba(206, 0, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+.filter-nav-button.active {
+  background: rgba(206, 0, 255, 0.5);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.filter-icon {
+  font-size: 16px;
+  transition: transform 0.3s ease;
+}
+
+.filter-nav-button.active .filter-icon {
+  transform: rotate(45deg);
+}
+
 @media (max-width: 768px) {
   .navigation {
     top: 10px;
@@ -115,6 +156,31 @@
   .nav-content {
     padding: 0.8rem 1rem;
     position: relative;
+  }
+
+  .filter-nav-button {
+    position: absolute;
+    top: 50%;
+    right: 50px;
+    transform: translateY(-50%);
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border-radius: 50%;
+    justify-content: center;
+  }
+
+  .filter-nav-button:hover {
+    transform: translateY(-50%) scale(1.05);
+  }
+
+  .filter-text {
+    display: none;
+  }
+
+  .filter-icon {
+    font-size: 18px;
+    margin: 0;
   }
 
   .mobile-menu-button {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './FilterSidebar.css';
 
 const FilterSidebar = ({ 
@@ -9,6 +9,32 @@ const FilterSidebar = ({
   onSearch
 }) => {
   const [interests, setInterests] = useState('');
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Проверяем, является ли устройство мобильным
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkMobile(); // Проверяем при первой загрузке
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Добавляем/удаляем класс body для предотвращения прокрутки
+  useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add('filter-menu-open');
+    } else {
+      document.body.classList.remove('filter-menu-open');
+    }
+    
+    return () => {
+      document.body.classList.remove('filter-menu-open');
+    };
+  }, [isOpen]);
 
   const handleFilterChange = (key, value) => {
     setFilters(prev => ({...prev, [key]: value}));
@@ -28,6 +54,11 @@ const FilterSidebar = ({
     // Обновляем фильтры с новыми интересами
     handleFilterChange('interests', interestsArray);
     
+    // Закрываем фильтры на мобильном устройстве после поиска
+    if (isMobile) {
+      onClose();
+    }
+    
     // Вызываем функцию поиска
     if (onSearch) {
       onSearch();
@@ -39,7 +70,7 @@ const FilterSidebar = ({
   };
 
   return (
-    <div className={`filter-sidebar ${isOpen ? 'open' : ''}`}>
+    <div className={`filter-sidebar ${isOpen ? 'open' : ''} ${isMobile ? 'mobile-filter' : ''}`}>
       <div className="filter-sidebar-content" onClick={stopPropagation}>
         <button className="close-button" onClick={onClose}>×</button>
         <h3>Фильтры</h3>

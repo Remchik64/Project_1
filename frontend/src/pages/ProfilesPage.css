@@ -115,42 +115,6 @@
   margin-left: 8px;
 }
 
-.filter-toggle {
-  padding: 10px 20px;
-  background: rgba(206, 0, 255, 0.37);
-  color: white;
-  border: none;
-  border-radius: 25px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(4px);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.filter-toggle:hover {
-  background: #3f0015;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-}
-
-.filter-toggle:active {
-  transform: translateY(1px);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.filter-toggle::before {
-  content: '⚙️';
-  margin-right: 8px;
-  font-size: 16px;
-}
-
 /* Адаптивная верстка */
 @media (max-width: 768px) {
   .profiles-page {
@@ -167,10 +131,6 @@
   .header-content {
     width: 100%;
     justify-content: space-between;
-  }
-
-  .hamburger-button {
-    align-self: flex-end;
   }
 
   .profiles-grid {

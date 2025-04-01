@@ -4,10 +4,10 @@
   left: -300px;
   width: 300px;
   height: 100vh;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(43, 15, 49, 0.95);
   backdrop-filter: blur(8px);
   transition: transform 0.3s ease-in-out;
-  z-index: 1002;
+  z-index: 9950;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
 }
 
@@ -20,8 +20,8 @@
   height: 100%;
   overflow-y: auto;
   position: relative;
-  z-index: 1003;
-  background: rgba(255, 255, 255, 0.05);
+  z-index: 9951;
+  background: rgba(43, 15, 49, 0.8);
   backdrop-filter: blur(8px);
 }
 
@@ -35,7 +35,7 @@
 .filter-section {
   margin-bottom: 20px;
   position: relative;
-  z-index: 1003;
+  z-index: 9952;
 }
 
 .filter-section label {
@@ -83,9 +83,9 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(3px);
-  z-index: 1001;
+  z-index: 9949;
 }
 
 .close-button {
@@ -105,6 +105,7 @@
   justify-content: center;
   transition: all 0.3s ease;
   backdrop-filter: blur(4px);
+  z-index: 9953;
 }
 
 .close-button:hover {
@@ -114,15 +115,29 @@
 
 @media (max-width: 768px) {
   .filter-sidebar {
-    width: 280px;
+    width: 100%;
+    left: -100%;
+    top: 0;
+    height: 100%;
   }
 
   .filter-sidebar.open {
-    transform: translateX(280px);
+    transform: translateX(100%);
   }
 
   .filter-sidebar-content {
-    padding: 15px;
+    padding: 20px;
+    padding-top: 60px;
+    height: 100%;
+    overflow-y: auto;
+  }
+
+  .close-button {
+    top: 15px;
+    right: 15px;
+    width: 40px;
+    height: 40px;
+    font-size: 28px;
   }
 
   .filter-section h3 {
@@ -134,19 +149,29 @@
   }
 }
 
+/* Скрываем стрелки слайдера, когда открыто меню фильтров */
+body:has(.filter-sidebar.open) .slider-btn {
+  display: none !important;
+}
+
+/* Для браузеров, не поддерживающих :has */
+.filter-sidebar.open ~ .profiles-grid .slider-btn {
+  display: none !important;
+}
+
 /* Поддержка для браузеров без backdrop-filter */
 @supports not (backdrop-filter: blur(8px)) {
   .filter-sidebar,
   .filter-sidebar-content {
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(43, 15, 49, 0.97);
   }
 
   .filter-section select {
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.1);
   }
 
   .filter-sidebar-overlay {
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(0, 0, 0, 0.6);
   }
 }
 
@@ -187,4 +212,51 @@
 
 .search-button:hover {
   background: #3f0015;
+}
+
+/* Стили для блокировки прокрутки при открытом меню фильтров */
+body.filter-menu-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+}
+
+/* Улучшенные стили для мобильной версии фильтров */
+.filter-sidebar.mobile-filter {
+  width: 100%;
+  left: -100%;
+}
+
+.filter-sidebar.mobile-filter.open {
+  transform: translateX(100%);
+}
+
+.filter-sidebar.mobile-filter .filter-sidebar-content {
+  height: 100vh;
+  padding-bottom: 70px; /* Дополнительный padding, чтобы внизу было место для кнопки */
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-sidebar.mobile-filter .search-button {
+  margin-top: auto;
+  position: sticky;
+  bottom: 20px;
+  padding: 15px;
+  font-size: 16px;
+  background: #b90c8a;
+  border-radius: 6px;
+}
+
+.filter-sidebar.mobile-filter .close-button {
+  position: fixed;
+  top: 15px;
+  right: 15px;
+}
+
+/* Улучшенный стиль для инпута на мобильных устройствах */
+.filter-sidebar.mobile-filter .interests-input {
+  padding: 12px;
+  font-size: 16px;
 }
