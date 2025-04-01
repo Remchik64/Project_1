@@ -16,8 +16,43 @@ const CitySelector = ({ onCitySelect }) => {
     useEffect(() => {
         const fetchCities = async () => {
             try {
+                // Получаем сохраненное значение из localStorage
+                const savedCityId = localStorage.getItem('selectedCity');
+                const savedAgeConfirmed = localStorage.getItem('ageConfirmed') === 'true';
+                
                 const response = await axios.get(getApiUrl('/api/cities'));
-                setCities(response.data);
+                const availableCities = response.data;
+                setCities(availableCities);
+                
+                // Если есть сохраненный город, пытаемся его использовать
+                if (savedCityId && (savedAgeConfirmed || isAdmin)) {
+                    const numericCityId = Number(savedCityId);
+                    
+                    // Проверяем, существует ли такой город в полученном списке
+                    const cityExists = availableCities.some(city => city.id === numericCityId);
+                    
+                    if (cityExists) {
+                        // Если город существует, устанавливаем его как выбранный
+                        setSelectedCity(String(numericCityId)); // Преобразуем в строку для select
+                        setAgeConfirmed(savedAgeConfirmed);
+                        
+                        // Можно сразу перейти к показу анкет
+                        if (onCitySelect && isAdmin) {
+                            onCitySelect(numericCityId);
+                            return;
+                        }
+                    } else {
+                        // Если такого города нет, сбрасываем localStorage
+                        console.warn(`Сохраненный город с ID ${numericCityId} не найден среди доступных городов`);
+                        localStorage.removeItem('selectedCity');
+                    }
+                }
+                
+                // Если есть только один город, предварительно выбираем его
+                if (availableCities.length === 1) {
+                    setSelectedCity(String(availableCities[0].id));
+                }
+                
                 setLoading(false);
             } catch (error) {
                 console.error('Ошибка при загрузке городов:', error);
@@ -27,15 +62,33 @@ const CitySelector = ({ onCitySelect }) => {
         };
 
         fetchCities();
-    }, []);
+    }, [isAdmin, onCitySelect]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
         if (selectedCity && (ageConfirmed || isAdmin)) {
             const numericCityId = Number(selectedCity);
-            localStorage.setItem('selectedCity', numericCityId);
-            localStorage.setItem('ageConfirmed', 'true');
-            onCitySelect(numericCityId);
+            
+            // Проверяем, что ID города валидный и город существует
+            const cityExists = cities.some(city => city.id === numericCityId);
+            
+            if (cityExists) {
+                localStorage.setItem('selectedCity', numericCityId);
+                localStorage.setItem('ageConfirmed', 'true');
+                onCitySelect(numericCityId);
+            } else {
+                // Если город не найден, выбираем первый доступный
+                if (cities.length > 0) {
+                    const firstCityId = cities[0].id;
+                    localStorage.setItem('selectedCity', firstCityId);
+                    localStorage.setItem('ageConfirmed', 'true');
+                    onCitySelect(firstCityId);
+                } else {
+                    // Если нет городов, просто скрываем селектор
+                    localStorage.removeItem('selectedCity');
+                    onCitySelect(null);
+                }
+            }
         }
     };
 
@@ -46,6 +99,27 @@ const CitySelector = ({ onCitySelect }) => {
 
     if (loading) return <div className="city-selector-loading">Загрузка списка городов...</div>;
     if (error) return <div className="city-selector-error">{error}</div>;
+
+    // Если не найдено городов, показываем сообщение
+    if (cities.length === 0) {
+        return (
+            <div className="city-selector-overlay">
+                <div className="city-selector-modal">
+                    <h2>Выбор города</h2>
+                    <p>В настоящее время нет доступных городов для выбора.</p>
+                    {isAdmin && (
+                        <button
+                            type="button"
+                            className="skip-button"
+                            onClick={handleSkip}
+                        >
+                            Пропустить выбор города
+                        </button>
+                    )}
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="city-selector-overlay">

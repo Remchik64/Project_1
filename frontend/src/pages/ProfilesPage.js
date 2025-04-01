@@ -33,8 +33,50 @@ const ProfilesPage = () => {
     const ageConfirmed = localStorage.getItem('ageConfirmed');
     
     if ((savedCity && ageConfirmed) || isAdmin) {
-      setSelectedCity(savedCity ? Number(savedCity) : null);
+      // Проверяем, что сохраненный ID города - числовое значение
+      const cityId = savedCity ? Number(savedCity) : null;
+      setSelectedCity(cityId);
       setShowCitySelector(false);
+      
+      // Загружаем города, чтобы убедиться, что сохраненный город существует
+      const validateCity = async () => {
+        try {
+          const response = await axios.get(getApiUrl('/api/cities'));
+          const availableCities = response.data;
+          setCities(availableCities);
+          
+          // Если сохраненный ID города не существует в списке доступных городов
+          if (cityId && !availableCities.some(city => city.id === cityId)) {
+            console.warn(`Сохраненный город с ID ${cityId} не найден. Сбрасываем выбор.`);
+            // Если город не найден в списке, удаляем его из localStorage и показываем выбор города
+            localStorage.removeItem('selectedCity');
+            setSelectedCity(null);
+            setShowCitySelector(true);
+          } else if (cityId) {
+            // Если город найден, устанавливаем его имя
+            const cityObj = availableCities.find(c => c.id === cityId);
+            if (cityObj) {
+              setCityName(cityObj.name);
+            }
+          }
+        } catch (error) {
+          console.error('Ошибка при проверке доступности города:', error);
+        }
+      };
+      
+      validateCity();
+    } else {
+      // Загружаем список городов в любом случае
+      const fetchCities = async () => {
+        try {
+          const response = await axios.get(getApiUrl('/api/cities'));
+          setCities(response.data);
+        } catch (error) {
+          console.error('Ошибка при загрузке городов:', error);
+        }
+      };
+      
+      fetchCities();
     }
     
     // Устанавливаем базовые SEO метаданные для страницы анкет
@@ -51,18 +93,6 @@ const ProfilesPage = () => {
         image: `${window.location.origin}/og-image.jpg`
       }
     });
-
-    // Загружаем список городов
-    const fetchCities = async () => {
-      try {
-        const response = await axios.get(getApiUrl('/api/cities'));
-        setCities(response.data);
-      } catch (error) {
-        console.error('Ошибка при загрузке городов:', error);
-      }
-    };
-    
-    fetchCities();
   }, [isAdmin]);
 
   useEffect(() => {
@@ -81,8 +111,40 @@ const ProfilesPage = () => {
         // Получаем анкеты только для выбранного города
         const cityId = Number(selectedCity);
         console.log(`Загрузка анкет для города с ID: ${cityId}`);
-        response = await axios.get(getApiUrl(`/api/cities/${cityId}/profiles`));
-        console.log('Получены анкеты для выбранного города:', response.data);
+        
+        try {
+          response = await axios.get(getApiUrl(`/api/cities/${cityId}/profiles`));
+          console.log('Получены анкеты для выбранного города:', response.data);
+        } catch (error) {
+          // Если произошла ошибка 404 (город не найден), пробуем загрузить первый доступный город
+          if (error.response && error.response.status === 404) {
+            console.warn(`Город с ID ${cityId} не найден. Пробуем использовать первый доступный город.`);
+            
+            // Получаем список доступных городов
+            const citiesResponse = await axios.get(getApiUrl('/api/cities'));
+            if (citiesResponse.data && citiesResponse.data.length > 0) {
+              // Используем первый доступный город
+              const firstCityId = citiesResponse.data[0].id;
+              console.log(`Используем город с ID ${firstCityId} вместо ${cityId}`);
+              
+              // Сохраняем новый ID города в localStorage и состояние
+              localStorage.setItem('selectedCity', firstCityId);
+              setSelectedCity(firstCityId);
+              setCityName(citiesResponse.data[0].name);
+              
+              // Получаем профили для нового города
+              response = await axios.get(getApiUrl(`/api/cities/${firstCityId}/profiles`));
+              console.log('Получены анкеты для доступного города:', response.data);
+            } else {
+              // Если нет доступных городов, получаем все публичные анкеты
+              response = await axios.get(getApiUrl('/api/public/profiles'));
+              console.log('Получены все публичные анкеты (нет доступных городов):', response.data);
+            }
+          } else {
+            // Если другая ошибка - пробрасываем ее дальше
+            throw error;
+          }
+        }
       } else {
         // Если город не выбран, получаем все публичные анкеты
         response = await axios.get(getApiUrl('/api/public/profiles'));
