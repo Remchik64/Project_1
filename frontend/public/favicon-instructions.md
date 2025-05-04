@@ -1,43 +1,40 @@
-# Инструкции по конвертации SVG в иконки
+# Инструкция по созданию favicon из SVG-файла
 
-## Автоматическая конвертация (рекомендуется)
+## Метод 1: Онлайн генератор (рекомендуется)
 
-1. Перейдите на сайт [RealFaviconGenerator](https://realfavicongenerator.net/)
-2. Загрузите файл `favicon.svg` из директории `frontend/public`
-3. Настройте параметры:
-   - iOS: Полноцветное изображение, без фона
-   - Windows: Используйте пурпурный цвет (#ce00ff) для фона плитки
-   - Android: Тема "порождена иконкой"
-   - Safari: Используйте интенсивный цвет
-   - Web App: Установите прозрачность фона 0%
-4. Скачайте пакет и распакуйте его в директорию `frontend/public`
+1. Посетите сайт [Real Favicon Generator](https://realfavicongenerator.net/)
+2. Нажмите "Select your Favicon image" и загрузите файл `favicon.svg`
+3. Настройте параметры для различных платформ:
+   - iOS: выберите фоновый цвет для плитки
+   - Android: используйте градиентный фон `#901492`
+   - Windows: используйте фон `#901492`
+   - macOS: используйте настройки по умолчанию
+4. Нажмите "Generate your Favicons and HTML code"
+5. Скачайте пакет с иконками
+6. Распакуйте скачанный архив в директорию `frontend/public/`
+7. Скопируйте предложенный HTML-код в `<head>` секцию файла `index.html`
 
-## Ручная конвертация
+## Метод 2: Использование локального скрипта
 
-Если вы предпочитаете ручную конвертацию, используйте следующие команды:
+Если у вас установлен ImageMagick, вы можете использовать скрипт `generate-favicons.sh` из корня проекта:
 
 ```bash
-# Установка утилиты для конвертации
-npm install -g svg2png
-
-# Конвертация SVG в PNG различных размеров
-svg2png favicon.svg -o favicon-16x16.png -w 16 -h 16
-svg2png favicon.svg -o favicon-32x32.png -w 32 -h 32
-svg2png favicon.svg -o apple-touch-icon.png -w 180 -h 180
-svg2png favicon.svg -o android-chrome-192x192.png -w 192 -h 192
-svg2png favicon.svg -o android-chrome-512x512.png -w 512 -h 512
-svg2png favicon.svg -o mstile-144x144.png -w 144 -h 144
-
-# Для создания favicon.ico вам потребуется дополнительная утилита, например ImageMagick:
-# convert favicon-16x16.png favicon-32x32.png favicon.ico
+chmod +x generate-favicons.sh
+./generate-favicons.sh
 ```
 
-## Добавление ссылок на иконки в HTML
+Скрипт создаст все необходимые иконки в директории `frontend/public/`
 
-Все необходимые ссылки на иконки уже добавлены в файл `index.html`.
+## Загрузка на сервер
+
+После создания всех иконок, загрузите их на сервер:
+
+```bash
+scp frontend/public/favicon.svg frontend/public/favicon.ico frontend/public/favicon-16x16.png frontend/public/favicon-32x32.png frontend/public/apple-touch-icon.png frontend/public/mstile-144x144.png root@185.255.120.50:/var/www/html/site/
+```
+
+Если вы использовали онлайн генератор и у вас есть дополнительные файлы, загрузите и их.
 
 ## Проверка
 
-После конвертации и добавления файлов проверьте их доступность, открыв сайт в браузере.
-
-Для проверки в Яндекс Вебмастере добавьте сайт и проверьте, правильно ли отображается иконка в сниппете. 
+Проверьте работу favicon, открыв сайт в разных браузерах. Возможно, потребуется очистить кэш браузера, чтобы увидеть новую иконку. 
