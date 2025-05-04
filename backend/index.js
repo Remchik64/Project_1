@@ -132,6 +132,12 @@ app.use('/api/cities', cityRoutes);
 // Маршруты для загрузки файлов
 app.use('/api/upload', uploadRoutes);
 
+// Обработка ошибки 404 для API-маршрутов
+app.use('/api/*', (req, res) => {
+    console.log(`404 - Маршрут не найден: ${req.originalUrl}`);
+    res.status(404).json({ message: 'Маршрут не найден' });
+});
+
 // Обработка ошибок
 app.use((err, req, res, next) => {
     console.error(err.stack);

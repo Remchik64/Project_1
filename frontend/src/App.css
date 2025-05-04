@@ -70,3 +70,56 @@ body.footer-expanded .app {
     pointer-events: none !important;
   }
 }
+
+/* Стили для страницы 404 */
+.not-found-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 70vh;
+  text-align: center;
+  padding: 0 20px;
+}
+
+.not-found-content {
+  max-width: 600px;
+  padding: 40px;
+  background: rgba(26, 26, 26, 0.9);
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.not-found-content h1 {
+  font-size: 120px;
+  margin: 0;
+  color: #e91e63;
+  line-height: 1;
+}
+
+.not-found-content h2 {
+  font-size: 30px;
+  margin: 0 0 20px 0;
+  color: #fff;
+}
+
+.not-found-content p {
+  margin-bottom: 30px;
+  color: #ccc;
+  font-size: 18px;
+}
+
+.not-found-content .btn-primary {
+  display: inline-block;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #e91e63, #9c27b0);
+  color: white;
+  text-decoration: none;
+  border-radius: 30px;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.not-found-content .btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}

@@ -18,6 +18,7 @@ import AdminEditProfilePage from './pages/AdminEditProfilePage';
 import AboutPage from './pages/AboutPage';
 import TermsPage from './pages/TermsPage';
 import PrivacyPage from './pages/PrivacyPage';
+import NotFoundPage from './pages/NotFoundPage';
 import SiteMap from './components/SiteMap';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -113,6 +114,9 @@ function App() {
                       </AdminRoute>
                     }
                   />
+                  
+                  {/* Путь для страницы 404 (должен быть последним) */}
+                  <Route path="*" element={<NotFoundPage />} />
                 </Routes>
               </main>
               <Footer />
