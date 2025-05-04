@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# fix-404-errors.sh - Скрипт для настройки правильной обработки 404 ошибок
+# fix-404-errors.sh - Скрипт для настройки правильной обработки 404 ошибок в Nginx
 # Автор: Claude
 # Дата создания: 2023-05-15
 
@@ -13,207 +13,96 @@ NC='\033[0m' # No Color
 echo -e "${YELLOW}Настройка правильной обработки 404 ошибок для сайта escort-bar.live${NC}"
 echo
 
-# Функция для проверки наличия файла
-check_file_exists() {
-  if [ ! -f "$1" ]; then
-    echo -e "${RED}Ошибка: Файл $1 не найден!${NC}"
+# Проверяем, запущен ли скрипт с привилегиями sudo
+if [ "$(id -u)" != "0" ]; then
+   echo -e "${RED}Этот скрипт должен быть запущен с привилегиями sudo${NC}"
+   echo "Пожалуйста, запустите: sudo $0"
+   exit 1
+fi
+
+# Путь к корневой директории сайта
+SITE_ROOT="/var/www/html/site"
+# Путь к конфигурации Nginx
+NGINX_CONF="/etc/nginx/sites-enabled/escort-bar.live"
+# Бэкап текущей конфигурации
+BACKUP_DATE=$(date +"%Y%m%d_%H%M%S")
+NGINX_BACKUP="/etc/nginx/sites-enabled/escort-bar.live.bak.$BACKUP_DATE"
+
+# Создание бэкапа текущей конфигурации Nginx
+echo -e "${GREEN}1. Создание резервной копии текущей конфигурации Nginx${NC}"
+if [ -f "$NGINX_CONF" ]; then
+    cp "$NGINX_CONF" "$NGINX_BACKUP"
+    echo -e "${GREEN}✓ Бэкап создан: $NGINX_BACKUP${NC}"
+else
+    echo -e "${RED}✗ Файл конфигурации Nginx не найден: $NGINX_CONF${NC}"
     exit 1
-  fi
-}
-
-# 1. Создаем файл 404.html
-echo -e "${GREEN}1. Создание кастомной страницы 404.html${NC}"
-cat > /tmp/404.html << 'EOF'
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="robots" content="noindex">
-    <title>404 - Страница не найдена | Escort Bar</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            background: #121212;
-            color: #fff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        .not-found-container {
-            text-align: center;
-            max-width: 600px;
-            padding: 40px;
-            background: rgba(26, 26, 26, 0.9);
-            border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        }
-        h1 {
-            font-size: 120px;
-            margin: 0;
-            color: #e91e63;
-            line-height: 1;
-        }
-        h2 {
-            font-size: 30px;
-            margin: 0 0 20px 0;
-        }
-        p {
-            margin-bottom: 30px;
-            color: #ccc;
-            font-size: 18px;
-        }
-        a {
-            display: inline-block;
-            padding: 12px 24px;
-            background: linear-gradient(135deg, #e91e63, #9c27b0);
-            color: white;
-            text-decoration: none;
-            border-radius: 30px;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-        a:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-        }
-    </style>
-</head>
-<body>
-    <div class="not-found-container">
-        <h1>404</h1>
-        <h2>Страница не найдена</h2>
-        <p>Извините, но запрашиваемая вами страница не существует.</p>
-        <a href="/">Вернуться на главную</a>
-    </div>
-</body>
-</html>
-EOF
-
-echo -e "${GREEN}Копирование 404.html в директорию сайта...${NC}"
-echo "sudo cp /tmp/404.html /var/www/html/site/"
+fi
 echo
 
-# 2. Обновляем конфигурацию Nginx для HTTP
-echo -e "${GREEN}2. Обновление конфигурации Nginx для HTTP...${NC}"
-# Создаем временный файл конфигурации
-cat > /tmp/nginx-http.conf << 'EOF'
-server {
-    server_name escort-bar.live www.escort-bar.live;
-    root /var/www/html/site;
-    index index.html;
-
-    # Обработка проверочного файла для Яндекс.Вебмастер
-    location = /b6f2f6a9266f10b2.html {
-        try_files $uri =404;
-    }
-    
-    # Настройка кастомной страницы 404
-    error_page 404 /404.html;
-    location = /404.html {
-        root /var/www/html/site;
-        internal;
-    }
-
-    location /api {
-        proxy_pass http://localhost:8080;
-        proxy_ssl_verify off;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        
-        # Обработка 404 для API
-        proxy_intercept_errors on;
-    }
-
-    location / {
-        try_files $uri $uri/ /index.html;
-    }
-
-    listen 80;
-    
-    # Редирект на HTTPS
-    return 301 https://$host$request_uri;
-}
-EOF
-
-echo -e "${GREEN}Замена HTTP конфигурации Nginx...${NC}"
-echo "sudo cp /tmp/nginx-http.conf /etc/nginx/sites-available/escort-bar.live-http"
-echo "sudo ln -sf /etc/nginx/sites-available/escort-bar.live-http /etc/nginx/sites-enabled/"
+# Копирование новой конфигурации Nginx
+echo -e "${GREEN}2. Установка новой конфигурации Nginx${NC}"
+if [ -f "nginx-404-fix.conf" ]; then
+    cp "nginx-404-fix.conf" "$NGINX_CONF"
+    echo -e "${GREEN}✓ Новая конфигурация установлена: $NGINX_CONF${NC}"
+else
+    echo -e "${RED}✗ Файл с новой конфигурацией не найден: nginx-404-fix.conf${NC}"
+    echo -e "${RED}  Пожалуйста, убедитесь, что файл существует в текущей директории${NC}"
+    exit 1
+fi
 echo
 
-# 3. Обновляем конфигурацию Nginx для HTTPS
-echo -e "${GREEN}3. Обновление конфигурации Nginx для HTTPS...${NC}"
-# Создаем временный файл конфигурации
-cat > /tmp/nginx-https.conf << 'EOF'
-server {
-    server_name escort-bar.live www.escort-bar.live;
-    root /var/www/html/site;
-    index index.html;
-
-    # Обработка проверочного файла для Яндекс.Вебмастер
-    location = /b6f2f6a9266f10b2.html {
-        try_files $uri =404;
-    }
-    
-    # Настройка кастомной страницы 404
-    error_page 404 /404.html;
-    location = /404.html {
-        root /var/www/html/site;
-        internal;
-    }
-
-    location /api {
-        proxy_pass http://localhost:8080;
-        proxy_ssl_verify off;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        
-        # Обработка 404 для API
-        proxy_intercept_errors on;
-    }
-
-    location / {
-        try_files $uri $uri/ /index.html;
-    }
-
-    listen 443 ssl; # managed by Certbot
-    ssl_certificate /etc/letsencrypt/live/escort-bar.live/fullchain.pem; # managed by Certbot
-    ssl_certificate_key /etc/letsencrypt/live/escort-bar.live/privkey.pem; # managed by Certbot
-    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
-    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
-}
-EOF
-
-echo -e "${GREEN}Замена HTTPS конфигурации Nginx...${NC}"
-echo "sudo cp /tmp/nginx-https.conf /etc/nginx/sites-available/escort-bar.live-https"
-echo "sudo ln -sf /etc/nginx/sites-available/escort-bar.live-https /etc/nginx/sites-enabled/"
+# Создание страницы 404
+echo -e "${GREEN}3. Установка страницы 404${NC}"
+if [ -f "404.html" ]; then
+    cp "404.html" "$SITE_ROOT/404.html"
+    # Установка правильных прав доступа
+    chown www-data:www-data "$SITE_ROOT/404.html"
+    chmod 644 "$SITE_ROOT/404.html"
+    echo -e "${GREEN}✓ Страница 404 установлена: $SITE_ROOT/404.html${NC}"
+else
+    echo -e "${RED}✗ Файл страницы 404 не найден: 404.html${NC}"
+    echo -e "${RED}  Пожалуйста, убедитесь, что файл существует в текущей директории${NC}"
+    exit 1
+fi
 echo
 
-# 4. Проверяем конфигурацию и перезапускаем Nginx
-echo -e "${GREEN}4. Проверка конфигурации и перезапуск Nginx...${NC}"
-echo "sudo nginx -t"
-echo "sudo systemctl reload nginx"
+# Проверка конфигурации Nginx
+echo -e "${GREEN}4. Проверка синтаксиса конфигурации Nginx${NC}"
+nginx -t
+if [ $? -ne 0 ]; then
+    echo -e "${RED}✗ Ошибка в конфигурации Nginx${NC}"
+    echo -e "${YELLOW}Восстанавливаем предыдущую конфигурацию...${NC}"
+    cp "$NGINX_BACKUP" "$NGINX_CONF"
+    echo -e "${GREEN}✓ Предыдущая конфигурация восстановлена${NC}"
+    exit 1
+else
+    echo -e "${GREEN}✓ Конфигурация Nginx корректна${NC}"
+fi
 echo
 
-# 5. Проверка обработки 404 ошибок
-echo -e "${GREEN}5. Проверка обработки 404 ошибок...${NC}"
-echo "curl -I https://escort-bar.live/nonexistent-page"
+# Перезагрузка Nginx
+echo -e "${GREEN}5. Перезагрузка Nginx${NC}"
+systemctl reload nginx
+if [ $? -ne 0 ]; then
+    echo -e "${RED}✗ Ошибка при перезагрузке Nginx${NC}"
+    echo -e "${YELLOW}Попробуйте вручную выполнить: sudo systemctl reload nginx${NC}"
+    exit 1
+else
+    echo -e "${GREEN}✓ Nginx успешно перезагружен${NC}"
+fi
 echo
 
-echo -e "${YELLOW}Инструкции по установке:${NC}"
-echo "1. Скопируйте этот скрипт на сервер"
-echo "2. Сделайте его исполняемым: chmod +x fix-404-errors.sh"
-echo "3. Запустите его с правами sudo: sudo ./fix-404-errors.sh"
+echo -e "${GREEN}Настройка 404 ошибок успешно завершена!${NC}"
+echo -e "${YELLOW}Рекомендуется проверить работу сайта и корректность обработки 404 ошибок${NC}"
+echo -e "${YELLOW}Используйте скрипт: ./verify-404-handling.sh${NC}"
 echo
-echo -e "${YELLOW}ВАЖНО:${NC}"
-echo "После выполнения скрипта проверьте в Яндекс.Вебмастер, устранены ли ошибки с отсутствующими страницами."
-echo "Для проверки может потребоваться некоторое время, пока Яндекс переиндексирует ваш сайт." 
+
+echo -e "${GREEN}Информация:${NC}"
+echo "1. Созданы файлы:"
+echo "   - Конфигурация Nginx: $NGINX_CONF"
+echo "   - Страница 404: $SITE_ROOT/404.html"
+echo "2. Резервная копия конфигурации: $NGINX_BACKUP"
+echo
+echo -e "${YELLOW}При необходимости вы можете восстановить предыдущую конфигурацию:${NC}"
+echo "sudo cp $NGINX_BACKUP $NGINX_CONF"
+echo "sudo systemctl reload nginx" 

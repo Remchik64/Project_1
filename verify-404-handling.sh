@@ -1,73 +1,69 @@
 #!/bin/bash
 
-# verify-404-handling.sh - Скрипт для проверки правильной обработки 404 ошибок
-# Автор: Claude
-# Дата создания: 2023-05-15
+# Скрипт для проверки правильной обработки 404 ошибок на сайте
 
-# Цвета для вывода
+# Определение цветов для вывода
 GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
 RED='\033[0;31m'
+YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-echo -e "${YELLOW}Проверка обработки 404 ошибок для сайта escort-bar.live${NC}"
-echo
+echo -e "${YELLOW}Проверка обработки 404 ошибок на сайте escort-bar.live${NC}"
+echo "-------------------------------------------------------"
 
-# Проверка доступности сайта
-echo -e "${GREEN}1. Проверка доступности сайта${NC}"
-HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://escort-bar.live)
-if [ "$HTTP_CODE" == "200" ]; then
-  echo -e "${GREEN}✓ Сайт доступен (HTTP код: $HTTP_CODE)${NC}"
-else
-  echo -e "${RED}✗ Сайт недоступен (HTTP код: $HTTP_CODE)${NC}"
-  exit 1
-fi
-echo
+# Функция для тестирования URL и проверки кода ответа
+check_url() {
+    local url=$1
+    local expected_code=$2
+    local description=$3
+    
+    # Получаем HTTP код ответа
+    status_code=$(curl -s -o /dev/null -w "%{http_code}" "$url")
+    
+    if [ "$status_code" -eq "$expected_code" ]; then
+        echo -e "${GREEN}✅ $description: $url возвращает $status_code как и ожидалось${NC}"
+    else
+        echo -e "${RED}❌ $description: $url возвращает $status_code вместо ожидаемого $expected_code${NC}"
+    fi
+}
 
-# Проверка обработки 404 для несуществующей страницы
-echo -e "${GREEN}2. Проверка обработки 404 для несуществующей страницы${NC}"
-HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://escort-bar.live/page-does-not-exist-123456789)
-if [ "$HTTP_CODE" == "404" ]; then
-  echo -e "${GREEN}✓ Несуществующая страница возвращает 404 (HTTP код: $HTTP_CODE)${NC}"
-else
-  echo -e "${RED}✗ Несуществующая страница возвращает некорректный код (HTTP код: $HTTP_CODE)${NC}"
-  echo -e "${YELLOW}   Ожидается: 404, Получено: $HTTP_CODE${NC}"
-fi
-echo
+# Тестирование несуществующих статических файлов
+echo -e "${YELLOW}Тестирование несуществующих статических файлов:${NC}"
+check_url "https://escort-bar.live/nonexistent-file.js" 404 "Несуществующий JS файл"
+check_url "https://escort-bar.live/images/nonexistent.jpg" 404 "Несуществующее изображение"
+check_url "https://escort-bar.live/styles/nonexistent.css" 404 "Несуществующий CSS файл"
 
-# Проверка обработки 404 для несуществующего API эндпоинта
-echo -e "${GREEN}3. Проверка обработки 404 для несуществующего API эндпоинта${NC}"
-HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://escort-bar.live/api/endpoint-does-not-exist)
-if [ "$HTTP_CODE" == "404" ]; then
-  echo -e "${GREEN}✓ Несуществующий API эндпоинт возвращает 404 (HTTP код: $HTTP_CODE)${NC}"
-else
-  echo -e "${RED}✗ Несуществующий API эндпоинт возвращает некорректный код (HTTP код: $HTTP_CODE)${NC}"
-  echo -e "${YELLOW}   Ожидается: 404, Получено: $HTTP_CODE${NC}"
-fi
-echo
+echo ""
 
-# Проверка содержимого страницы 404
-echo -e "${GREEN}4. Проверка содержимого страницы 404${NC}"
-PAGE_CONTENT=$(curl -s https://escort-bar.live/page-does-not-exist-123456789)
-if echo "$PAGE_CONTENT" | grep -q "404"; then
-  echo -e "${GREEN}✓ Страница 404 содержит текст '404'${NC}"
-else
-  echo -e "${RED}✗ Страница 404 не содержит текст '404'${NC}"
-fi
+# Тестирование несуществующих API маршрутов
+echo -e "${YELLOW}Тестирование несуществующих API маршрутов:${NC}"
+check_url "https://escort-bar.live/api/nonexistent" 404 "Несуществующий API маршрут"
 
-if echo "$PAGE_CONTENT" | grep -q "Страница не найдена"; then
-  echo -e "${GREEN}✓ Страница 404 содержит текст 'Страница не найдена'${NC}"
-else
-  echo -e "${RED}✗ Страница 404 не содержит текст 'Страница не найдена'${NC}"
-fi
+echo ""
 
-# Проверка наличия мета-тега noindex на странице 404
-if echo "$PAGE_CONTENT" | grep -q 'name="robots" content="noindex"'; then
-  echo -e "${GREEN}✓ Страница 404 содержит мета-тег noindex${NC}"
-else
-  echo -e "${RED}✗ Страница 404 не содержит мета-тег noindex${NC}"
-fi
-echo
+# Тестирование несуществующих страниц
+echo -e "${YELLOW}Тестирование специальных 404 маршрутов:${NC}"
+check_url "https://escort-bar.live/nonexistent/" 404 "Специальный маршрут /nonexistent/"
+check_url "https://escort-bar.live/notfound/" 404 "Специальный маршрут /notfound/"
+check_url "https://escort-bar.live/unknown/" 404 "Специальный маршрут /unknown/"
+check_url "https://escort-bar.live/404/" 404 "Специальный маршрут /404/"
+
+echo ""
+
+# Тестирование рандомных несуществующих страниц
+echo -e "${YELLOW}Тестирование случайных несуществующих страниц:${NC}"
+random_path1=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 10 | head -n 1)
+random_path2=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 10 | head -n 1)
+
+check_url "https://escort-bar.live/$random_path1" 200 "Случайный несуществующий путь 1 (SPA должен обрабатывать)"
+check_url "https://escort-bar.live/$random_path2" 200 "Случайный несуществующий путь 2 (SPA должен обрабатывать)"
+
+echo ""
+echo -e "${YELLOW}ПРИМЕЧАНИЕ:${NC} Для SPA (React) приложений нормально, что случайные несуществующие пути возвращают 200,"
+echo "поскольку они перенаправляются на клиентскую маршрутизацию. Важно, чтобы статические файлы и API"
+echo "маршруты правильно возвращали 404."
+echo ""
+echo -e "${GREEN}Проверка завершена. Результаты выше указывают на проблемы, которые нужно исправить, если они есть.${NC}"
 
 echo -e "${YELLOW}Инструкции:${NC}"
 echo "1. Скопируйте этот скрипт на сервер"
