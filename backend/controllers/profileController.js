@@ -2,6 +2,7 @@ const { Profile, User, SiteSettings } = require('../models');
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
+const indexNowService = require('../services/indexNowService');
 
 // Функция для получения MD5-хеша файла
 const getFileHash = (filePath) => {
@@ -188,6 +189,15 @@ exports.createProfile = async (req, res) => {
         const profile = await Profile.create(profileData);
         console.log('Профиль успешно создан:', profile.toJSON());
         
+        // Отправляем уведомление в IndexNow о новом профиле
+        indexNowService.notifyNewProfile(profile.id)
+            .then(result => {
+                console.log('[IndexNow] Результат уведомления о создании профиля:', result);
+            })
+            .catch(error => {
+                console.error('[IndexNow] Ошибка уведомления о создании профиля:', error);
+            });
+        
         res.status(201).json({
             message: 'Профиль успешно создан',
             profile: profile
@@ -309,6 +319,15 @@ exports.updateProfile = async (req, res) => {
         const updatedProfile = await Profile.findByPk(req.params.id);
         console.log('Профиль обновлен:', updatedProfile.toJSON());
         
+        // Отправляем уведомление в IndexNow об обновлении профиля
+        indexNowService.notifyProfileUpdate(updatedProfile.id)
+            .then(result => {
+                console.log('[IndexNow] Результат уведомления об обновлении профиля:', result);
+            })
+            .catch(error => {
+                console.error('[IndexNow] Ошибка уведомления об обновлении профиля:', error);
+            });
+        
         res.json(updatedProfile);
     } catch (error) {
         console.error('Ошибка при обновлении профиля:', error);
@@ -350,6 +369,15 @@ exports.updateStatus = async (req, res) => {
         
         console.log('Статус профиля обновлен:', updatedProfile.toJSON());
         
+        // Отправляем уведомление в IndexNow об обновлении статуса профиля
+        indexNowService.notifyProfileUpdate(updatedProfile.id)
+            .then(result => {
+                console.log('[IndexNow] Результат уведомления об изменении статуса профиля:', result);
+            })
+            .catch(error => {
+                console.error('[IndexNow] Ошибка уведомления об изменении статуса профиля:', error);
+            });
+        
         res.json(updatedProfile);
     } catch (error) {
         console.error('Ошибка при обновлении статуса профиля:', error);
@@ -368,6 +396,9 @@ exports.deleteProfile = async (req, res) => {
             return res.status(404).json({ message: 'Профиль не найден' });
         }
 
+        // Сохраняем ID профиля для уведомления перед удалением
+        const profileId = profile.id;
+
         // Удаляем фото профиля, если оно есть
         if (profile.photo) {
             const photoPath = path.join(__dirname, '..', profile.photo);
@@ -377,6 +408,16 @@ exports.deleteProfile = async (req, res) => {
         }
 
         await profile.destroy();
+        
+        // Отправляем уведомление в IndexNow об удалении профиля
+        indexNowService.notifyProfileDeletion(profileId)
+            .then(result => {
+                console.log('[IndexNow] Результат уведомления об удалении профиля:', result);
+            })
+            .catch(error => {
+                console.error('[IndexNow] Ошибка уведомления об удалении профиля:', error);
+            });
+        
         res.json({ message: 'Профиль успешно удален' });
     } catch (error) {
         console.error('Ошибка при удалении профиля:', error);
