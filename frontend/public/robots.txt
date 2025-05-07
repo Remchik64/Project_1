@@ -1,12 +1,17 @@
-# Allow all web crawlers
+# Разрешаем индексировать все страницы для всех поисковых роботов
 User-agent: *
 Allow: /
 
-# Sitemap location
-Sitemap: https://вашдомен.ru/sitemap.xml
-
-# Disallow admin routes
+# Запрещаем индексацию административных разделов
 Disallow: /admin/
+Disallow: /cabinet/
 Disallow: /login
 Disallow: /register
-Disallow: /cabinet 
+
+# Запрещаем индексацию черновиков и системных страниц
+Disallow: /logout
+Disallow: /api/
+Disallow: /404
+
+# Указываем местоположение XML-карты сайта
+Sitemap: https://escort-bar.live/sitemap.xml 

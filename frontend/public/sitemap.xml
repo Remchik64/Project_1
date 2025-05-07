@@ -1,52 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Главная страница -->
   <url>
-    <loc>https://вашдомен.ru/</loc>
-    <lastmod>2024-02-26</lastmod>
-    <changefreq>weekly</changefreq>
+    <loc>https://escort-bar.live/</loc>
+    <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
+  
+  <!-- Страница с анкетами -->
   <url>
-    <loc>https://вашдомен.ru/profiles</loc>
-    <lastmod>2024-02-26</lastmod>
-    <changefreq>daily</changefreq>
+    <loc>https://escort-bar.live/profiles</loc>
+    <changefreq>hourly</changefreq>
     <priority>0.9</priority>
   </url>
+  
+  <!-- Страница поиска -->
   <url>
-    <loc>https://вашдомен.ru/search</loc>
-    <lastmod>2024-02-26</lastmod>
+    <loc>https://escort-bar.live/search</loc>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://вашдомен.ru/about</loc>
-    <lastmod>2024-02-26</lastmod>
-    <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
+  
+  <!-- О нас -->
   <url>
-    <loc>https://вашдомен.ru/contact</loc>
-    <lastmod>2024-02-26</lastmod>
+    <loc>https://escort-bar.live/about</loc>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://вашдомен.ru/terms</loc>
-    <lastmod>2024-02-26</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://вашдомен.ru/privacy</loc>
-    <lastmod>2024-02-26</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://вашдомен.ru/sitemap</loc>
-    <lastmod>2024-02-26</lastmod>
-    <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
-  <!-- Города будут добавляться динамически через серверный скрипт -->
+  
+  <!-- Условия использования -->
+  <url>
+    <loc>https://escort-bar.live/terms</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <!-- Политика конфиденциальности -->
+  <url>
+    <loc>https://escort-bar.live/privacy</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <!-- Карта сайта -->
+  <url>
+    <loc>https://escort-bar.live/sitemap</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+  </url>
 </urlset> 

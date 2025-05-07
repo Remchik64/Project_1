@@ -95,3 +95,6 @@ backend/testFrontendRequest.js
 backend/updateCityStatus.js
 backend/checkCities.js
 backend/checkDuplicates.js
+
+# Личная документация
+PROJECT_DOCUMENTATION.md
